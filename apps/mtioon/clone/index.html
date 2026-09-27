@@ -989,6 +989,7 @@
       position: relative;
       min-height: 0;
       flex: 1 1 auto;
+      background: #ffffff;
     }
 
     .inside-card-body {
@@ -1015,6 +1016,7 @@
 
     .inside-canvas {
       display: block;
+      background: transparent;
     }
 
     .inside-preset-viewport {
@@ -1027,8 +1029,8 @@
     }
 
     .inside-canvas-contain {
-      max-width: 100%;
-      max-height: 100%;
+      display: block;
+      flex: 0 0 auto;
     }
 
     .inside-canvas-badge {
@@ -3731,9 +3733,26 @@
          Inside
          ========================================================= */
 
-      const INSIDE_PRESET_LABELS = [
-        "fade", "rise", "pop", "slide", "blur", "slam", "drop", "wipe", "drift",
-        "float", "swing", "zoom", "spin", "flip", "bounce", "reveal", "fall", "lift", "grow"
+      const INSIDE_PRESETS = [
+        { id: "fade", label: "Fade" },
+        { id: "pop", label: "Pop" },
+        { id: "slide", label: "Slide", dirs: true },
+        { id: "rise", label: "Rise" },
+        { id: "blur", label: "Blur" },
+        { id: "bounce", label: "Bounce" },
+        { id: "zoom", label: "Zoom" },
+        { id: "slam", label: "Slam" },
+        { id: "drop", label: "Drop" },
+        { id: "spin", label: "Spin" },
+        { id: "wipe", label: "Wipe", dirs: true },
+        { id: "type", label: "Typewriter" },
+        { id: "flip", label: "Flip" },
+        { id: "turn", label: "Turn (3D)", dirs: true },
+        { id: "tumble", label: "Tumble (3D)" },
+        { id: "flip3d", label: "Card flip (3D)" },
+        { id: "land", label: "Land (squash)" },
+        { id: "jelly", label: "Jelly" },
+        { id: "boing", label: "Boing" }
       ];
 
       const INSIDE_PROMPTS = [
@@ -3867,11 +3886,18 @@
           ? Math.max(.01, Math.min(width / logicalWidth, height / logicalHeight))
           : Math.max(.01, width / logicalWidth);
         const dpr = Math.min(2, window.devicePixelRatio || 1);
-        const bitmapWidth = Math.max(1, Math.round(logicalWidth * scale * dpr));
-        const bitmapHeight = Math.max(1, Math.round(logicalHeight * scale * dpr));
+        const cssWidth = logicalWidth * scale;
+        const cssHeight = logicalHeight * scale;
+        const bitmapWidth = Math.max(1, Math.round(cssWidth * dpr));
+        const bitmapHeight = Math.max(1, Math.round(cssHeight * dpr));
+
+        canvas.style.width = `${cssWidth}px`;
+        canvas.style.height = `${cssHeight}px`;
+
         if (canvas.width !== bitmapWidth) canvas.width = bitmapWidth;
         if (canvas.height !== bitmapHeight) canvas.height = bitmapHeight;
-        return { scale, dpr, width, height, bitmapWidth, bitmapHeight };
+
+        return { scale, dpr, width, height, cssWidth, cssHeight, bitmapWidth, bitmapHeight };
       };
 
       const drawInsideRoundedRect = (context, x, y, width, height, radius) => {
@@ -3899,10 +3925,382 @@
         context.fillRect(0, 0, width, height);
       };
 
-      const presetProgress = (time, duration = 2.2) => {
-        const cycle = (time % duration) / duration;
-        const t = clamp01(cycle);
-        return t;
+      const INSIDE_PRESET_BASE_STATE = Object.freeze({
+        opacity: 1,
+        dx: 0,
+        dy: 0,
+        sx: 1,
+        sy: 1,
+        rotate: 0,
+        blur: 0,
+        reveal: 1,
+        rx: 0,
+        ry: 0
+      });
+
+      const INSIDE_PRESET_EASES = {
+        linear: value => value,
+        smooth: value => 1 - Math.pow(1 - value, 4),
+        outQuad: value => 1 - (1 - value) * (1 - value),
+        inQuad: value => value * value,
+        inOutQuad: value => value < .5 ? 2 * value * value : 1 - Math.pow(-2 * value + 2, 2) / 2,
+        outCubic: value => 1 - Math.pow(1 - value, 3),
+        inCubic: value => value * value * value,
+        inOutCubic: value => value < .5 ? 4 * value * value * value : 1 - Math.pow(-2 * value + 2, 3) / 2,
+        inOutSine: value => (1 - Math.cos(Math.PI * value)) / 2,
+        outBack: value => 1 + 2.70158 * Math.pow(value - 1, 3) + 1.70158 * Math.pow(value - 1, 2),
+        inBack: value => 2.70158 * value * value * value - 1.70158 * value * value,
+        outExpo: value => value >= 1 ? 1 : 1 - Math.pow(2, -10 * value),
+        inExpo: value => value <= 0 ? 0 : Math.pow(2, 10 * value - 10),
+        inOutExpo: value => {
+          if (value <= 0) return 0;
+          if (value >= 1) return 1;
+          return value < .5
+            ? Math.pow(2, 20 * value - 10) / 2
+            : (2 - Math.pow(2, -20 * value + 10)) / 2;
+        },
+        outElastic: value => {
+          if (value === 0 || value === 1) return value;
+          const c4 = 2 * Math.PI / 3;
+          return Math.pow(2, -10 * value) * Math.sin((value * 10 - .75) * c4) + 1;
+        },
+        outBounce: value => {
+          const n1 = 7.5625;
+          const d1 = 2.75;
+          if (value < 1 / d1) return n1 * value * value;
+          if (value < 2 / d1) {
+            const t = value - 1.5 / d1;
+            return n1 * t * t + .75;
+          }
+          if (value < 2.5 / d1) {
+            const t = value - 2.25 / d1;
+            return n1 * t * t + .9375;
+          }
+          const t = value - 2.625 / d1;
+          return n1 * t * t + .984375;
+        },
+        hold: value => Number(value >= 1)
+      };
+
+      const insidePresetTween = (prop, from, to, ease = "smooth") => ({
+        prop,
+        ease,
+        kf: [[0, from], [1, to]]
+      });
+
+      const insidePresetKeys = (prop, keyframes, ease = "linear") => ({
+        prop,
+        ease,
+        kf: keyframes
+      });
+
+      const insidePresetSampled = (prop, sample, extra = []) => {
+        const times = [
+          ...Array.from({ length: 49 }, (_, index) => index / 48),
+          ...extra.flatMap(time => [time - 1e-4, time])
+        ];
+        const uniqueTimes = [...new Set(times)].sort((a, b) => a - b);
+        return insidePresetKeys(prop, uniqueTimes.map(time => [time, sample(time)]));
+      };
+
+      const insidePresetDirection = direction => {
+        switch (direction) {
+          case "down": return { prop: "dy", sign: -1 };
+          case "left": return { prop: "dx", sign: 1 };
+          case "right": return { prop: "dx", sign: -1 };
+          default: return { prop: "dy", sign: 1 };
+        }
+      };
+
+      const insidePresetLandOscillation = (time, frequency = 2, decay = 3.5) => (
+        Math.exp(-decay * time) * Math.cos(2 * frequency * Math.PI * time) * (1 - time)
+      );
+
+      const INSIDE_PRESET_TRACKS = {
+        fade: () => [
+          insidePresetTween("opacity", 0, 1, "outQuad")
+        ],
+        pop: () => [
+          insidePresetTween("sx", 0, 1, "outBack"),
+          insidePresetTween("sy", 0, 1, "outBack"),
+          insidePresetTween("opacity", 0, 1, "outQuad")
+        ],
+        slide: spec => {
+          const { prop, sign } = insidePresetDirection(spec.dir);
+          return [
+            insidePresetTween(prop, .45 * sign * (spec.intensity ?? 1), 0, "smooth"),
+            insidePresetTween("opacity", 0, 1, "outQuad")
+          ];
+        },
+        rise: spec => [
+          insidePresetTween("dy", .22 * (spec.intensity ?? 1), 0, "smooth"),
+          insidePresetTween("opacity", 0, 1, "outQuad")
+        ],
+        blur: () => [
+          insidePresetTween("blur", .08, 0, "smooth"),
+          insidePresetTween("sx", 1.06, 1, "smooth"),
+          insidePresetTween("sy", 1.06, 1, "smooth"),
+          insidePresetTween("opacity", 0, 1, "outQuad")
+        ],
+        bounce: spec => {
+          const intensity = spec.intensity ?? 1;
+          return [
+            insidePresetKeys("dy", [[0, -.9 * intensity], [.5, .07 * intensity], [.72, -.035 * intensity], [.88, .015 * intensity], [1, 0]], "outQuad"),
+            insidePresetTween("opacity", 0, 1, "outQuad")
+          ];
+        },
+        zoom: () => [
+          insidePresetTween("sx", 1.6, 1, "smooth"),
+          insidePresetTween("sy", 1.6, 1, "smooth"),
+          insidePresetTween("opacity", 0, 1, "outQuad")
+        ],
+        slam: spec => {
+          const intensity = spec.intensity ?? 1;
+          return [
+            insidePresetKeys("sx", [[0, 1 + 2 * intensity], [.55, .94], [.8, 1.02], [1, 1]], "outQuad"),
+            insidePresetKeys("sy", [[0, 1 + 2 * intensity], [.55, .94], [.8, 1.02], [1, 1]], "outQuad"),
+            insidePresetKeys("opacity", [[0, 0], [.25, 1], [1, 1]])
+          ];
+        },
+        drop: spec => {
+          const intensity = spec.intensity ?? 1;
+          return [
+            insidePresetTween("dy", -1.2 * intensity, 0, "outElastic"),
+            insidePresetTween("rotate", -8 * intensity, 0, "outElastic"),
+            insidePresetKeys("opacity", [[0, 0], [.15, 1], [1, 1]])
+          ];
+        },
+        spin: spec => {
+          const intensity = spec.intensity ?? 1;
+          return [
+            insidePresetTween("rotate", -180 * intensity, 0, "outExpo"),
+            insidePresetTween("sx", .2, 1, "outBack"),
+            insidePresetTween("sy", .2, 1, "outBack"),
+            insidePresetTween("opacity", 0, 1, "outQuad")
+          ];
+        },
+        wipe: () => [
+          insidePresetTween("reveal", 0, 1, "outExpo")
+        ],
+        type: () => [
+          insidePresetTween("reveal", 0, 1, "linear")
+        ],
+        flip: () => [
+          insidePresetTween("sy", 0, 1, "outBack"),
+          insidePresetTween("opacity", 0, 1, "outQuad")
+        ],
+        turn: spec => {
+          const { prop, sign } = spec.dir === "right" || spec.dir === "left"
+            ? { prop: "ry", sign: spec.dir === "right" ? -1 : 1 }
+            : { prop: "rx", sign: spec.dir === "down" ? -1 : 1 };
+          return [
+            insidePresetTween(prop, 88 * sign * (spec.intensity ?? 1), 0, "outExpo"),
+            insidePresetKeys("opacity", [[0, 0], [.2, 1], [1, 1]])
+          ];
+        },
+        tumble: spec => {
+          const intensity = spec.intensity ?? 1;
+          return [
+            insidePresetTween("rx", 100 * intensity, 0, "outBack"),
+            insidePresetTween("dy", .35 * intensity, 0, "outExpo"),
+            insidePresetKeys("opacity", [[0, 0], [.25, 1], [1, 1]])
+          ];
+        },
+        flip3d: spec => {
+          const intensity = spec.intensity ?? 1;
+          return [
+            insidePresetTween("ry", -180 * intensity, 0, "outBack"),
+            insidePresetKeys("opacity", [[0, 0], [.1, 1], [1, 1]])
+          ];
+        },
+        land: spec => {
+          const intensity = spec.intensity ?? 1;
+          const progress = time => Math.min(1, time / .4);
+          return [
+            insidePresetSampled("dy", time => time < .4
+              ? -1.4 * intensity * (1 - Math.pow(progress(time), 2))
+              : 0, [.4]),
+            insidePresetSampled("sy", time => time < .4
+              ? 1 + .25 * intensity * Math.pow(progress(time), 2)
+              : 1 - .2 * intensity * insidePresetLandOscillation((time - .4) / .6), [.4]),
+            insidePresetSampled("sx", time => time < .4
+              ? 1 - .1 * intensity * Math.pow(progress(time), 2)
+              : 1 + .15 * intensity * insidePresetLandOscillation((time - .4) / .6), [.4]),
+            insidePresetKeys("opacity", [[0, 0], [.08, 1], [1, 1]])
+          ];
+        },
+        jelly: spec => {
+          const intensity = spec.intensity ?? 1;
+          const active = time => time < .25 ? 1 - Math.pow(1 - time / .25, 2) : 1;
+          const stretch = time => Math.max(.1, 1 + .3 * intensity * Math.sin(5 * Math.PI * time) * Math.exp(-3.2 * time) * (1 - time));
+          return [
+            insidePresetSampled("sy", time => active(time) * stretch(time)),
+            insidePresetSampled("sx", time => active(time) / stretch(time)),
+            insidePresetKeys("opacity", [[0, 0], [.1, 1], [1, 1]])
+          ];
+        },
+        boing: spec => {
+          const intensity = spec.intensity ?? 1;
+          const active = time => Math.min(1, Math.max(0, (time - .45) / .4));
+          const stretch = time => Math.max(.1, 1 + .15 * intensity * Math.sin(Math.PI * active(time)) - .12 * intensity * (time > .85 ? Math.sin(Math.PI * (time - .85) / .15) : 0));
+          return [
+            insidePresetSampled("dy", time => (
+              time < .4 ? .9 * intensity * (1 - time / .4) : 0
+            ) - .3 * intensity * Math.sin(Math.PI * active(time))),
+            insidePresetSampled("sy", time => stretch(time)),
+            insidePresetSampled("sx", time => 1 / stretch(time)),
+            insidePresetKeys("opacity", [[0, 0], [.1, 1], [1, 1]])
+          ];
+        }
+      };
+
+      const INSIDE_PRESET_RUNTIME = new Map(
+        INSIDE_PRESETS.map(preset => [preset.id, {
+          ...preset,
+          duration: .7,
+          start: 0,
+          end: 2.2
+        }])
+      );
+
+      const insidePresetCompile = (preset, direction = preset.dirs ? "up" : undefined) => {
+        const spec = {
+          id: preset.id,
+          dir: direction,
+          intensity: 1,
+          duration: .7
+        };
+        return {
+          id: preset.id,
+          dir: direction,
+          tracks: INSIDE_PRESET_TRACKS[preset.id](spec),
+          duration: spec.duration
+        };
+      };
+
+      const insidePresetClip = preset => ({
+        start: 0,
+        end: 2.2,
+        in: insidePresetCompile(preset)
+      });
+
+      const insidePresetDurations = clip => {
+        const total = Math.max(0, clip.end - clip.start);
+        let inDuration = clip.in ? clip.in.duration : 0;
+        let outDuration = clip.out ? clip.out.duration : 0;
+        const combined = inDuration + outDuration;
+        if (combined > total && combined > 0) {
+          const ratio = total / combined;
+          inDuration *= ratio;
+          outDuration *= ratio;
+        }
+        return { inDuration, outDuration };
+      };
+
+      const insidePresetSampleKeyframes = (track, progress) => {
+        const eased = (INSIDE_PRESET_EASES[track.ease] || INSIDE_PRESET_EASES.linear)(clamp01(progress));
+        const keyframes = track.kf;
+        if (keyframes.length === 1) return keyframes[0][1];
+
+        let index = 1;
+        while (index < keyframes.length - 1 && eased > keyframes[index][0]) index += 1;
+
+        const [fromTime, fromValue] = keyframes[index - 1];
+        const [toTime, toValue] = keyframes[index];
+        const span = toTime - fromTime;
+        const local = span > 0 ? (eased - fromTime) / span : 1;
+        return fromValue + (toValue - fromValue) * local;
+      };
+
+      const applyInsidePresetTrack = (stateValue, track, progress) => {
+        const value = insidePresetSampleKeyframes(track, progress);
+        switch (track.prop) {
+          case "opacity": stateValue.opacity *= value; break;
+          case "sx": stateValue.sx *= value; break;
+          case "sy": stateValue.sy *= value; break;
+          case "dx": stateValue.dx += value; break;
+          case "dy": stateValue.dy += value; break;
+          case "rotate": stateValue.rotate += value; break;
+          case "blur": stateValue.blur += value; break;
+          case "reveal": stateValue.reveal *= value; break;
+          case "rx": stateValue.rx += value; break;
+          case "ry": stateValue.ry += value; break;
+        }
+      };
+
+      const applyInsidePresetTracks = (stateValue, tracks, progress) => {
+        tracks.forEach(track => applyInsidePresetTrack(stateValue, track, progress));
+      };
+
+      const sampleInsidePreset = (clip, time) => {
+        if (time < clip.start || time >= clip.end) return null;
+
+        const stateValue = { ...INSIDE_PRESET_BASE_STATE };
+        const { inDuration, outDuration } = insidePresetDurations(clip);
+
+        if (clip.in && inDuration > 0 && time < clip.start + inDuration) {
+          applyInsidePresetTracks(stateValue, clip.in.tracks, (time - clip.start) / inDuration);
+          if (clip.in.dir) stateValue.revealDir = clip.in.dir;
+        }
+
+        if (clip.out && outDuration > 0 && time > clip.end - outDuration) {
+          applyInsidePresetTracks(stateValue, clip.out.tracks, (time - (clip.end - outDuration)) / outDuration);
+          if (clip.out.dir) stateValue.revealDir = clip.out.dir;
+        }
+
+        return stateValue;
+      };
+
+      const insidePresetLayer = (preset, text) => ({
+        type: "text",
+        text,
+        x: 500,
+        y: 500,
+        w: 1000,
+        h: 1000,
+        size: Math.round(Math.min(240, 850 / (.85 * text.length))),
+        font: "Sunghyun Sans",
+        weight: 900,
+        fill: "#171717",
+        rotation: 0,
+        scale: 1,
+        sx: 1,
+        sy: 1,
+        preset
+      });
+
+      const createInsidePresetGlyphs = (context, layer) => {
+        context.save();
+        context.font = `${layer.weight} ${layer.size}px "${layer.font}", Inter, sans-serif`;
+        context.textBaseline = "alphabetic";
+        const width = context.measureText(layer.text).width;
+        const startX = -width / 2;
+        const baselineY = layer.size * .35;
+        let cursorX = startX;
+        const glyphs = [];
+        for (const character of layer.text) {
+          const glyphWidth = context.measureText(character).width;
+          glyphs.push({ character, x: cursorX, y: baselineY });
+          cursorX += glyphWidth;
+        }
+        context.restore();
+        return glyphs;
+      };
+
+      const projectInsidePresetTransform = stateValue => {
+        const rotateZ = stateValue.rotate * Math.PI / 180;
+        const rotateX = stateValue.rx * Math.PI / 180;
+        const rotateY = stateValue.ry * Math.PI / 180;
+        const cosZ = Math.cos(rotateZ);
+        const sinZ = Math.sin(rotateZ);
+        const cosX = Math.cos(rotateX);
+        const cosY = Math.cos(rotateY);
+        return {
+          a: cosZ * cosY * stateValue.sx,
+          b: sinZ * cosY * stateValue.sx,
+          c: -sinZ * cosX * stateValue.sy,
+          d: cosZ * cosX * stateValue.sy
+        };
       };
 
       const drawInsidePreset = (canvas, labelIndex, time) => {
@@ -3910,28 +4308,40 @@
         if (!metrics) return;
         const context = canvas.getContext("2d");
         if (!context) return;
+
+        const preset = INSIDE_PRESETS[labelIndex];
+        if (!preset) return;
+
+        const clip = insidePresetClip(preset);
+        const sampledState = sampleInsidePreset(clip, Math.min(time, clip.end - 1e-6));
+        if (!sampledState) return;
+
+        const layer = insidePresetLayer(preset, preset.label);
         const { scale, dpr } = metrics;
-        const width = 1000;
-        const height = 1000;
+        const ref = Math.max(80, Math.min(600, Math.max(layer.w, layer.h)));
+        const transform = projectInsidePresetTransform(sampledState);
+        const offsetX = sampledState.dx * ref + layer.x;
+        const offsetY = sampledState.dy * ref + layer.y;
+        const visibleGlyphCount = Math.max(0, Math.min(layer.text.length, Math.floor(layer.text.length * sampledState.reveal + 1e-6)));
+        const glyphs = createInsidePresetGlyphs(context, layer);
+
         context.setTransform(scale * dpr, 0, 0, scale * dpr, 0, 0);
-        drawInsideBackground(context, width, height);
-
-        const label = INSIDE_PRESET_LABELS[labelIndex];
-        const phase = presetProgress(time);
-        const direction = labelIndex % 3;
-        const eased = easeOutBack(Math.min(1, phase / .35));
-        let offsetX = 0;
-        let offsetY = 0;
-        if (direction === 0) offsetY = (1 - eased) * -160;
-        if (direction === 1) offsetX = (1 - eased) * 220;
-        if (direction === 2) offsetY = (1 - eased) * 120;
-        const pulse = phase > .35 ? 1 + .03 * Math.sin((phase - .35) * Math.PI * 2) : .94 + .06 * eased;
-
+        context.clearRect(0, 0, 1000, 1000);
         context.save();
-        context.translate(width / 2 + offsetX, height / 2 + offsetY);
-        context.scale(pulse, pulse);
-        context.globalAlpha = clamp01(phase / .18);
-        drawInsideText(context, label, 0, 0, Math.min(240, 850 / Math.max(.85 * label.length, 1)), 900, "Sunghyun Sans", "#171717");
+        context.translate(offsetX, offsetY);
+        context.transform(transform.a, transform.b, transform.c, transform.d, 0, 0);
+        context.globalAlpha = clamp01(sampledState.opacity);
+        if (sampledState.blur > 0) {
+          context.filter = `blur(${(sampledState.blur * ref * scale * dpr).toFixed(2)}px)`;
+        }
+        context.fillStyle = layer.fill;
+        context.font = `${layer.weight} ${layer.size}px "${layer.font}", Inter, sans-serif`;
+        context.textBaseline = "alphabetic";
+
+        for (let index = 0; index < visibleGlyphCount; index += 1) {
+          const glyph = glyphs[index];
+          context.fillText(glyph.character, glyph.x, glyph.y);
+        }
         context.restore();
       };
 
@@ -4054,23 +4464,59 @@
       };
 
       const populateInsideToolRows = () => {
-        const groups = [INSIDE_TOOLS.slice(0,5), INSIDE_TOOLS.slice(5,10), INSIDE_TOOLS.slice(10,14), INSIDE_TOOLS.slice(14)];
+        const groups = [
+          INSIDE_TOOLS.slice(0, 5),
+          INSIDE_TOOLS.slice(5, 10),
+          INSIDE_TOOLS.slice(10, 14),
+          INSIDE_TOOLS.slice(14)
+        ];
+
         const rows = document.querySelectorAll("[data-inside-tool-row]");
+
         rows.forEach((row, index) => {
           row.replaceChildren();
+
           const fragment = document.createDocumentFragment();
+
           for (let repeat = 0; repeat < 3; repeat += 1) {
             const group = document.createElement("div");
             group.className = "inside-tool-chip-row";
             group.setAttribute("aria-hidden", repeat > 0 ? "true" : "false");
-            groups[index].forEach(tool => group.appendChild(createInsideToolChip(tool)));
+
+            groups[index].forEach(tool => {
+              group.appendChild(createInsideToolChip(tool));
+            });
+
             fragment.appendChild(group);
           }
+
           row.appendChild(fragment);
-          requestAnimationFrame(() => {
+
+          const startAnimation = () => {
             const firstGroup = row.querySelector(".inside-tool-chip-row");
             if (!firstGroup) return;
-            row.style.setProperty("--inside-tool-width", `${firstGroup.offsetWidth + 20}px`);
+
+            const width = firstGroup.getBoundingClientRect().width + 20;
+            row.style.setProperty("--inside-tool-width", `${width}px`);
+
+            if (state.reducedMotion) {
+              row.style.animationPlayState = "paused";
+              row.style.transform = "translate3d(0,0,0)";
+              return;
+            }
+
+            row.style.animationName = "inside-tool-drift";
+            row.style.animationDuration = getComputedStyle(row)
+              .getPropertyValue("--inside-tool-duration")
+              .trim() || "30s";
+            row.style.animationTimingFunction = "linear";
+            row.style.animationIterationCount = "infinite";
+            row.style.animationFillMode = "none";
+            row.style.animationPlayState = "running";
+          };
+
+          requestAnimationFrame(() => {
+            startAnimation();
           });
         });
       };
@@ -4079,37 +4525,48 @@
         const canvas = card.querySelector("[data-inside-presets-canvas]");
         const label = card.querySelector("[data-inside-presets-label]");
         if (!canvas || !label) return;
-        let frame = 0;
+
+        let presetIndex = 0;
         let raf = 0;
         let visible = false;
-        const started = { value: false };
+        let started = false;
+        const startedAt = performance.now() / 1000;
+
         const render = () => {
-          const now = performance.now() / 1000;
-          if (state.reducedMotion) {
-            frame = 0;
-            drawInsidePreset(canvas, frame, 1.2);
-          } else {
-            frame = Math.floor(now / 2.2) % INSIDE_PRESET_LABELS.length;
-            drawInsidePreset(canvas, frame, now % 2.2);
-          }
-          label.textContent = `${frame + 1} / ${INSIDE_PRESET_LABELS.length} · ${INSIDE_PRESET_LABELS[frame]}`;
+          const elapsed = performance.now() / 1000 - startedAt;
+          presetIndex = state.reducedMotion
+            ? 0
+            : Math.floor(elapsed / 2.2) % INSIDE_PRESETS.length;
+          const localTime = state.reducedMotion ? 1.2 : elapsed % 2.2;
+          const preset = INSIDE_PRESETS[presetIndex];
+          drawInsidePreset(canvas, presetIndex, localTime);
+          label.textContent = `${presetIndex + 1} / ${INSIDE_PRESETS.length} · ${preset.id}`;
           if (visible && !state.reducedMotion) raf = requestAnimationFrame(render);
         };
+
         const observer = new IntersectionObserver(entries => {
           visible = entries[0]?.isIntersecting === true;
-          if (visible && !started.value) {
-            started.value = true;
+          if (visible && !started) {
+            started = true;
             render();
-          } else if (visible && !state.reducedMotion) {
+            return;
+          }
+          if (visible && !state.reducedMotion) {
             cancelAnimationFrame(raf);
             render();
           } else {
             cancelAnimationFrame(raf);
           }
-        }, { threshold: .2, rootMargin: "120px" });
+        });
+
         observer.observe(canvas);
+
         const resize = new ResizeObserver(render);
         resize.observe(canvas.parentElement);
+
+        const fontLoad = ensureInsideFont("Sunghyun Sans", 900, 240);
+        fontLoad.then(render);
+
         render();
       };
 

@@ -1010,8 +1010,6 @@
     .inside-card {
       position: relative;
       display: flex;
-      min-width: 0;
-      min-height: 0;
       flex-direction: column;
       overflow: hidden;
       border-radius: 28px;
@@ -1020,7 +1018,6 @@
       opacity: 0;
       transform: translateY(24px);
       filter: blur(8px);
-      will-change: transform, opacity;
     }
 
     .inside-card.inside-card-reveal {
@@ -1030,16 +1027,20 @@
       transition: opacity .7s ease, transform .8s cubic-bezier(.22,1,.36,1), filter .7s ease;
     }
 
+    .inside-card.inside-card-inspection {
+      z-index: 10;
+      overflow: visible;
+    }
+
     .inside-card-visual {
       position: relative;
       min-height: 0;
-      flex: 1 1 auto;
-      background: #ffffff;
+      flex: 1 1 0%;
+      background: transparent;
     }
 
     .inside-card-body {
       padding: 16px 24px 24px;
-      flex: 0 0 auto;
     }
 
     .inside-card-title {
@@ -1136,15 +1137,11 @@
     .inside-prompt-caret {
       display: inline-block;
       vertical-align: text-bottom;
-      width: 2px;
-      height: 1em;
-      margin-left: 1px;
-      background: #171717;
-      animation: 1s steps(2) infinite inside-prompt-caret-blink;
-    }
-
-    @keyframes inside-prompt-caret-blink {
-      100% { background: transparent; }
+      width: 7px;
+      height: 1.1em;
+      margin-left: 2px;
+      background: #ff8a5b;
+      animation: 1s steps(2) infinite caret-blink;
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -1244,13 +1241,12 @@
       position: absolute;
       left: 0;
       top: 0;
-      z-index: 3;
+      z-index: 10;
       width: 132px;
       pointer-events: none;
-      overflow: visible;
+      overflow: hidden;
       opacity: 0;
       transform: translate(-9999px,0);
-      transition: opacity .25s ease;
     }
 
     .inside-tool-viewport {
@@ -1513,7 +1509,6 @@
       .inside-section { padding-left: 16px; padding-right: 16px; }
       .inside-card-body { padding-left: 20px; padding-right: 20px; }
       .inside-prompt-bar { left: 16px; right: 16px; }
-      .inside-inspection-viewport { padding: 16px; }
       .inside-export-demo { padding: 20px; }
     }
 
@@ -2525,7 +2520,7 @@
                 <canvas class="inside-canvas inside-prompt-canvas" data-inside-prompt-canvas aria-label="A layer changed by a typed prompt"></canvas>
               </div>
               <div class="inside-prompt-bar">
-                <span class="inside-prompt-text" data-inside-prompt-text></span>
+                <span class="inside-prompt-text" data-inside-prompt-text><span data-inside-prompt-value></span></span>
                 <span class="inside-prompt-tool" data-inside-prompt-tool aria-hidden="true"><span class="inside-prompt-tool-check">✓</span> update_layers</span>
               </div>
             </div>
@@ -2549,7 +2544,7 @@
           </div>
         </article>
 
-        <article class="inside-card" data-inside-card="inspection">
+        <div class="inside-card inside-card-inspection" data-inside-card="inspection">
           <div class="inside-card-visual">
             <div class="inside-inspection-viewport">
               <div class="inside-frame-grid" data-inside-frame-grid>
@@ -2559,13 +2554,21 @@
                 <canvas class="inside-frame" data-inside-frame="3" aria-label="Frame at 7.9s"></canvas>
                 <span class="inside-inspection-outline" data-inside-inspection-outline aria-hidden="true"></span>
                 <svg class="inside-inspection-eyes" data-inside-inspection-eyes viewBox="0 0 320 160" aria-hidden="true">
-                  <g data-inside-eye-left transform="translate(80 80)">
+                  <g transform="translate(80 80)">
                     <circle r="73" fill="#171717"></circle>
-                    <circle data-pupil r="34" fill="#F5F5F5"></circle>
+                    <g data-inside-eye-lid>
+                      <g data-inside-eye-white>
+                        <circle r="34" fill="#F5F5F5"></circle>
+                      </g>
+                    </g>
                   </g>
-                  <g data-inside-eye-right transform="translate(240 80)">
+                  <g transform="translate(240 80)">
                     <circle r="73" fill="#171717"></circle>
-                    <circle data-pupil r="34" fill="#F5F5F5"></circle>
+                    <g data-inside-eye-lid>
+                      <g data-inside-eye-white>
+                        <circle r="34" fill="#F5F5F5"></circle>
+                      </g>
+                    </g>
                   </g>
                 </svg>
               </div>
@@ -2575,7 +2578,7 @@
             <h3 class="inside-card-title">Claude looks before it answers.</h3>
             <p class="inside-card-copy">After every change it renders frames and checks each one.</p>
           </div>
-        </article>
+        </div>
 
         <article class="inside-card inside-card-wide" data-inside-card="tools">
           <div class="inside-card-visual">
@@ -3305,12 +3308,15 @@
       };
 
       const LANDING_FRAME_DOC = {
+        id: "landing-bento",
+        duration: 8,
+        fps: 60,
         canvas: { width: 1920, height: 1080, background: "#F4F1EA" },
         camera: [
           { time: 0, zoom: 1.12 },
-          { time: 2.4, zoom: 1 }
+          { time: 2.4, zoom: 1, ease: "smooth" }
         ],
-        frames: [0.6, 3.4, 4.8, 7.4],
+        frames: [0.4, 1.6, 4.2, 7.9],
         layers: {
           hookBackground: { start: 0, end: 2.5, fill: "#111111" },
           hookWord: {
@@ -3366,8 +3372,14 @@
       };
 
       const landingCameraZoom = time => {
+        if (time <= 0) return 1.12;
         if (time >= 2.4) return 1;
-        return 1.12 - 0.12 * smoothStep(time / 2.4);
+
+        const progress = smoothStep(time / 2.4);
+        return Math.exp(
+          Math.log(1.12) +
+          (Math.log(1) - Math.log(1.12)) * progress
+        );
       };
 
       const landingLayerProgress = (time, start, duration) => clamp01((time - start) / duration);
@@ -4461,7 +4473,7 @@
         ...INSIDE_PROMPT_LAYERS[stepIndex]
       });
 
-      const drawInsidePrompt = (canvas, stepIndex, animationElapsed, animateLayer) => {
+      const drawInsidePrompt = (canvas, stepIndex, animationElapsed, animateLayer, initialAnimationElapsed = 0) => {
         const metrics = sizeInsideCanvas(canvas, 1500, 560, true);
         if (!metrics) return;
 
@@ -4471,10 +4483,11 @@
         const layer = animateLayer
           ? createInsidePromptLayer(stepIndex)
           : { ...INSIDE_PROMPT_BASE_LAYER };
-        const animation = animateLayer ? layer.in : null;
+        const animation = layer.in || null;
         const clip = animation ? createInsidePromptClip(animation) : null;
+        const localAnimationTime = animateLayer ? animationElapsed : initialAnimationElapsed;
         const sampledState = clip
-          ? sampleInsidePreset(clip, Math.min(29.999, Math.max(0, animationElapsed)))
+          ? (sampleInsidePreset(clip, Math.min(29.999, Math.max(0, localAnimationTime))) || { ...INSIDE_PRESET_BASE_STATE })
           : { ...INSIDE_PRESET_BASE_STATE };
 
         const { scale, dpr } = metrics;
@@ -4652,70 +4665,175 @@
         });
       };
 
+      const drawLandingWords = (context, layer, elapsed, animation) => {
+        const words = String(layer.text).split(/(\s+)/).filter(Boolean);
+        const wordItems = words.filter(word => !/^\s+$/.test(word));
+
+        context.save();
+        context.font = `${layer.weight} ${layer.size}px "${layer.font}", Inter, sans-serif`;
+
+        const wordWidths = wordItems.map(word => context.measureText(word).width);
+        const spaceWidth = context.measureText(" ").width;
+        const totalWidth = wordWidths.reduce((sum, width) => sum + width, 0) + spaceWidth * Math.max(0, wordItems.length - 1);
+        let offsetX = layer.x - totalWidth / 2;
+        let wordIndex = 0;
+
+        for (const token of words) {
+          if (/^\s+$/.test(token)) {
+            offsetX += spaceWidth;
+            continue;
+          }
+
+          const width = wordWidths[wordIndex];
+          const localElapsed = elapsed - wordIndex * (layer.stagger || 0);
+
+          drawLandingTextLayer(context, {
+            ...layer,
+            text: token,
+            x: offsetX + width / 2,
+            w: Math.max(width + 2, 1)
+          }, localElapsed, animation);
+
+          offsetX += width + spaceWidth;
+          wordIndex += 1;
+        }
+
+        context.restore();
+      };
+
       const drawInsideBentoFrame = (context, time) => {
         const logicalWidth = LANDING_FRAME_DOC.canvas.width;
         const logicalHeight = LANDING_FRAME_DOC.canvas.height;
-        drawInsideBackground(context, logicalWidth, logicalHeight, LANDING_FRAME_DOC.canvas.background);
+
+        context.clearRect(0, 0, logicalWidth, logicalHeight);
+        context.fillStyle = LANDING_FRAME_DOC.canvas.background;
+        context.fillRect(0, 0, logicalWidth, logicalHeight);
+
+        context.save();
+        context.translate(logicalWidth / 2, logicalHeight / 2);
+        const zoom = landingCameraZoom(time);
+        context.scale(zoom, zoom);
+        context.translate(-logicalWidth / 2, -logicalHeight / 2);
 
         if (time < 2.5) {
           context.fillStyle = "#111111";
           context.fillRect(0, 0, logicalWidth, logicalHeight);
-          const progress = landingLayerProgress(time, .3, .45);
-          const scale = .72 + .28 * easeOutBack(progress);
-          context.save();
-          context.translate(960, 500);
-          context.scale(scale, scale);
-          drawInsideText(context, "Say it.", 0, 0, 360, 900, "Sunghyun Sans", "#F4F1EA");
+
+          drawLandingTextLayer(context, {
+            text: "Say it.",
+            font: "Sunghyun Sans",
+            weight: 900,
+            size: 360,
+            w: 1700,
+            h: 400,
+            x: 960,
+            y: 500,
+            fill: "#F4F1EA",
+            align: "center",
+            lineHeight: 1.2,
+            letterSpacing: 0
+          }, time - 0.3, { id: "slam", duration: 0.45 });
+
+          drawLandingWords(context, {
+            text: "then watch it move",
+            font: "Inter",
+            weight: 500,
+            size: 56,
+            w: 1200,
+            h: 80,
+            x: 960,
+            y: 740,
+            fill: "#FF5A1F",
+            align: "center",
+            lineHeight: 1.2,
+            letterSpacing: 0,
+            stagger: 0.06
+          }, time - 1.1, { id: "rise", duration: 0.5 });
+
           context.restore();
-          if (time > 1.1) {
-            const subtitle = clamp01((time - 1.1) / .5);
-            context.save();
-            context.globalAlpha = subtitle;
-            drawInsideText(context, "then watch it move", 960, 740 + (1 - easeOutBack(subtitle)) * 26, 56, 500, "Inter", "#FF5A1F");
-            context.restore();
-          }
           return;
         }
 
         if (time < 5.5) {
-          const titleProgress = clamp01((time - 2.6) / .6);
-          context.save();
-          context.globalAlpha = titleProgress;
-          context.filter = titleProgress < 1 ? `blur(${(1 - titleProgress) * 7}px)` : "none";
-          drawInsideText(context, "Every frame stays editable.", 960, 230, 96, 400, "Instrument Serif", "#111111");
-          context.restore();
+          drawLandingTextLayer(context, {
+            text: "Every frame stays editable.",
+            font: "Instrument Serif",
+            weight: 400,
+            size: 96,
+            w: 1600,
+            h: 120,
+            x: 960,
+            y: 230,
+            fill: "#111111",
+            align: "center",
+            lineHeight: 1.2,
+            letterSpacing: 0
+          }, time - 2.6, { id: "blur", duration: 0.6 });
 
           LANDING_FRAME_DOC.layers.cards.forEach(card => {
-            const progress = clamp01((time - card.start) / .9);
-            const drop = easeOutBack(progress);
-            const y = card.y + (1 - drop) * -140;
-            const textProgress = clamp01((time - card.start - .2) / .4);
-            context.save();
-            context.translate(card.x, y);
-            context.rotate(card.rotation * Math.PI / 180);
-            context.globalAlpha = progress;
-            context.shadowColor = "rgba(0,0,0,.2)";
-            context.shadowBlur = 40;
-            context.shadowOffsetY = 20;
-            context.fillStyle = card.fill;
-            drawInsideRoundedRect(context, -card.w/2, -card.h/2, card.w, card.h, 36);
-            context.fill();
-            context.shadowColor = "transparent";
-            context.globalAlpha = textProgress;
-            drawInsideText(context, card.text, 0, (1 - easeOutBack(textProgress)) * 18, 58, 600, "Clash Display", card.textFill);
-            context.restore();
+            drawLandingRectLayer(context, {
+              x: card.x,
+              y: card.y,
+              w: card.w,
+              h: card.h,
+              rotation: card.rotation,
+              radius: 36,
+              fill: card.fill,
+              shadowColor: "#00000033",
+              shadowBlur: 40,
+              shadowOffsetY: 20
+            }, time - card.start, { id: "drop", duration: 0.9 });
+
+            drawLandingTextLayer(context, {
+              text: card.text,
+              font: "Clash Display",
+              weight: 600,
+              size: 58,
+              w: 420,
+              h: 100,
+              x: card.x,
+              y: card.y,
+              rotation: card.rotation,
+              fill: card.textFill,
+              align: "center",
+              lineHeight: 1.2,
+              letterSpacing: 0
+            }, time - card.start, { id: "pop", duration: 0.4 });
           });
+
+          context.restore();
           return;
         }
 
-        context.fillStyle = "#171717";
-        context.fillRect(0, 0, logicalWidth, logicalHeight);
-        if (time < 8) {
-          const alpha = clamp01((time - 7) / .6);
-          context.globalAlpha = alpha;
-          drawInsideText(context, "motion, by prompt", 960, 760, 48, 500, "Inter", "#FF5A1F");
-          context.globalAlpha = 1;
+        const logo = drawInsideExportLogo.get();
+        if (logo) {
+          const width = 820;
+          const height = width * 169 / 712;
+          context.drawImage(
+            logo,
+            logicalWidth / 2 - width / 2,
+            420 - height / 2,
+            width,
+            height
+          );
         }
+
+        drawLandingTextLayer(context, {
+          text: "motion, by prompt",
+          font: "Inter",
+          weight: 500,
+          size: 48,
+          w: 900,
+          h: 70,
+          x: 960,
+          y: 760,
+          fill: "#FF5A1F",
+          align: "center",
+          lineHeight: 1.2,
+          letterSpacing: 0
+        }, time - 7, { id: "type", duration: 0.7 });
+
+        context.restore();
       };
 
       const populateInsideToolRows = () => {
@@ -4828,8 +4946,9 @@
       const initializeInsidePrompt = card => {
         const canvas = card.querySelector("[data-inside-prompt-canvas]");
         const textNode = card.querySelector("[data-inside-prompt-text]");
+        const valueNode = card.querySelector("[data-inside-prompt-value]");
         const tool = card.querySelector("[data-inside-prompt-tool]");
-        if (!canvas || !textNode || !tool) return;
+        if (!canvas || !textNode || !valueNode || !tool) return;
 
         let caret = null;
 
@@ -4839,11 +4958,7 @@
           caret = document.createElement("span");
           caret.className = "inside-prompt-caret";
           caret.setAttribute("aria-hidden", "true");
-          caret.style.background = "#171717";
-          caret.style.width = "2px";
-          caret.style.height = "1em";
-          caret.style.marginLeft = "1px";
-          textNode.appendChild(caret);
+          valueNode.after(caret);
         };
 
         const unmountCaret = () => {
@@ -4894,6 +5009,7 @@
                 : "",
               toolVisible: false,
               animationElapsed: 0,
+              initialAnimationElapsed: Math.max(0, elapsedSinceStart),
               animateLayer: false
             };
           }
@@ -4905,6 +5021,7 @@
               typed: "",
               toolVisible: false,
               animationElapsed: 0,
+              initialAnimationElapsed: elapsedSinceStart,
               animateLayer: false
             };
           }
@@ -4931,6 +5048,7 @@
             typed: command.say.slice(0, typedCount),
             toolVisible: cycleTime >= toolStart,
             animationElapsed: animateLayer ? cycleTime - patchStart : 0,
+            initialAnimationElapsed: 0,
             animateLayer
           };
         };
@@ -4946,7 +5064,7 @@
 
           if (cycle.typed !== lastText) {
             lastText = cycle.typed;
-            textNode.textContent = cycle.typed;
+            valueNode.textContent = cycle.typed;
           }
 
           if (cycle.toolVisible) {
@@ -4961,7 +5079,8 @@
             canvas,
             cycle.step,
             cycle.animationElapsed,
-            cycle.animateLayer
+            cycle.animateLayer,
+            cycle.initialAnimationElapsed
           );
 
           canvas.setAttribute("aria-label", `A layer changed by a typed prompt: ${command.say}`);
@@ -5049,89 +5168,205 @@
         const eyes = card.querySelector("[data-inside-inspection-eyes]");
         if (!grid || !outline || !eyes) return;
 
-        drawInsideFrames(card);
-        const resize = new ResizeObserver(() => drawInsideFrames(card));
-        resize.observe(grid);
+        const frames = [0.4, 1.6, 4.2, 7.9];
+        const frameCanvases = [...grid.querySelectorAll("[data-inside-frame]")];
+        const whiteEyes = [...eyes.querySelectorAll("[data-inside-eye-white]")];
+        const eyeLids = [...eyes.querySelectorAll("[data-inside-eye-lid]")];
+        const dpr = Math.min(2, window.devicePixelRatio || 1);
 
-        let frame = 0;
-        let nextMove = performance.now() + 1200;
-        let previous = null;
-        let target = null;
-        let lastBlink = performance.now() + 1500;
-        let blinkStart = -1;
-        let raf = 0;
-        let visible = true;
+        const drawFrames = () => {
+          frameCanvases.forEach((canvas, index) => {
+            const logicalWidth = LANDING_FRAME_DOC.canvas.width;
+            const logicalHeight = LANDING_FRAME_DOC.canvas.height;
+            const width = Math.max(1, canvas.clientWidth || 1);
+            const scale = Math.max(.01, width / logicalWidth);
+            const bitmapWidth = Math.max(1, Math.round(logicalWidth * scale * dpr));
+            const bitmapHeight = Math.max(1, Math.round(logicalHeight * scale * dpr));
 
-        const randomPoint = fallback => {
-          const bounds = grid.getBoundingClientRect();
-          for (let tries = 0; tries < 12; tries += 1) {
-            const point = { x: bounds.width * (-.08 + Math.random() * 1.16), y: bounds.height * (-.12 + Math.random() * 1.24) };
-            if (!fallback || Math.hypot(point.x - fallback.x, point.y - fallback.y) > .4 * Math.hypot(bounds.width, bounds.height)) return point;
-          }
-          return { x: bounds.width / 2, y: bounds.height / 2 };
+            if (canvas.width !== bitmapWidth) canvas.width = bitmapWidth;
+            if (canvas.height !== bitmapHeight) canvas.height = bitmapHeight;
+
+            const context = canvas.getContext("2d");
+            if (!context) return;
+
+            context.setTransform(scale * dpr, 0, 0, scale * dpr, 0, 0);
+            drawInsideBentoFrame(context, frames[index]);
+          });
         };
 
-        const pickTarget = now => {
-          const cards = [...grid.querySelectorAll(".inside-frame")];
-          const choice = cards[Math.floor(Math.random() * cards.length)];
+        let animationFrame = 0;
+        let eyeFrom = null;
+        let eyeTo = null;
+        let eyeMoveStart = -Infinity;
+        let nextEyeMove = 0;
+        let previousGaze = null;
+        let gazeTarget = null;
+        let gazeMoveStart = -Infinity;
+        let nextGazeMove = -Infinity;
+        let blinkStart = -1;
+        let nextBlink = performance.now() + 1500;
+
+        const smooth = value => INSIDE_PRESET_EASES.smooth(clamp01(value));
+        const randomBetween = (min, max) => min + Math.random() * (max - min);
+
+        const randomPoint = previous => {
           const bounds = grid.getBoundingClientRect();
-          const rect = choice.getBoundingClientRect();
-          previous = target || { x: rect.left - bounds.left, y: rect.top - bounds.top, w: rect.width, h: rect.height };
-          if (Math.random() < .75) {
-            target = { x: rect.left - bounds.left, y: rect.top - bounds.top, w: rect.width, h: rect.height };
-          } else {
-            const point = randomPoint(previous);
-            target = { x: point.x, y: point.y, w: 94, h: 54 };
+
+          for (let attempt = 0; attempt < 12; attempt += 1) {
+            const point = {
+              x: randomBetween(-.08, 1.08) * bounds.width,
+              y: randomBetween(-.12, 1.12) * bounds.height
+            };
+
+            if (
+              !previous ||
+              Math.hypot(point.x - previous.x, point.y - previous.y) >
+                .4 * Math.hypot(bounds.width, bounds.height)
+            ) {
+              return point;
+            }
           }
-          outline.style.opacity = target.w > 100 ? "1" : "0";
-          nextMove = now + 700 + Math.random() * 1200;
+
+          return {
+            x: bounds.width / 2,
+            y: bounds.height / 2
+          };
+        };
+
+        const chooseInspectionTarget = now => {
+          const index = Math.floor(4 * Math.random());
+          const canvas = frameCanvases[index];
+          const bounds = grid.getBoundingClientRect();
+          const rect = canvas?.getBoundingClientRect();
+
+          previousGaze = gazeTarget;
+
+          if (rect && Math.random() < .75) {
+            gazeTarget = {
+              x: rect.left - bounds.left + rect.width / 2,
+              y: rect.top - bounds.top + rect.height / 2
+            };
+
+            outline.style.opacity = "1";
+            outline.style.transform = `translate(${rect.left - bounds.left}px, ${rect.top - bounds.top}px)`;
+            outline.style.width = `${rect.width}px`;
+            outline.style.height = `${rect.height}px`;
+          } else {
+            gazeTarget = randomPoint(null);
+            outline.style.opacity = "0";
+          }
+
+          if (!previousGaze) {
+            previousGaze = gazeTarget;
+          }
+
+          gazeMoveStart = now;
+          nextGazeMove = now + randomBetween(700, 1900);
         };
 
         const render = now => {
-          if (!visible) return;
-          if (!target || now >= nextMove) pickTarget(now);
-          const bounds = grid.getBoundingClientRect();
-          const progress = Math.min(1, Math.max(0, (now - (nextMove - 700)) / 700));
-          const eased = smoothStep(progress);
-          const from = previous || target;
-          const to = target;
-          const x = from.x + (to.x - from.x) * eased;
-          const y = from.y + (to.y - from.y) * eased;
-          outline.style.transform = `translate(${x}px, ${y}px)`;
-          outline.style.width = `${to.w}px`;
-          outline.style.height = `${to.h}px`;
-
-          if (now > lastBlink) {
-            blinkStart = now;
-            lastBlink = now + 2200 + 2600 * Math.random();
+          if (now >= nextEyeMove) {
+            eyeFrom = eyeTo || randomPoint(null);
+            eyeTo = randomPoint(eyeFrom);
+            eyeMoveStart = now;
+            nextEyeMove = now + randomBetween(2600, 4800);
+            chooseInspectionTarget(now);
           }
-          const blink = blinkStart > 0 ? (now - blinkStart) / 160 : 2;
-          const blinkScale = blink < 1 ? 1 - .92 * Math.sin(Math.PI * blink) : 1;
-          const centerX = target.x + target.w / 2;
-          const centerY = target.y + target.h / 2;
-          eyes.style.opacity = target.w > 100 ? "1" : "0";
-          eyes.style.transform = `translate(${centerX - 66}px, ${centerY - 36}px)`;
-          eyes.querySelectorAll("[data-pupil]").forEach((pupil, index) => {
-            const orbit = index === 0 ? -8 : 8;
-            pupil.setAttribute("transform", `translate(${orbit * .5}px ${12 * blinkScale}px) scale(1 ${blinkScale})`);
+
+          if (now >= nextGazeMove) {
+            chooseInspectionTarget(now);
+          }
+
+          const eyeProgress = Math.min(
+            1,
+            Math.max(0, (now - eyeMoveStart) / 780)
+          );
+
+          const eyeEase = smooth(eyeProgress);
+          const eyeX = eyeFrom.x + (eyeTo.x - eyeFrom.x) * eyeEase;
+          const eyeY = eyeFrom.y + (eyeTo.y - eyeFrom.y) * eyeEase;
+          const eyeBob = 16 * Math.sin(Math.PI * eyeProgress);
+          const eyeScaleX = 1 - .03 * Math.sin(Math.PI * eyeProgress);
+          const eyeScaleY = 1 + .06 * Math.sin(Math.PI * eyeProgress);
+          const bounds = grid.getBoundingClientRect();
+
+          eyes.style.transform =
+            `translate(${eyeX - bounds.width / 2}px, ${eyeY - bounds.height / 2 - eyeBob}px) scale(${eyeScaleX}, ${eyeScaleY})`;
+          eyes.style.opacity = "1";
+          eyes.style.transformOrigin = "50% 100%";
+
+          const gazeProgress = smooth(
+            Math.min(1, Math.max(0, (now - gazeMoveStart) / 420))
+          );
+
+          const getGazeOffset = point => {
+            const dx = point.x - eyeX;
+            const dy = point.y - eyeY;
+            const distance = Math.hypot(dx, dy) || 1;
+            const amount = Math.min(1, distance / 160);
+
+            return {
+              x: dx / distance * 28 * amount,
+              y: dy / distance * 24 * amount
+            };
+          };
+
+          const oldOffset = getGazeOffset(previousGaze || gazeTarget || { x: eyeX, y: eyeY });
+          const targetOffset = getGazeOffset(gazeTarget || { x: eyeX, y: eyeY });
+          const pupilOffset = offCentre({
+            x: oldOffset.x + (targetOffset.x - oldOffset.x) * gazeProgress,
+            y: oldOffset.y + (targetOffset.y - oldOffset.y) * gazeProgress
+          }, 28, 24);
+
+          if (now >= nextBlink) {
+            blinkStart = now;
+            nextBlink = now + randomBetween(2200, 5200);
+          }
+
+          const blinkProgress = blinkStart > 0
+            ? (now - blinkStart) / 150
+            : 2;
+
+          const blinkScale = blinkProgress < 1
+            ? 1 - .92 * Math.sin(Math.PI * blinkProgress)
+            : 1;
+
+          whiteEyes.forEach(eye => {
+            eye.setAttribute(
+              "transform",
+              `translate(${pupilOffset.x} ${pupilOffset.y})`
+            );
           });
-          frame += 1;
-          if (!state.reducedMotion) raf = requestAnimationFrame(render);
+
+          eyeLids.forEach(eye => {
+            eye.setAttribute(
+              "transform",
+              `scale(1 ${blinkScale})`
+            );
+          });
+
+          if (!state.reducedMotion) {
+            animationFrame = requestAnimationFrame(render);
+          }
         };
 
-        const observer = new IntersectionObserver(entries => {
-          visible = entries[0]?.isIntersecting === true;
-          if (visible && !state.reducedMotion) {
-            cancelAnimationFrame(raf);
-            raf = requestAnimationFrame(render);
-          }
-        }, { threshold: .1, rootMargin: "120px" });
-        observer.observe(grid);
+        ensureLandingFrameFonts().then(drawFrames);
+        drawFrames();
+
+        drawInsideExportLogo.load().then(drawFrames);
+
+        const now = performance.now();
+        chooseInspectionTarget(now);
+        eyeFrom = randomPoint(null);
+        eyeTo = randomPoint(eyeFrom);
+        eyeMoveStart = now;
+        nextEyeMove = now + randomBetween(2600, 4800);
+
         if (state.reducedMotion) {
-          pickTarget(performance.now());
-          render(performance.now());
+          nextBlink = Infinity;
+          render(now);
         } else {
-          raf = requestAnimationFrame(render);
+          animationFrame = requestAnimationFrame(render);
         }
       };
 
@@ -5259,7 +5494,7 @@
           layer.x + stateValue.dx * ref,
           layer.y + stateValue.dy * ref
         );
-        context.rotate((layer.rotation || 0) + stateValue.rotate * Math.PI / 180);
+        context.rotate(((layer.rotation || 0) + stateValue.rotate) * Math.PI / 180);
         context.scale(stateValue.sx, stateValue.sy);
         context.globalAlpha = clamp01(stateValue.opacity);
         context.shadowColor = layer.shadowColor || "transparent";

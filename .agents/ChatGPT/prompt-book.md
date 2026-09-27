@@ -14,7 +14,7 @@ Let's make the inspection specifically compare footer and navbar pupil movement 
 ```
 
 ```text
-Our cloned sources code: https://github.com/0n6k4v-Coder/web-app-reverse-engineering-lab/blob/main/apps/mtioon/clone/index.html
+Let's implement your finding to our sources code: https://github.com/0n6k4v-Coder/web-app-reverse-engineering-lab/blob/main/apps/mtioon/clone/index.html
 
-Now update our code please.
+Don't update it directly to github. I need to see the code in this conversation. Proceed these task instead.
 ```

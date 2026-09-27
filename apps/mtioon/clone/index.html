@@ -1135,11 +1135,20 @@
 
     .inside-prompt-caret {
       display: inline-block;
+      vertical-align: text-bottom;
       width: 2px;
       height: 1em;
       margin-left: 1px;
-      vertical-align: text-bottom;
       background: #171717;
+      animation: 1s steps(2) infinite inside-prompt-caret-blink;
+    }
+
+    @keyframes inside-prompt-caret-blink {
+      100% { background: transparent; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .inside-prompt-caret { animation: none; }
     }
 
     .inside-prompt-tool {
@@ -1158,7 +1167,6 @@
       opacity: 0;
       transform: translateX(6px) scale(.85);
       transform-origin: center;
-      transition: opacity .25s ease, transform .35s cubic-bezier(.34,1.35,.64,1);
     }
 
     .inside-prompt-tool.is-visible {
@@ -2517,7 +2525,7 @@
                 <canvas class="inside-canvas inside-prompt-canvas" data-inside-prompt-canvas aria-label="A layer changed by a typed prompt"></canvas>
               </div>
               <div class="inside-prompt-bar">
-                <span class="inside-prompt-text" data-inside-prompt-text></span><span class="inside-prompt-caret" data-inside-prompt-caret aria-hidden="true"></span>
+                <span class="inside-prompt-text" data-inside-prompt-text></span>
                 <span class="inside-prompt-tool" data-inside-prompt-tool aria-hidden="true"><span class="inside-prompt-tool-check">✓</span> update_layers</span>
               </div>
             </div>
@@ -3797,13 +3805,53 @@
         { id: "boing", label: "Boing" }
       ];
 
-      const INSIDE_PROMPTS = [
-        { say: "Make it say hello.", text: "Hello.", font: "Sunghyun Sans", weight: 900, size: 240, fill: "#171717", duration: .5 },
-        { say: "Set it in Instrument Serif.", text: "Hello.", font: "Instrument Serif", weight: 400, size: 240, fill: "#171717", duration: .7 },
-        { say: "Orange, please.", text: "Hello.", font: "Instrument Serif", weight: 400, size: 240, fill: "#FF5A1F", duration: .4 },
-        { say: "Bigger. Slam it in.", text: "Hello.", font: "Sunghyun Sans", weight: 900, size: 280, fill: "#FF5A1F", duration: .5 },
-        { say: "Back to black, calmer.", text: "Hello.", font: "Sunghyun Sans", weight: 900, size: 200, fill: "#171717", duration: .8 }
+      const INSIDE_PROMPT_COMMANDS = [
+        {
+          say: "Make it say hello.",
+          patch: { text: "Hello.", in: { id: "pop", duration: .5 } }
+        },
+        {
+          say: "Set it in Instrument Serif.",
+          patch: { font: "Instrument Serif", weight: 400, in: { id: "blur", duration: .7 } }
+        },
+        {
+          say: "Orange, please.",
+          patch: { fill: "#FF5A1F", in: { id: "fade", duration: .4 } }
+        },
+        {
+          say: "Bigger. Slam it in.",
+          patch: { size: 280, font: "Sunghyun Sans", weight: 900, in: { id: "slam", duration: .5 } }
+        },
+        {
+          say: "Back to black, calmer.",
+          patch: { fill: "#171717", size: 200, in: { id: "rise", duration: .8 } }
+        }
       ];
+
+      const INSIDE_PROMPT_BASE_LAYER = {
+        id: "t",
+        type: "text",
+        font: "Sunghyun Sans",
+        weight: 900,
+        size: 200,
+        w: 1350,
+        h: 320,
+        x: 750,
+        y: 280,
+        fill: "#171717",
+        text: "Say it.",
+        start: 0,
+        end: 30,
+        align: "center",
+        lineHeight: 1.2,
+        letterSpacing: 0
+      };
+
+      const INSIDE_PROMPT_LAYERS = INSIDE_PROMPT_COMMANDS.reduce((layers, command) => {
+        const previous = layers[layers.length - 1] || INSIDE_PROMPT_BASE_LAYER;
+        layers.push({ ...previous, ...(command.patch || {}) });
+        return layers;
+      }, []);
 
       const INSIDE_FONT_FAMILIES = [
         ["Sunghyun Sans", 900],
@@ -4387,25 +4435,80 @@
         context.restore();
       };
 
-      const drawInsidePrompt = (canvas, prompt, elapsed) => {
-        const metrics = sizeInsideCanvas(canvas, 1200, 675, true);
+      const getInsidePromptPreset = id => INSIDE_PRESET_RUNTIME.get(id) || INSIDE_PRESETS.find(preset => preset.id === id);
+
+      const createInsidePromptClip = animation => {
+        const preset = getInsidePromptPreset(animation.id);
+        if (!preset || !INSIDE_PRESET_TRACKS[animation.id]) return null;
+        const spec = {
+          id: animation.id,
+          dir: undefined,
+          intensity: 1,
+          duration: animation.duration
+        };
+        return {
+          start: 0,
+          end: 30,
+          in: {
+            id: animation.id,
+            tracks: INSIDE_PRESET_TRACKS[animation.id](spec),
+            duration: animation.duration
+          }
+        };
+      };
+
+      const createInsidePromptLayer = stepIndex => ({
+        ...INSIDE_PROMPT_LAYERS[stepIndex]
+      });
+
+      const drawInsidePrompt = (canvas, stepIndex, animationElapsed, animateLayer) => {
+        const metrics = sizeInsideCanvas(canvas, 1500, 560, true);
         if (!metrics) return;
+
         const context = canvas.getContext("2d");
         if (!context) return;
-        const { scale, dpr } = metrics;
-        context.setTransform(scale * dpr, 0, 0, scale * dpr, 0, 0);
-        drawInsideBackground(context, 1200, 675, "#F4F1EA");
 
-        const motion = easeOutBack(clamp01(elapsed / Math.max(prompt.duration, .1)));
+        const layer = animateLayer
+          ? createInsidePromptLayer(stepIndex)
+          : { ...INSIDE_PROMPT_BASE_LAYER };
+        const animation = animateLayer ? layer.in : null;
+        const clip = animation ? createInsidePromptClip(animation) : null;
+        const sampledState = clip
+          ? sampleInsidePreset(clip, Math.min(29.999, Math.max(0, animationElapsed)))
+          : { ...INSIDE_PRESET_BASE_STATE };
+
+        const { scale, dpr } = metrics;
+        const ref = Math.max(80, Math.min(600, Math.max(layer.w, layer.h)));
+        const transform = projectInsidePresetTransform(sampledState);
+        const glyphs = layoutInsideFontText(context, layer);
+
+        context.setTransform(scale * dpr, 0, 0, scale * dpr, 0, 0);
+        context.clearRect(0, 0, 1500, 560);
+        context.fillStyle = "#FFFFFF";
+        context.fillRect(0, 0, 1500, 560);
+
         context.save();
-        context.translate(600, 338 - (1 - motion) * 28);
-        context.globalAlpha = clamp01(elapsed / .12);
-        context.filter = elapsed < prompt.duration ? `blur(${Math.max(0, (1 - clamp01(elapsed / prompt.duration)) * 4)}px)` : "none";
-        context.fillStyle = prompt.fill;
-        context.font = `${prompt.weight} ${prompt.size}px "${prompt.font}", Inter, Arial, sans-serif`;
-        context.textAlign = "center";
-        context.textBaseline = "middle";
-        context.fillText(prompt.text, 0, 0);
+        context.translate(layer.x + sampledState.dx * ref, layer.y + sampledState.dy * ref);
+        context.transform(transform.a, transform.b, transform.c, transform.d, 0, 0);
+        context.globalAlpha = clamp01(sampledState.opacity);
+        context.filter = sampledState.blur > 0
+          ? `blur(${(sampledState.blur * ref * scale * dpr).toFixed(2)}px)`
+          : "none";
+        context.fillStyle = layer.fill;
+        context.font = `${layer.weight} ${layer.size}px "${layer.font}", Inter, sans-serif`;
+        context.textBaseline = "alphabetic";
+        context.textAlign = "left";
+        context.direction = "ltr";
+
+        const visibleGlyphCount = sampledState.reveal >= 1
+          ? glyphs.length
+          : Math.max(0, Math.min(glyphs.length, Math.floor(glyphs.length * sampledState.reveal + 1e-6)));
+
+        for (let index = 0; index < visibleGlyphCount; index += 1) {
+          const glyph = glyphs[index];
+          context.fillText(glyph.character, glyph.x, glyph.y);
+        }
+
         context.restore();
       };
 
@@ -4725,64 +4828,171 @@
       const initializeInsidePrompt = card => {
         const canvas = card.querySelector("[data-inside-prompt-canvas]");
         const textNode = card.querySelector("[data-inside-prompt-text]");
-        const caret = card.querySelector("[data-inside-prompt-caret]");
         const tool = card.querySelector("[data-inside-prompt-tool]");
-        if (!canvas || !textNode || !caret || !tool) return;
+        if (!canvas || !textNode || !tool) return;
 
-        let step = 0;
-        let startedAt = 0;
-        let sequenceStart = performance.now();
+        let caret = null;
+
+        const mountCaret = () => {
+          if (caret?.isConnected) return;
+
+          caret = document.createElement("span");
+          caret.className = "inside-prompt-caret";
+          caret.setAttribute("aria-hidden", "true");
+          caret.style.background = "#171717";
+          caret.style.width = "2px";
+          caret.style.height = "1em";
+          caret.style.marginLeft = "1px";
+          textNode.appendChild(caret);
+        };
+
+        const unmountCaret = () => {
+          if (!caret) return;
+          caret.remove();
+          caret = null;
+        };
+
+        const initialDelay = .9;
+        const characterDelay = .034;
+        const toolDelay = .35;
+        const patchDelay = .3;
+        const renderHold = 2.4;
+        const cycleLengths = INSIDE_PROMPT_COMMANDS.map(command => (
+          command.say.length * characterDelay + toolDelay + patchDelay + renderHold
+        ));
+        const totalLength = cycleLengths.reduce((sum, value) => sum + value, 0);
+        const sequenceStart = performance.now() / 1000;
+
         let visible = false;
         let raf = 0;
         let lastStep = -1;
-        let typingStart = performance.now();
+        let lastText = "";
+        let lastToolVisible = false;
+
+        const setToolState = visibleState => {
+          if (visibleState === lastToolVisible) return;
+          lastToolVisible = visibleState;
+          runAnimation(
+            tool,
+            "inside-prompt-tool",
+            visibleState
+              ? { opacity: 1, scale: 1, x: 0 }
+              : { opacity: 0, scale: .85, x: 6 },
+            state.reducedMotion
+              ? { duration: 0 }
+              : { type: "spring", stiffness: 500, damping: 30 }
+          );
+        };
 
         const getCycle = now => {
-          if (state.reducedMotion) return { step: 0, typing: 1, toolVisible: false, elapsed: 1.2 };
-          const cycleLengths = INSIDE_PROMPTS.map(item => item.say.length * .034 + .35 + .3 + 2.4);
-          const total = cycleLengths.reduce((sum, value) => sum + value, 0);
-          let time = ((now - sequenceStart) / 1000) % total;
-          let index = 0;
-          while (time > cycleLengths[index] && index < cycleLengths.length - 1) {
-            time -= cycleLengths[index];
-            index += 1;
+          if (state.reducedMotion) {
+            const elapsedSinceStart = Math.max(0, now - sequenceStart);
+            return {
+              step: 0,
+              typed: elapsedSinceStart >= initialDelay
+                ? INSIDE_PROMPT_COMMANDS[0].say
+                : "",
+              toolVisible: false,
+              animationElapsed: 0,
+              animateLayer: false
+            };
           }
-          const prompt = INSIDE_PROMPTS[index];
-          const typingDuration = prompt.say.length * .034;
-          const typing = Math.min(prompt.say.length, Math.max(0, Math.floor(time / .034)));
-          const showTool = time >= typingDuration + .35;
-          const elapsed = Math.max(0, time - typingDuration - .65);
-          return { step: index, typing, showTool, elapsed };
+
+          const elapsedSinceStart = Math.max(0, now - sequenceStart);
+          if (elapsedSinceStart < initialDelay) {
+            return {
+              step: 0,
+              typed: "",
+              toolVisible: false,
+              animationElapsed: 0,
+              animateLayer: false
+            };
+          }
+
+          let cycleTime = (elapsedSinceStart - initialDelay) % totalLength;
+          let step = 0;
+
+          while (step < cycleLengths.length - 1 && cycleTime >= cycleLengths[step]) {
+            cycleTime -= cycleLengths[step];
+            step += 1;
+          }
+
+          const command = INSIDE_PROMPT_COMMANDS[step];
+          const typingDuration = command.say.length * characterDelay;
+          const typedCount = cycleTime < typingDuration
+            ? Math.min(command.say.length, Math.floor(cycleTime / characterDelay) + 1)
+            : command.say.length;
+          const toolStart = typingDuration + toolDelay;
+          const patchStart = toolStart + patchDelay;
+          const animateLayer = cycleTime >= patchStart;
+
+          return {
+            step,
+            typed: command.say.slice(0, typedCount),
+            toolVisible: cycleTime >= toolStart,
+            animationElapsed: animateLayer ? cycleTime - patchStart : 0,
+            animateLayer
+          };
         };
 
         const render = () => {
-          const now = performance.now();
+          const now = performance.now() / 1000;
           const cycle = getCycle(now);
-          const prompt = INSIDE_PROMPTS[cycle.step];
+          const command = INSIDE_PROMPT_COMMANDS[cycle.step];
+
           if (cycle.step !== lastStep) {
             lastStep = cycle.step;
-            textNode.textContent = "";
           }
-          textNode.textContent = state.reducedMotion ? prompt.say : prompt.say.slice(0, cycle.typing);
-          tool.classList.toggle("is-visible", cycle.showTool);
-          caret.style.display = cycle.typing < prompt.say.length && !state.reducedMotion ? "inline-block" : "none";
-          drawInsidePrompt(canvas, prompt, cycle.elapsed);
-          if (visible && !state.reducedMotion) raf = requestAnimationFrame(render);
+
+          if (cycle.typed !== lastText) {
+            lastText = cycle.typed;
+            textNode.textContent = cycle.typed;
+          }
+
+          if (cycle.toolVisible) {
+            unmountCaret();
+          } else {
+            mountCaret();
+          }
+
+          setToolState(cycle.toolVisible);
+
+          drawInsidePrompt(
+            canvas,
+            cycle.step,
+            cycle.animationElapsed,
+            cycle.animateLayer
+          );
+
+          canvas.setAttribute("aria-label", `A layer changed by a typed prompt: ${command.say}`);
+        };
+
+        const loop = () => {
+          render();
+          if (visible && !state.reducedMotion) {
+            raf = requestAnimationFrame(loop);
+          }
         };
 
         const observer = new IntersectionObserver(entries => {
           visible = entries[0]?.isIntersecting === true;
-          if (visible) {
-            sequenceStart = performance.now();
-            cancelAnimationFrame(raf);
-            render();
+          cancelAnimationFrame(raf);
+          if (visible && !state.reducedMotion) {
+            raf = requestAnimationFrame(loop);
           } else {
-            cancelAnimationFrame(raf);
+            render();
           }
         }, { threshold: .15, rootMargin: "120px" });
         observer.observe(canvas);
-        const resize = new ResizeObserver(render);
+
+        const resize = new ResizeObserver(() => render());
         resize.observe(canvas.parentElement);
+
+        Promise.all([
+          ensureInsideFont("Sunghyun Sans", 900, 200),
+          ensureInsideFont("Instrument Serif", 400, 240)
+        ]).then(() => render());
+
         render();
       };
 

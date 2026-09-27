@@ -34,7 +34,7 @@
 
   <style>
     :root {
-      --surface: rgb(245, 245, 245);
+      --paper: #f5f5f5;
       --ink: #171717;
       --muted-ink: #525252;
       --orange: #ff5a1f;
@@ -58,7 +58,7 @@
 
     body {
       min-width: 320px;
-      background: var(--surface);
+      background: var(--paper);
       color: var(--ink);
       font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       -webkit-font-smoothing: antialiased;
@@ -78,11 +78,7 @@
       position: relative;
       min-height: 100vh;
       overflow-x: clip;
-      background-color: var(--surface);
-      background-image: radial-gradient(60% 40% at 50% 0%, rgba(255, 90, 31, 0.1), rgba(0, 0, 0, 0) 70%);
-      background-repeat: no-repeat;
-      background-position: center top;
-      background-size: 100% 100%;
+      background: radial-gradient(60% 40% at 50% 0%, #ff5a1f1a, transparent 70%), var(--paper);
     }
 
     /* =========================================================
@@ -912,6 +908,591 @@
       .tweak-canvas { left: 18px; width: 60%; }
     }
 
+
+    /* =========================================================
+       Pricing
+       ========================================================= */
+
+    .pricing-section {
+      width: 100%;
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 128px 20px 0;
+      scroll-margin-top: 96px;
+    }
+
+    .pricing-heading-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+
+    .pricing-heading {
+      max-width: 720px;
+      margin: 0;
+      font-family: var(--font-display);
+      font-size: 38px;
+      font-weight: 900;
+      line-height: 1.02;
+      letter-spacing: -0.03em;
+      color: var(--ink);
+    }
+
+    .pricing-description {
+      max-width: 520px;
+      margin: 16px 0 0;
+      font-size: 17px;
+      line-height: 1.625;
+      color: #525252;
+    }
+
+    .pricing-toggle-wrap { margin-top: 32px; }
+
+    .pricing-toggle {
+      position: relative;
+      display: inline-flex;
+      padding: 4px;
+      border-radius: 9999px;
+      background: rgba(0, 0, 0, 0.06);
+    }
+
+    .pricing-period-thumb {
+      position: absolute;
+      top: 4px;
+      left: 4px;
+      height: 40px;
+      border-radius: 9999px;
+      background: #171717;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+      transition: left 0.5s cubic-bezier(.34, 1.4, .64, 1), width 0.5s cubic-bezier(.34, 1.4, .64, 1);
+      pointer-events: none;
+    }
+
+    .pricing-period-button {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      height: 40px;
+      padding: 0 20px;
+      border: 0;
+      border-radius: 9999px;
+      background: transparent;
+      color: #525252;
+      font: 600 14px/1 Inter, ui-sans-serif, system-ui, sans-serif;
+      white-space: nowrap;
+      cursor: pointer;
+      touch-action: manipulation;
+      transform: translateZ(0);
+    }
+
+    .pricing-period-button:active { transform: scale(.96); }
+    .pricing-period-button:focus-visible {
+      outline: 2px solid var(--orange);
+      outline-offset: 3px;
+    }
+
+    .pricing-period-button span:first-child { transition: color .3s; }
+    .pricing-period-button[data-active="true"] span:first-child { color: #fff; }
+
+    .pricing-saving {
+      border-radius: 9999px;
+      padding: 2px 6px;
+      color: #E8470B;
+      background: rgba(255, 90, 31, 0.12);
+      font-size: 11.5px;
+      font-weight: 700;
+      line-height: 1.2;
+      font-variant-numeric: tabular-nums;
+      transition: color .3s, background-color .3s;
+    }
+
+    .pricing-period-button[data-active="true"] .pricing-saving {
+      color: #fff;
+      background: var(--orange);
+    }
+
+    .pricing-grid {
+      display: grid;
+      align-items: start;
+      gap: 20px;
+      margin-top: 48px;
+      padding: 16px 0;
+    }
+
+    .pricing-card {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      padding: 28px;
+      overflow: visible;
+      border-radius: 30px;
+      background: #fff;
+      color: #171717;
+      box-shadow: 0 0 0 .5px rgba(0,0,0,.07), 0 30px 60px -40px rgba(0,0,0,.3);
+      transition: transform .5s cubic-bezier(.34, 1.4, .64, 1), box-shadow .5s cubic-bezier(.34, 1.4, .64, 1);
+    }
+
+    .pricing-card:hover { transform: translateY(-4px); }
+
+    .pricing-card--pro {
+      margin: -16px 0;
+      padding-top: 48px;
+      padding-bottom: 48px;
+      background: #171717;
+      color: #fff;
+      box-shadow: 0 50px 100px -40px rgba(0,0,0,.55);
+    }
+
+    .pricing-card--pro:hover {
+      box-shadow: 0 54px 104px -40px rgba(0,0,0,.58);
+    }
+
+    .pricing-card h3 {
+      margin: 0;
+      font-family: var(--font-display);
+      font-size: 22px;
+      font-weight: 900;
+      line-height: 1.5;
+      letter-spacing: -0.02em;
+    }
+
+    .pricing-card-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .pricing-popular {
+      border-radius: 9999px;
+      padding: 4px 10px;
+      background: rgba(255,255,255,.12);
+      color: #fff;
+      font-size: 11.5px;
+      font-weight: 600;
+      line-height: 1.45;
+      white-space: nowrap;
+    }
+
+    .pricing-plan-copy {
+      margin: 4px 0 0;
+      color: #737373;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .pricing-card--pro .pricing-plan-copy { color: rgba(255,255,255,.6); }
+
+    .pricing-price-wrap { margin-top: 24px; }
+
+    .pricing-price-line {
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+      min-height: 54px;
+    }
+
+    .pricing-price {
+      display: inline-flex;
+      font-family: var(--font-display);
+      font-size: 54px;
+      font-weight: 900;
+      line-height: 1;
+      letter-spacing: -0.045em;
+      white-space: nowrap;
+    }
+
+    .pricing-price-char {
+      position: relative;
+      display: inline-flex;
+      overflow: hidden;
+      height: 1em;
+      min-width: .34em;
+      align-items: center;
+      justify-content: center;
+      vertical-align: top;
+    }
+
+    .pricing-price-char--symbol { min-width: .32em; }
+
+    .pricing-price-char > span {
+      display: inline-block;
+      will-change: transform, opacity, filter;
+    }
+
+    .pricing-price-char.is-enter > span { animation: pricing-char-in .55s cubic-bezier(.34,1.4,.64,1) both; }
+    .pricing-price-char.is-exit > span { animation: pricing-char-out .55s cubic-bezier(.34,1.4,.64,1) both; }
+
+    @keyframes pricing-char-in {
+      from { opacity: 0; transform: translateY(var(--price-enter, -.55em)); filter: blur(6px); }
+      to { opacity: 1; transform: translateY(0); filter: blur(0); }
+    }
+
+    @keyframes pricing-char-out {
+      from { opacity: 1; transform: translateY(0); filter: blur(0); }
+      to { opacity: 0; transform: translateY(var(--price-exit, .55em)); filter: blur(6px); }
+    }
+
+    .pricing-price-suffix {
+      color: #737373;
+      font-size: 14px;
+      line-height: 1.5;
+      white-space: nowrap;
+    }
+
+    .pricing-card--pro .pricing-price-suffix { color: rgba(255,255,255,.55); }
+
+    .pricing-price-note {
+      position: relative;
+      height: 20px;
+      margin: 8px 0 0;
+      overflow: hidden;
+      color: #737373;
+      font-size: 13px;
+      line-height: 19.5px;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+
+    .pricing-card--pro .pricing-price-note { color: rgba(255,255,255,.5); }
+
+    .pricing-price-note > span { display: block; overflow: hidden; text-overflow: ellipsis; }
+
+    .pricing-cta-wrap { margin-top: 28px; }
+
+    .pricing-cta {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 48px;
+      border-radius: 9999px;
+      background: #171717;
+      color: #fff;
+      font-size: 15px;
+      font-weight: 600;
+      line-height: 1;
+      text-decoration: none;
+      transition: transform .22s cubic-bezier(.34,1.4,.64,1), box-shadow .22s ease;
+    }
+
+    .pricing-cta:hover { transform: translateY(-2px); }
+    .pricing-cta:active { transform: translateY(1px) scale(.985); }
+    .pricing-cta:focus-visible {
+      outline: 2px solid var(--orange);
+      outline-offset: 3px;
+    }
+
+    .pricing-card--pro .pricing-cta {
+      background: var(--orange);
+      box-shadow: 0 2px 10px rgba(255,90,31,.35);
+    }
+
+    .pricing-cta-note {
+      margin: 10px 0 0;
+      text-align: center;
+      color: #8a8a8a;
+      font-size: 12px;
+      line-height: 18px;
+    }
+
+    .pricing-card--pro .pricing-cta-note { color: rgba(255,255,255,.45); }
+
+    .pricing-voice-wrap {
+      margin-top: 28px;
+      perspective: 900px;
+    }
+
+    .pricing-voice-tilt {
+      transform-style: preserve-3d;
+      transform: rotateX(18deg);
+      transition: transform .45s cubic-bezier(.34,1.4,.64,1);
+    }
+
+    .pricing-voice-wrap:hover .pricing-voice-tilt { transform: rotateX(4deg) translateY(-3px); }
+
+    .pricing-candy {
+      position: relative;
+      display: inline-block;
+      width: 100%;
+      transform-style: preserve-3d;
+      isolation: isolate;
+    }
+
+    .pricing-candy-layer {
+      position: absolute;
+      inset: 0;
+      border-radius: 20px;
+      background: var(--candy-side);
+      transform-style: preserve-3d;
+    }
+
+    .pricing-candy-layer:nth-child(1) { transform: translateZ(0); box-shadow: var(--candy-shadow); }
+    .pricing-candy-layer:nth-child(2) { transform: translateZ(2px); }
+    .pricing-candy-layer:nth-child(3) { transform: translateZ(4px); }
+    .pricing-candy-layer:nth-child(4) { transform: translateZ(6px); }
+
+    .pricing-candy-face {
+      position: relative;
+      display: flex;
+      align-items: center;
+      width: 100%;
+      gap: 14px;
+      padding: 14px;
+      border-radius: 20px;
+      background: linear-gradient(180deg, rgba(255,255,255,.16) 0%, rgba(255,255,255,0) 60%), var(--candy-face);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.28);
+      color: var(--candy-text, #171717);
+      transform: translateZ(8px);
+      transform-style: preserve-3d;
+    }
+
+    .pricing-voice-bars {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      width: 44px;
+      height: 44px;
+      flex: 0 0 44px;
+      border-radius: 13px;
+      background: rgba(0,0,0,.06);
+      color: rgba(0,0,0,.25);
+    }
+
+    .pricing-card--pro .pricing-voice-bars,
+    .pricing-voice-bars[data-on="true"] {
+      background: rgba(255,255,255,.2);
+      color: #fff;
+    }
+
+    .pricing-voice-bars > i {
+      display: block;
+      width: 3px;
+      border-radius: 2px;
+      background: currentColor;
+      transform-origin: 50% 50%;
+    }
+
+    .pricing-voice-bars[data-on="true"] > i { animation: pricing-voice-bar 1.1s ease-in-out infinite; }
+
+    @keyframes pricing-voice-bar {
+      0%,100% { transform: scaleY(.45); }
+      50% { transform: scaleY(1); }
+    }
+
+    .pricing-voice-title {
+      display: block;
+      color: rgba(0,0,0,.55);
+      font-size: 14.5px;
+      font-weight: 600;
+      line-height: 1.35;
+    }
+
+    .pricing-card--pro .pricing-voice-title { color: #fff; }
+
+    .pricing-voice-detail {
+      display: block;
+      margin-top: 2px;
+      color: rgba(0,0,0,.4);
+      font-size: 12.5px;
+      line-height: 1.35;
+    }
+
+    .pricing-card--pro .pricing-voice-detail { color: rgba(255,255,255,.8); }
+
+    .pricing-features {
+      margin: 16px 0 0;
+      padding: 0;
+      list-style: none;
+      font-size: 14px;
+      line-height: 21px;
+    }
+
+    .pricing-feature {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-height: 42px;
+      padding: 10px 0;
+      border-top: 1px solid rgba(0,0,0,.06);
+    }
+
+    .pricing-card--pro .pricing-feature { border-top-color: rgba(255,255,255,.1); }
+    .pricing-feature:first-child { border-top: 0; }
+
+    .pricing-feature-check {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 18px;
+      height: 18px;
+      flex: 0 0 18px;
+      border-radius: 9999px;
+      background: #171717;
+      color: #fff;
+    }
+
+    .pricing-card--pro .pricing-feature-check { background: var(--orange); }
+    .pricing-feature-check svg { width: 9px; height: 7px; }
+    .pricing-feature-text { color: #262626; }
+    .pricing-card--pro .pricing-feature-text { color: rgba(255,255,255,.85); }
+
+    .pricing-unlimited-toys {
+      position: absolute;
+      top: -20px;
+      right: 16px;
+      width: 190px;
+      height: 120px;
+      pointer-events: none;
+      perspective: 1000px;
+    }
+
+    .pricing-toy {
+      position: absolute;
+      display: inline-block;
+      transform-style: preserve-3d;
+      animation: pricing-toy-bob var(--toy-bob,5s) ease-in-out infinite;
+    }
+
+    .pricing-toy--one { top: 0; right: 6px; --toy-bob: 5.2s; }
+    .pricing-toy--two { top: 42px; right: 62px; --toy-bob: 6.1s; }
+    .pricing-toy--three { top: 80px; right: 0; --toy-bob: 4.6s; }
+
+    .pricing-toy-inner { transform-style: preserve-3d; }
+    .pricing-toy-label {
+      position: relative;
+      display: flex;
+      align-items: center;
+      height: 32px;
+      gap: 6px;
+      padding: 0 14px;
+      border-radius: 9999px;
+      color: #fff;
+      font-size: 12.5px;
+      font-weight: 600;
+      line-height: 1;
+      white-space: nowrap;
+      background: linear-gradient(180deg, rgba(255,255,255,.16) 0%, rgba(255,255,255,0) 60%), var(--toy-face);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.28);
+      transform: translateZ(14px) rotateX(40deg) rotateZ(var(--toy-rotate,0deg));
+      transform-style: preserve-3d;
+    }
+
+    .pricing-toy-label::before,
+    .pricing-toy-label::after { content: ""; position: absolute; inset: 0; border-radius: inherit; background: var(--toy-side); z-index: -1; transform-style: preserve-3d; }
+    .pricing-toy-label::before { transform: translateZ(2px); }
+    .pricing-toy-label::after { box-shadow: 0 14px 20px -10px rgba(0,0,0,.35); transform: translateZ(12px); }
+
+    .pricing-toy--one { --toy-face:#FF6A2B; --toy-side:#C43E0C; --toy-rotate:6deg; }
+    .pricing-toy--two { --toy-face:#9A5BF5; --toy-side:#6B37C4; --toy-rotate:-5deg; }
+    .pricing-toy--three { --toy-face:#3ECFAF; --toy-side:#21A088; --toy-rotate:4deg; }
+
+    .pricing-toy-label svg { width: 13px; height: 13px; flex: 0 0 13px; }
+
+    @keyframes pricing-toy-bob {
+      0%,100% { transform: translateY(0); }
+      50% { transform: translateY(-6px); }
+    }
+
+    .pricing-trial-wrap { margin-top: 40px; }
+
+    .pricing-trial {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      padding: 24px 32px;
+      border-radius: 24px;
+      background: #fff;
+      box-shadow: 0 0 0 .5px rgba(0,0,0,.07);
+    }
+
+    .pricing-trial-copy { min-width: 0; }
+    .pricing-trial-title {
+      margin: 0;
+      font-family: var(--font-display);
+      font-size: 20px;
+      font-weight: 900;
+      line-height: 1.3;
+      letter-spacing: -0.02em;
+    }
+
+    .pricing-trial-text {
+      margin: 4px 0 0;
+      color: #737373;
+      font-size: 13.5px;
+      line-height: 1.45;
+    }
+
+    .pricing-trial-cta {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex: 0 0 auto;
+      height: 48px;
+      padding: 0 24px;
+      border-radius: 9999px;
+      background: rgba(0,0,0,.06);
+      color: #171717;
+      font-size: 15px;
+      font-weight: 600;
+      line-height: 22.5px;
+      text-decoration: none;
+      transition: transform .22s cubic-bezier(.34,1.4,.64,1), background-color .2s ease;
+    }
+
+    .pricing-trial-cta:hover { transform: translateY(-2px); background: rgba(0,0,0,.09); }
+    .pricing-trial-cta:active { transform: translateY(1px) scale(.985); }
+    .pricing-trial-cta:focus-visible { outline: 2px solid var(--orange); outline-offset: 3px; }
+
+    @media (min-width: 640px) {
+      .pricing-section { padding-left: 24px; padding-right: 24px; }
+      .pricing-heading { font-size: 56px; }
+    }
+
+    @media (min-width: 1024px) {
+      .pricing-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    }
+
+    @media (max-width: 1023px) {
+      .pricing-card--pro { margin: 0; padding-top: 28px; padding-bottom: 28px; }
+      .pricing-unlimited-toys { right: 20px; }
+    }
+
+    @media (max-width: 767px) {
+      .pricing-section { padding-top: 100px; }
+      .pricing-grid { margin-top: 40px; grid-template-columns: minmax(0,1fr); }
+      .pricing-trial { flex-direction: column; align-items: center; text-align: center; }
+      .pricing-trial-cta { width: auto; }
+    }
+
+    @media (max-width: 639px) {
+      .pricing-section { padding-left: 20px; padding-right: 20px; }
+      .pricing-card { padding: 28px; }
+    }
+
+    @media (max-width: 399px) {
+      .pricing-section { padding-left: 16px; padding-right: 16px; }
+      .pricing-card { padding: 24px; }
+      .pricing-unlimited-toys { right: 12px; transform: scale(.9); transform-origin: top right; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .pricing-period-thumb,
+      .pricing-card,
+      .pricing-cta,
+      .pricing-trial-cta,
+      .pricing-price-char > span { transition: none !important; animation: none !important; }
+      .pricing-period-button:active,
+      .pricing-cta:active,
+      .pricing-trial-cta:active { transform: none; }
+      .pricing-voice-bars[data-on="true"] > i,
+      .pricing-toy { animation: none !important; }
+    }
+
     @media (prefers-reduced-motion: reduce) {
       html { scroll-behavior: auto; }
       .nav-link,
@@ -1078,6 +1659,192 @@
             <p class="how-card-copy">Select a layer and edit it, or tell Claude what “this” should do. Every change is one undo step.</p>
           </div>
         </article>
+      </div>
+    </section>
+
+
+
+    <!-- Pricing -->
+    <section id="pricing" class="pricing-section" aria-labelledby="pricing-heading">
+      <div class="pricing-heading-wrap">
+        <h2 id="pricing-heading" class="pricing-heading">Pick a pace.</h2>
+        <p class="pricing-description">Pick a plan and start today. Not sure yet? Try mtioon free for 7 days first.</p>
+
+        <div class="pricing-toggle-wrap">
+          <div class="pricing-toggle" role="tablist" aria-label="Billing period" data-pricing-toggle>
+            <span class="pricing-period-thumb" aria-hidden="true"></span>
+            <button type="button" role="tab" aria-selected="true" class="pricing-period-button" data-period="month" data-active="true">
+              <span>Monthly</span>
+            </button>
+            <button type="button" role="tab" aria-selected="false" class="pricing-period-button" data-period="year" data-active="false">
+              <span>Yearly</span>
+              <span class="pricing-saving">−17%</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="pricing-grid" data-pricing-grid>
+        <article class="pricing-card" data-plan="starter">
+          <div class="pricing-card-top">
+            <h3>Starter</h3>
+          </div>
+          <p class="pricing-plan-copy">A few videos a month.</p>
+
+          <div class="pricing-price-wrap">
+            <div class="pricing-price-line">
+              <span class="pricing-price" data-price aria-label="€20"></span>
+              <span class="pricing-price-suffix">/ month</span>
+            </div>
+            <p class="pricing-price-note"><span data-price-note>€200 a year if you pay yearly</span></p>
+          </div>
+
+          <div class="pricing-cta-wrap">
+            <a class="pricing-cta" data-plan-cta href="/login?next=%2Fapi%2Fbilling%2Fcheckout%3Fplan%3Dstarter%26interval%3Dmonth">Get Starter</a>
+            <p class="pricing-cta-note">Billed through Stripe. Cancel anytime.</p>
+          </div>
+
+          <div class="pricing-voice-wrap">
+            <div class="pricing-voice-tilt">
+              <span class="pricing-candy" style="--candy-face:#F1F1F1;--candy-side:#D9D9D9;--candy-shadow:0 10px 16px -12px rgba(0,0,0,.2)">
+                <span class="pricing-candy-layer" aria-hidden="true"></span>
+                <span class="pricing-candy-layer" aria-hidden="true"></span>
+                <span class="pricing-candy-layer" aria-hidden="true"></span>
+                <span class="pricing-candy-layer" aria-hidden="true"></span>
+                <span class="pricing-candy-face">
+                  <span class="pricing-voice-bars" aria-hidden="true">
+                    <i style="height:9px;animation-delay:0s"></i><i style="height:16px;animation-delay:-.18s"></i><i style="height:20px;animation-delay:-.36s"></i><i style="height:13px;animation-delay:-.54s"></i><i style="height:8px;animation-delay:-.72s"></i>
+                  </span>
+                  <span>
+                    <span class="pricing-voice-title">AI narrator</span>
+                    <span class="pricing-voice-detail">Comes with Pro and Unlimited</span>
+                  </span>
+                </span>
+              </span>
+            </div>
+          </div>
+
+          <ul class="pricing-features">
+            <li class="pricing-feature"><span class="pricing-feature-check">✓</span><span class="pricing-feature-text">10,000 credits a month, about 5 videos</span></li>
+            <li class="pricing-feature"><span class="pricing-feature-check">✓</span><span class="pricing-feature-text">10 projects</span></li>
+            <li class="pricing-feature"><span class="pricing-feature-check">✓</span><span class="pricing-feature-text">5 GB for your video, images and music</span></li>
+            <li class="pricing-feature"><span class="pricing-feature-check">✓</span><span class="pricing-feature-text">Claude Code over MCP, and Ask Claude in the editor</span></li>
+            <li class="pricing-feature"><span class="pricing-feature-check">✓</span><span class="pricing-feature-text">MP4 export up to 1080p at 60 fps, with sound</span></li>
+          </ul>
+        </article>
+
+        <article class="pricing-card pricing-card--pro" data-plan="pro">
+          <div class="pricing-card-top">
+            <h3>Pro</h3>
+            <span class="pricing-popular">Most popular</span>
+          </div>
+          <p class="pricing-plan-copy">Video every week.</p>
+
+          <div class="pricing-price-wrap">
+            <div class="pricing-price-line">
+              <span class="pricing-price" data-price aria-label="€60"></span>
+              <span class="pricing-price-suffix">/ month</span>
+            </div>
+            <p class="pricing-price-note"><span data-price-note>€600 a year if you pay yearly</span></p>
+          </div>
+
+          <div class="pricing-cta-wrap">
+            <a class="pricing-cta" data-plan-cta href="/login?next=%2Fapi%2Fbilling%2Fcheckout%3Fplan%3Dpro%26interval%3Dmonth">Get Pro</a>
+            <p class="pricing-cta-note">Billed through Stripe. Cancel anytime.</p>
+          </div>
+
+          <div class="pricing-voice-wrap">
+            <div class="pricing-voice-tilt">
+              <span class="pricing-candy" style="--candy-face:#FF6A2B;--candy-side:#C43E0C;--candy-shadow:0 14px 20px -12px rgba(0,0,0,.45)">
+                <span class="pricing-candy-layer" aria-hidden="true"></span>
+                <span class="pricing-candy-layer" aria-hidden="true"></span>
+                <span class="pricing-candy-layer" aria-hidden="true"></span>
+                <span class="pricing-candy-layer" aria-hidden="true"></span>
+                <span class="pricing-candy-face">
+                  <span class="pricing-voice-bars" data-on="true" aria-hidden="true">
+                    <i style="height:9px;animation-delay:0s"></i><i style="height:16px;animation-delay:-.18s"></i><i style="height:20px;animation-delay:-.36s"></i><i style="height:13px;animation-delay:-.54s"></i><i style="height:8px;animation-delay:-.72s"></i>
+                  </span>
+                  <span>
+                    <span class="pricing-voice-title">AI narrator</span>
+                    <span class="pricing-voice-detail">11,500 voice credits a month · about 15 narrated videos</span>
+                  </span>
+                </span>
+              </span>
+            </div>
+          </div>
+
+          <ul class="pricing-features">
+            <li class="pricing-feature"><span class="pricing-feature-check">✓</span><span class="pricing-feature-text">40,000 credits a month, about 21 videos</span></li>
+            <li class="pricing-feature"><span class="pricing-feature-check">✓</span><span class="pricing-feature-text">Unlimited projects</span></li>
+            <li class="pricing-feature"><span class="pricing-feature-check">✓</span><span class="pricing-feature-text">25 GB for your video, images and music</span></li>
+            <li class="pricing-feature"><span class="pricing-feature-check">✓</span><span class="pricing-feature-text">Claude Code over MCP, and Ask Claude in the editor</span></li>
+            <li class="pricing-feature"><span class="pricing-feature-check">✓</span><span class="pricing-feature-text">MP4 export up to 4K at 60 fps, with sound</span></li>
+          </ul>
+        </article>
+
+        <article class="pricing-card" data-plan="unlimited">
+          <div class="pricing-unlimited-toys" aria-hidden="true">
+            <span class="pricing-toy pricing-toy--one"><span class="pricing-toy-label"><svg viewBox="0 0 16 16" fill="currentColor"><path d="M9.5 1L3 9h4l-.5 6L13 7H9z" fill-rule="evenodd"></path></svg>∞ credits</span></span>
+            <span class="pricing-toy pricing-toy--two"><span class="pricing-toy-label"><svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 1l1.6 4.4L14 7l-4.4 1.6L8 13l-1.6-4.4L2 7l4.4-1.6zM13 11l.7 1.8 1.8.7-1.8.7z" fill-rule="evenodd"></path></svg>Unlimited</span></span>
+            <span class="pricing-toy pricing-toy--three"><span class="pricing-toy-label"><svg viewBox="0 0 16 16" fill="currentColor"><path d="M7.25 1.5h1.5v13h-1.5zM4 4.5h1.5v7H4zM10.5 3.5H12v9h-1.5zM1 6.5h1.5v3H1zM13.5 6h1.5v4h-1.5z" fill-rule="evenodd"></path></svg>AI narrator</span></span>
+          </div>
+
+          <div class="pricing-card-top">
+            <h3>Unlimited</h3>
+          </div>
+          <p class="pricing-plan-copy">Studios and teams.</p>
+
+          <div class="pricing-price-wrap">
+            <div class="pricing-price-line">
+              <span class="pricing-price" data-price aria-label="€200"></span>
+              <span class="pricing-price-suffix">/ month</span>
+            </div>
+            <p class="pricing-price-note"><span data-price-note>€2,000 a year if you pay yearly</span></p>
+          </div>
+
+          <div class="pricing-cta-wrap">
+            <a class="pricing-cta" data-plan-cta href="/login?next=%2Fapi%2Fbilling%2Fcheckout%3Fplan%3Dunlimited%26interval%3Dmonth">Get Unlimited</a>
+            <p class="pricing-cta-note">Billed through Stripe. Cancel anytime.</p>
+          </div>
+
+          <div class="pricing-voice-wrap">
+            <div class="pricing-voice-tilt">
+              <span class="pricing-candy" style="--candy-face:#FF6A2B;--candy-side:#C43E0C;--candy-shadow:0 14px 20px -12px rgba(0,0,0,.45)">
+                <span class="pricing-candy-layer" aria-hidden="true"></span>
+                <span class="pricing-candy-layer" aria-hidden="true"></span>
+                <span class="pricing-candy-layer" aria-hidden="true"></span>
+                <span class="pricing-candy-layer" aria-hidden="true"></span>
+                <span class="pricing-candy-face">
+                  <span class="pricing-voice-bars" data-on="true" aria-hidden="true">
+                    <i style="height:9px;animation-delay:0s"></i><i style="height:16px;animation-delay:-.18s"></i><i style="height:20px;animation-delay:-.36s"></i><i style="height:13px;animation-delay:-.54s"></i><i style="height:8px;animation-delay:-.72s"></i>
+                  </span>
+                  <span>
+                    <span class="pricing-voice-title">AI narrator</span>
+                    <span class="pricing-voice-detail">75,000 voice credits a month · about 100 narrated videos</span>
+                  </span>
+                </span>
+              </span>
+            </div>
+          </div>
+
+          <ul class="pricing-features">
+            <li class="pricing-feature"><span class="pricing-feature-check">✓</span><span class="pricing-feature-text">Unlimited credits</span></li>
+            <li class="pricing-feature"><span class="pricing-feature-check">✓</span><span class="pricing-feature-text">Unlimited projects</span></li>
+            <li class="pricing-feature"><span class="pricing-feature-check">✓</span><span class="pricing-feature-text">100 GB for your video, images and music</span></li>
+            <li class="pricing-feature"><span class="pricing-feature-check">✓</span><span class="pricing-feature-text">Claude Code over MCP, and Ask Claude in the editor</span></li>
+            <li class="pricing-feature"><span class="pricing-feature-check">✓</span><span class="pricing-feature-text">MP4 export up to 4K at 60 fps, with sound</span></li>
+          </ul>
+        </article>
+      </div>
+
+      <div class="pricing-trial-wrap">
+        <div class="pricing-trial">
+          <div class="pricing-trial-copy">
+            <p class="pricing-trial-title">Not ready to pick? Try it 7 days free.</p>
+            <p class="pricing-trial-text">1,000 credits, 3 projects and 1 GB of uploads: about one finished video. Card up front, nothing charged before day 8; then it continues as Starter.</p>
+          </div>
+          <a class="pricing-trial-cta" href="/login?next=%2Fapi%2Fbilling%2Fcheckout%3Fplan%3Dstarter%26interval%3Dmonth%26trial%3D1" data-umami-event="pricing_trial_click" data-umami-event-signed-in="false">Start free trial</a>
+        </div>
       </div>
     </section>
 
@@ -1856,6 +2623,120 @@
         window.addEventListener("beforeunload", stopSequence, { once: true });
       };
 
+
+
+      /* =========================================================
+         Pricing
+         ========================================================= */
+
+      const PRICING_PLANS = {
+        starter: {
+          month: 20,
+          year: 200,
+          yearNote: "€200 billed once a year · you save €40"
+        },
+        pro: {
+          month: 60,
+          year: 600,
+          yearNote: "€600 billed once a year · you save €120"
+        },
+        unlimited: {
+          month: 200,
+          year: 2000,
+          yearNote: "€2,000 billed once a year · you save €400"
+        }
+      };
+
+      const formatMoney = value => `€${new Intl.NumberFormat("en-US").format(value)}`;
+
+      const buildPriceChars = (node, text, direction = 1) => {
+        const previous = [...node.children];
+        const oldText = previous.map(item => item.textContent).join("");
+        const fragment = document.createDocumentFragment();
+
+        [...text].forEach((character, index) => {
+          const slot = document.createElement("span");
+          slot.className = `pricing-price-char${character === "€" ? " pricing-price-char--symbol" : ""}`;
+          slot.setAttribute("aria-hidden", "true");
+          const next = document.createElement("span");
+          next.textContent = character;
+          next.style.setProperty("--price-enter", direction > 0 ? "-0.55em" : "0.55em");
+          next.style.setProperty("--price-exit", direction > 0 ? "0.55em" : "-0.55em");
+          if (!state.reducedMotion) next.classList.add("price-incoming");
+          slot.appendChild(next);
+          fragment.appendChild(slot);
+        });
+
+        node.replaceChildren(fragment);
+        node.setAttribute("aria-label", text);
+
+        if (state.reducedMotion || oldText === "") return;
+
+        [...node.children].forEach(slot => slot.classList.add("is-enter"));
+      };
+
+      const updatePricingPrice = (card, period, direction) => {
+        const plan = card.dataset.plan;
+        const data = PRICING_PLANS[plan];
+        const monthly = period === "year" ? Math.round(data.year / 12) : data.month;
+        const note = period === "year" ? data.yearNote : `${formatMoney(data.year)} a year if you pay yearly`;
+        const price = card.querySelector("[data-price]");
+        const priceNote = card.querySelector("[data-price-note]");
+        const cta = card.querySelector("[data-plan-cta]");
+        if (!price || !priceNote || !cta) return;
+
+        buildPriceChars(price, formatMoney(monthly), direction);
+        priceNote.textContent = note;
+        cta.href = `/login?next=${encodeURIComponent(`/api/billing/checkout?plan=${plan}&interval=${period}`)}`;
+        cta.dataset.umamiEventInterval = period;
+      };
+
+      const initializePricing = () => {
+        const section = document.querySelector("#pricing");
+        const toggle = section?.querySelector("[data-pricing-toggle]");
+        const thumb = toggle?.querySelector(".pricing-period-thumb");
+        const buttons = toggle ? [...toggle.querySelectorAll("[data-period]")] : [];
+        const cards = section ? [...section.querySelectorAll("[data-plan]")] : [];
+        if (!section || !toggle || !thumb || !buttons.length || !cards.length) return;
+
+        let period = "month";
+
+        const syncThumb = () => {
+          const active = buttons.find(button => button.dataset.active === "true") || buttons[0];
+          thumb.style.left = `${active.offsetLeft}px`;
+          thumb.style.width = `${active.offsetWidth}px`;
+        };
+
+        const render = nextPeriod => {
+          const previous = period;
+          period = nextPeriod;
+          const direction = period === "year" ? 1 : -1;
+
+          buttons.forEach(button => {
+            const active = button.dataset.period === period;
+            button.dataset.active = String(active);
+            button.setAttribute("aria-selected", String(active));
+          });
+
+          syncThumb();
+          cards.forEach(card => updatePricingPrice(card, period, direction));
+        };
+
+        buttons.forEach(button => {
+          button.addEventListener("click", () => {
+            if (button.dataset.period === period) return;
+            render(button.dataset.period);
+          });
+        });
+
+        const reducedMotionObserver = () => syncThumb();
+        window.addEventListener("resize", reducedMotionObserver, { passive: true });
+        window.addEventListener("beforeunload", () => window.removeEventListener("resize", reducedMotionObserver));
+
+        cards.forEach(card => updatePricingPrice(card, period, 1));
+        requestAnimationFrame(syncThumb);
+      };
+
       /* =========================================================
          Final CTA command pill
          ========================================================= */
@@ -1989,6 +2870,7 @@
       const initialize = () => {
         initializeLogoTracking();
         initializeHowAnimations();
+        initializePricing();
         initializeCommand();
         initializePressButtons();
       };

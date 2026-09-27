@@ -36,11 +36,34 @@ Each application should contain its own clone source code and research notes.
 Example:
 
 ```text
-apps/
-└── mtioon/
-    ├── clone/
-    ├── research/
-    └── README.md
+web-app-reverse-engineering-lab/
+├── README.md
+├── apps/
+│   ├── mtioon/
+│   │   ├── clone/
+│   │   │   └── index.html
+│   │   ├── research/
+│   │   │   ├── runtime.md
+│   │   │   ├── source-analysis.md
+│   │   │   ├── measurements.md
+│   │   │   └── screenshots/
+│   │   └── README.md
+│   │
+│   └── future-app/
+│
+├── methodology/
+│   ├── chrome-devtools.md
+│   ├── source-inspection.md
+│   ├── animation-analysis.md
+│   └── visual-validation.md
+│
+├── tooling/
+│   ├── scripts/
+│   └── snippets/
+│
+└── docs/
+    ├── discoveries.md
+    └── lessons-learned.md
 ```
 
 ## Principles

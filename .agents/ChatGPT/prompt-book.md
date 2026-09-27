@@ -34,3 +34,9 @@ Crucial Skills:
 Your Task:
 Give me the Chrome DevTools CLI to inspect the target website’s source code. You must inspect both appearance, functionality, and everything necessary until you have enough context from the original target website’s source code. When you are ready, provide the generated code inside a fenced code block in the conversation.
 ```
+
+```text
+Re-analyze the <Element>.
+
+Carefully inspect the original mtioon implementation and compare it with our current clone. Identify the differences and determine what changes are needed to make our implementation as close to the original as possible, ideally pixel-accurate.
+```

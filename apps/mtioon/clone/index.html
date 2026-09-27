@@ -1385,62 +1385,205 @@
         return wrapper;
       };
 
-      const waitForCanvasSize = canvas => {
-        const draw = painter => {
-          const rect = canvas.getBoundingClientRect();
-          const dpr = Math.min(2, window.devicePixelRatio || 1);
-          const width = Math.max(1, Math.round(rect.width * dpr));
-          const height = Math.max(1, Math.round(rect.height * dpr));
-          if (canvas.width !== width) canvas.width = width;
-          if (canvas.height !== height) canvas.height = height;
-          const context = canvas.getContext("2d");
-          if (!context) return;
-          context.setTransform(dpr, 0, 0, dpr, 0, 0);
-          painter(context, rect.width, rect.height);
-        };
-
-        const observer = new ResizeObserver(() => draw(currentPainter(canvas)));
-        observer.observe(canvas);
-        return draw;
+      const LANDING_FRAME_DOC = {
+        canvas: { width: 1920, height: 1080, background: "#F4F1EA" },
+        camera: [
+          { time: 0, zoom: 1.12 },
+          { time: 2.4, zoom: 1 }
+        ],
+        frames: [0.6, 3.4, 4.8, 7.4],
+        layers: {
+          hookBackground: { start: 0, end: 2.5, fill: "#111111" },
+          hookWord: {
+            start: 0.3, end: 2.5, text: "Say it.", font: "Sunghyun Sans",
+            weight: 900, size: 360, x: 960, y: 500, fill: "#F4F1EA"
+          },
+          hookSubtitle: {
+            start: 1.1, end: 2.5, text: "then watch it move", font: "Inter",
+            weight: 500, size: 56, x: 960, y: 740, fill: "#FF5A1F"
+          },
+          cards: [
+            { start: 2.7, x: 560, y: 560, w: 460, h: 300, rotation: -6, fill: "#FF5A1F", text: "you type", textFill: "#FFFFFF" },
+            { start: 2.9, x: 960, y: 540, w: 460, h: 300, rotation: 3, fill: "#111111", text: "Claude edits", textFill: "#F4F1EA" },
+            { start: 3.1, x: 1360, y: 560, w: 460, h: 300, rotation: 7, fill: "#3B82F6", text: "you tweak", textFill: "#FFFFFF" }
+          ],
+          howTitle: {
+            start: 2.6, end: 5.5, text: "Every frame stays editable.", font: "Instrument Serif",
+            weight: 400, size: 96, x: 960, y: 230, fill: "#111111"
+          },
+          ctaTag: {
+            start: 7, end: 8, text: "motion, by prompt", font: "Inter", weight: 500,
+            size: 48, x: 960, y: 760, fill: "#FF5A1F"
+          }
+        }
       };
 
-      const framePainter = (index, context, width, height) => {
-        context.clearRect(0, 0, width, height);
-        context.fillStyle = "#F4F1EA";
-        context.fillRect(0, 0, width, height);
-        context.save();
-        context.translate(width / 2, height / 2);
-        context.fillStyle = index % 2 === 0 ? "#171717" : "#ff5a1f";
-        context.beginPath();
-        context.arc((index - 1.5) * 12, (index % 2 ? -3 : 4), Math.max(6, height * 0.18), 0, Math.PI * 2);
-        context.fill();
-        context.font = `${Math.max(9, width * 0.17)}px Inter, Arial, sans-serif`;
-        context.fontWeight = "900";
+      const landingFontLoads = new Map();
+      const ensureLandingFont = (fontName, weight, size) => {
+        const key = `${weight} ${size}px ${fontName}`;
+        if (!landingFontLoads.has(key)) {
+          landingFontLoads.set(key, document.fonts.load(`${weight} ${size}px "${fontName}"`).catch(() => []));
+        }
+        return landingFontLoads.get(key);
+      };
+
+      const ensureLandingFrameFonts = () => Promise.all([
+        ensureLandingFont("Sunghyun Sans", 900, 360),
+        ensureLandingFont("Clash Display", 600, 58),
+        ensureLandingFont("Instrument Serif", 400, 96),
+        ensureLandingFont("Inter", 500, 56)
+      ]);
+
+      const clamp01 = value => Math.max(0, Math.min(1, value));
+      const smoothStep = value => {
+        const t = clamp01(value);
+        return t * t * (3 - 2 * t);
+      };
+      const easeOutBack = value => {
+        const t = clamp01(value) - 1;
+        const c1 = 1.70158;
+        const c3 = c1 + 1;
+        return 1 + c3 * t * t * t + c1 * t * t;
+      };
+
+      const landingCameraZoom = time => {
+        if (time >= 2.4) return 1;
+        return 1.12 - 0.12 * smoothStep(time / 2.4);
+      };
+
+      const landingLayerProgress = (time, start, duration) => clamp01((time - start) / duration);
+
+      const drawLandingText = (context, text, x, y, size, weight, family, fill, maxWidth) => {
+        context.font = `${weight} ${size}px "${family}", sans-serif`;
         context.textAlign = "center";
         context.textBaseline = "middle";
-        context.fillStyle = index === 1 ? "#171717" : "#ffffff";
-        context.fillText(["STOP", "SCROLL", "HOOK", "BEAT"][index], 0, 0);
-        context.restore();
+        context.fillStyle = fill;
+        if (maxWidth) context.fillText(text, x, y, maxWidth);
+        else context.fillText(text, x, y);
       };
 
-      const currentPainter = canvas => {
-        const index = Number(canvas.dataset.frame || 0);
-        return (context, width, height) => framePainter(index, context, width, height);
+      const drawRoundedRect = (context, x, y, width, height, radius) => {
+        const r = Math.min(radius, width / 2, height / 2);
+        context.beginPath();
+        context.moveTo(x + r, y);
+        context.arcTo(x + width, y, x + width, y + height, r);
+        context.arcTo(x + width, y + height, x, y + height, r);
+        context.arcTo(x, y + height, x, y, r);
+        context.arcTo(x, y, x + width, y, r);
+        context.closePath();
+      };
+
+      const drawLandingLogo = (context) => {
+        const svg = document.querySelector(".brand svg");
+        if (!svg) {
+          drawLandingText(context, "mtioon", 960, 500, 170, 900, "Sunghyun Sans", "#111111");
+          return;
+        }
+
+        const serializer = new XMLSerializer();
+        const source = serializer.serializeToString(svg);
+        const image = new Image();
+        image.src = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(source)}`;
+        const width = 820;
+        const height = width * 169 / 712;
+        image.onload = () => {
+          context.save();
+          context.drawImage(image, 960 - width / 2, 420 - height / 2, width, height);
+          context.fillStyle = "#F4F1EA";
+          context.beginPath();
+          context.arc(960 - 86, 420, 12, 0, Math.PI * 2);
+          context.arc(960 + 86, 420, 12, 0, Math.PI * 2);
+          context.fill();
+          context.restore();
+        };
+      };
+
+      const drawLandingFrame = (index, context, width, height) => {
+        const logicalWidth = LANDING_FRAME_DOC.canvas.width;
+        const logicalHeight = LANDING_FRAME_DOC.canvas.height;
+        const dpr = Math.min(2, window.devicePixelRatio || 1);
+        const scale = Math.max(0.01, width / logicalWidth);
+        const time = LANDING_FRAME_DOC.frames[index] ?? LANDING_FRAME_DOC.frames[0];
+
+        context.setTransform(1, 0, 0, 1, 0, 0);
+        context.clearRect(0, 0, context.canvas.width, context.canvas.height);
+        context.setTransform(scale * dpr, 0, 0, scale * dpr, 0, 0);
+        context.fillStyle = LANDING_FRAME_DOC.canvas.background;
+        context.fillRect(0, 0, logicalWidth, logicalHeight);
+
+        if (time < 2.5) {
+          context.fillStyle = LANDING_FRAME_DOC.layers.hookBackground.fill;
+          context.fillRect(0, 0, logicalWidth, logicalHeight);
+
+          const wordProgress = landingLayerProgress(time, 0.3, 0.45);
+          const wordScale = 0.72 + 0.28 * easeOutBack(wordProgress);
+          context.save();
+          context.translate(960, 500);
+          context.scale(wordScale, wordScale);
+          drawLandingText(context, "Say it.", 0, 0, 360, 900, "Sunghyun Sans", "#F4F1EA");
+          context.restore();
+
+          const subtitleProgress = landingLayerProgress(time, 1.1, 0.5);
+          context.save();
+          context.globalAlpha = subtitleProgress;
+          context.translate(0, (1 - easeOutBack(subtitleProgress)) * 26);
+          drawLandingText(context, "then watch it move", 960, 740, 56, 500, "Inter", "#FF5A1F");
+          context.restore();
+          return;
+        }
+
+        if (time < 5.5) {
+          const titleProgress = landingLayerProgress(time, 2.6, 0.6);
+          context.save();
+          context.globalAlpha = titleProgress;
+          context.filter = titleProgress < 1 ? `blur(${Math.max(0, (1 - titleProgress) * 7)}px)` : "none";
+          drawLandingText(context, "Every frame stays editable.", 960, 230, 96, 400, "Instrument Serif", "#111111");
+          context.restore();
+
+          LANDING_FRAME_DOC.layers.cards.forEach(card => {
+            const progress = landingLayerProgress(time, card.start, 0.9);
+            const drop = easeOutBack(progress);
+            const y = card.y + (1 - drop) * -140;
+            const textProgress = landingLayerProgress(time, card.start + 0.2, 0.4);
+            context.save();
+            context.translate(card.x, y);
+            context.rotate(card.rotation * Math.PI / 180);
+            context.globalAlpha = progress;
+            context.shadowColor = "rgba(0,0,0,0.20)";
+            context.shadowBlur = 40;
+            context.shadowOffsetY = 20;
+            context.fillStyle = card.fill;
+            drawRoundedRect(context, -card.w / 2, -card.h / 2, card.w, card.h, 36);
+            context.fill();
+            context.shadowColor = "transparent";
+            context.globalAlpha = textProgress;
+            context.translate(0, (1 - easeOutBack(textProgress)) * 18);
+            drawLandingText(context, card.text, 0, 0, 58, 600, "Clash Display", card.textFill);
+            context.restore();
+          });
+          return;
+        }
+
+        drawLandingLogo(context);
+        drawLandingText(context, LANDING_FRAME_DOC.layers.ctaTag.text, 960, 760, 48, 500, "Inter", "#FF5A1F");
       };
 
       const drawFrameCanvases = card => {
         card.querySelectorAll(".frame-canvas").forEach(canvas => {
-          const index = Number(canvas.dataset.frame || 0);
           const rect = canvas.getBoundingClientRect();
           const dpr = Math.min(2, window.devicePixelRatio || 1);
-          const width = Math.max(1, Math.round(rect.width * dpr));
-          const height = Math.max(1, Math.round(rect.height * dpr));
-          canvas.width = width;
-          canvas.height = height;
+          const logicalWidth = LANDING_FRAME_DOC.canvas.width;
+          const scale = Math.max(0.01, rect.width / logicalWidth);
+          const bitmapWidth = Math.max(1, Math.round(logicalWidth * scale * dpr));
+          const bitmapHeight = Math.max(1, Math.round(LANDING_FRAME_DOC.canvas.height * scale * dpr));
+
+          canvas.width = bitmapWidth;
+          canvas.height = bitmapHeight;
+
           const context = canvas.getContext("2d");
           if (!context) return;
-          context.setTransform(dpr, 0, 0, dpr, 0, 0);
-          framePainter(index, context, rect.width, rect.height);
+          context.imageSmoothingEnabled = true;
+          drawLandingFrame(Number(canvas.dataset.frame || 0), context, rect.width, rect.height);
         });
       };
 
@@ -1612,7 +1755,9 @@
           note.hidden = !showNote;
           note.classList.toggle("is-visible", showNote);
 
-          if (showFrames) drawFrameCanvases(card);
+          if (showFrames) {
+            ensureLandingFrameFonts().then(() => drawFrameCanvases(card));
+          }
         };
 
         const start = () => {

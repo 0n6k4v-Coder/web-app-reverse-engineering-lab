@@ -1,0 +1,2549 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  />
+  <title>MTIOON Clone</title>
+
+  <style>
+    :root {
+      --surface: rgb(245, 245, 245);
+      --ink: #171717;
+      --muted-ink: #525252;
+
+      --orange: #ff5a1f;
+      --orange-dark: #b8400f;
+
+      --command-dark: #2b2b2b;
+      --command-black: #0a0a0a;
+
+      --green: #3dc46b;
+      --green-dark: #23934a;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      min-height: 100%;
+      margin: 0;
+    }
+
+    body {
+      min-width: 320px;
+
+      background: var(--surface);
+      color: var(--ink);
+
+      font-family:
+        Inter,
+        ui-sans-serif,
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    button,
+    input,
+    textarea,
+    select {
+      font: inherit;
+    }
+
+    button {
+      border: 0;
+    }
+
+    /* =========================================================
+       Page
+       ========================================================= */
+
+    .landing {
+      position: relative;
+
+      min-height: 100vh;
+
+      overflow-x: clip;
+
+      background-color: rgb(245, 245, 245);
+
+      background-image:
+        radial-gradient(
+          60% 40% at 50% 0%,
+          rgba(255, 90, 31, 0.1),
+          rgba(0, 0, 0, 0) 70%
+        );
+
+      background-repeat: no-repeat;
+      background-position: center top;
+      background-size: 100% 100%;
+    }
+
+    /* =========================================================
+       Navigation
+       ========================================================= */
+
+    .nav-wrapper {
+      position: fixed;
+      inset: 0 0 auto;
+
+      z-index: 50;
+
+      display: flex;
+      justify-content: center;
+
+      padding: 16px;
+
+      pointer-events: none;
+    }
+
+    .navbar {
+      pointer-events: auto;
+
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      width: 100%;
+      max-width: 1120px;
+      height: 56px;
+
+      gap: 12px;
+
+      padding: 0 8px 0 16px;
+
+      border-radius: 9999px;
+
+      background: rgba(255, 255, 255, 0.8);
+
+      box-shadow:
+        0 1px 2px rgba(0, 0, 0, 0.05),
+        0 12px 40px -16px rgba(0, 0, 0, 0.25),
+        inset 0 0 0 0.5px rgba(0, 0, 0, 0.06);
+
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+
+      width: 109.53px;
+      height: 26px;
+
+      flex-shrink: 0;
+
+      color: var(--ink);
+    }
+
+    .brand svg {
+      display: block;
+
+      width: 109.53px;
+      height: 26px;
+
+      overflow: visible;
+
+      pointer-events: none;
+    }
+
+    .nav-links {
+      display: none;
+      align-items: center;
+
+      gap: 4px;
+    }
+
+    .nav-link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+
+      padding: 8px 14px;
+
+      border-radius: 9999px;
+
+      color: var(--muted-ink);
+
+      font-size: 14px;
+      font-weight: 500;
+      line-height: 21px;
+
+      transition: color 200ms ease;
+    }
+
+    .nav-link:hover {
+      color: var(--ink);
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+
+      gap: 8px;
+
+      flex-shrink: 0;
+    }
+
+    .sign-in {
+      display: none;
+      align-items: center;
+
+      padding: 0 12px;
+
+      color: var(--muted-ink);
+
+      font-size: 14px;
+      font-weight: 500;
+      line-height: 21px;
+
+      white-space: nowrap;
+
+      transition: color 200ms ease;
+    }
+
+    .sign-in:hover {
+      color: var(--ink);
+    }
+
+    .demo-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+
+      height: 40px;
+
+      padding: 0 16px;
+
+      border-radius: 9999px;
+
+      background: #171717;
+      color: #ffffff;
+
+      font-size: 13.5px;
+      font-weight: 600;
+      line-height: 40px;
+
+      white-space: nowrap;
+    }
+
+    /* =========================================================
+       Final CTA
+       ========================================================= */
+
+    .final-cta {
+      width: 100%;
+      max-width: 1120px;
+
+      margin: 0 auto;
+
+      padding: 128px 24px 0;
+    }
+
+    .final-cta-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+
+      text-align: center;
+    }
+
+    .final-cta-heading {
+      max-width: 720px;
+
+      margin: 0;
+
+      color: var(--ink);
+
+      font-family:
+        "Sunghyun Sans",
+        Inter,
+        ui-sans-serif,
+        system-ui,
+        sans-serif;
+
+      font-size: 40px;
+      font-weight: 900;
+      line-height: 1;
+
+      letter-spacing: -0.035em;
+
+      text-wrap: balance;
+    }
+
+    .final-cta-description {
+      max-width: 480px;
+
+      margin: 20px 0 0;
+
+      color: var(--muted-ink);
+
+      font-size: 16px;
+      font-weight: 400;
+      line-height: 26px;
+    }
+
+    /* =========================================================
+       3D command
+       ========================================================= */
+
+    .command-wrap {
+      position: relative;
+
+      width: min(785px, 100%);
+      max-width: 100%;
+
+      margin-top: 32px;
+
+      perspective: 1100px;
+    }
+
+    .command-button {
+      position: relative;
+
+      display: block;
+
+      width: 100%;
+      min-width: 0;
+
+      padding: 0;
+
+      border: 0;
+      border-radius: 9999px;
+
+      background: transparent;
+
+      color: var(--ink);
+
+      text-align: left;
+
+      cursor: pointer;
+
+      outline: none;
+
+      appearance: none;
+      -webkit-appearance: none;
+
+      transform-style: preserve-3d;
+
+      will-change: transform;
+    }
+
+    .command-button:focus-visible {
+      outline: 2px solid var(--orange);
+      outline-offset: 4px;
+    }
+
+    .command-depth {
+      position: absolute;
+      inset: 0;
+
+      border-radius: 9999px;
+
+      background: var(--command-black);
+
+      transform-style: preserve-3d;
+
+      pointer-events: none;
+    }
+
+    .command-depth.depth-0 {
+      transform: translateZ(0);
+
+      box-shadow:
+        0 26px 34px -18px rgba(0, 0, 0, 0.5);
+    }
+
+    .command-depth.depth-1 {
+      transform: translateZ(2px);
+    }
+
+    .command-depth.depth-2 {
+      transform: translateZ(4px);
+    }
+
+    .command-depth.depth-3 {
+      transform: translateZ(6px);
+    }
+
+    .command-depth.depth-4 {
+      transform: translateZ(8px);
+    }
+
+    .command-depth.depth-5 {
+      transform: translateZ(10px);
+    }
+
+    .command-depth.depth-6 {
+      transform: translateZ(12px);
+    }
+
+    .command-depth.depth-7 {
+      transform: translateZ(14px);
+    }
+
+    .command-face {
+      position: relative;
+
+      display: flex;
+      align-items: center;
+
+      width: 100%;
+      min-height: 60px;
+
+      gap: 12px;
+
+      padding: 10px 10px 10px 24px;
+
+      border-radius: 9999px;
+
+      background:
+        linear-gradient(
+          180deg,
+          rgba(255, 255, 255, 0.16) 0%,
+          rgba(255, 255, 255, 0) 60%
+        ),
+        var(--command-dark);
+
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.28);
+
+      transform: translateZ(16px);
+
+      transform-style: preserve-3d;
+    }
+
+    .command-code {
+      min-width: 0;
+
+      flex: 1;
+
+      overflow-x: auto;
+
+      padding-right: 24px;
+
+      color: rgba(255, 255, 255, 0.85);
+
+      font-family:
+        ui-monospace,
+        SFMono-Regular,
+        Menlo,
+        Monaco,
+        Consolas,
+        "Liberation Mono",
+        monospace;
+
+      font-size: 12.5px;
+      font-weight: 400;
+      line-height: 1.625;
+
+      white-space: nowrap;
+
+      scrollbar-width: none;
+
+      mask-image:
+        linear-gradient(
+          90deg,
+          #000 calc(100% - 28px),
+          transparent
+        );
+
+      -webkit-mask-image:
+        linear-gradient(
+          90deg,
+          #000 calc(100% - 28px),
+          transparent
+        );
+    }
+
+    .command-code::-webkit-scrollbar {
+      display: none;
+    }
+
+    .command-prefix {
+      margin-right: 8px;
+
+      color: rgba(255, 255, 255, 0.35);
+    }
+
+    .copy-control {
+      position: relative;
+
+      display: grid;
+      place-items: center;
+
+      flex-shrink: 0;
+
+      height: 40px;
+
+      padding: 0 16px;
+
+      border-radius: 9999px;
+
+      background: var(--orange);
+
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.3),
+        0 3px 0 var(--orange-dark);
+
+      color: #ffffff;
+
+      font-size: 13px;
+      font-weight: 600;
+      line-height: 1;
+
+      pointer-events: none;
+
+      transform-style: preserve-3d;
+
+      will-change:
+        background-color,
+        box-shadow;
+    }
+
+    .copy-label,
+    .copy-check {
+      grid-area: 1 / 1;
+    }
+
+    .copy-label {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    .copy-check {
+      display: flex;
+
+      opacity: 0;
+
+      transform: scale(0.4);
+    }
+
+    .copy-check svg {
+      width: 18px;
+      height: 18px;
+
+      transform: translateZ(1px);
+    }
+
+    .copy-status {
+      position: absolute;
+
+      width: 1px;
+      height: 1px;
+
+      padding: 0;
+      margin: -1px;
+
+      overflow: hidden;
+
+      clip: rect(0, 0, 0, 0);
+
+      white-space: nowrap;
+
+      border: 0;
+    }
+
+    /* =========================================================
+       Copied floating badge
+       ========================================================= */
+
+    .copy-badge {
+      position: absolute;
+
+      top: -2px;
+      right: 12px;
+
+      z-index: 5;
+
+      display: block;
+
+      pointer-events: none;
+
+      transform-origin: 50% 100%;
+      transform-style: preserve-3d;
+
+      will-change:
+        transform,
+        opacity,
+        filter;
+    }
+
+    .copy-badge-layer {
+      position: absolute;
+      inset: 0;
+
+      border-radius: 9999px;
+
+      background: var(--green-dark);
+
+      transform-style: preserve-3d;
+
+      pointer-events: none;
+    }
+
+    .copy-badge-layer.depth-0 {
+      transform: translateZ(0);
+
+      box-shadow:
+        0 14px 20px -10px rgba(0, 0, 0, 0.35);
+    }
+
+    .copy-badge-layer.depth-1 {
+      transform: translateZ(2px);
+    }
+
+    .copy-badge-layer.depth-2 {
+      transform: translateZ(4px);
+    }
+
+    .copy-badge-layer.depth-3 {
+      transform: translateZ(6px);
+    }
+
+    .copy-badge-layer.depth-4 {
+      transform: translateZ(8px);
+    }
+
+    .copy-badge-layer.depth-5 {
+      transform: translateZ(10px);
+    }
+
+    .copy-badge-face {
+      position: relative;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      height: 34px;
+
+      gap: 6px;
+
+      padding: 0 14px;
+
+      border-radius: 9999px;
+
+      background:
+        linear-gradient(
+          180deg,
+          rgba(255, 255, 255, 0.16),
+          rgba(255, 255, 255, 0) 60%
+        ),
+        var(--green);
+
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.28);
+
+      color: #ffffff;
+
+      font-size: 13px;
+      font-weight: 600;
+      line-height: 1;
+
+      white-space: nowrap;
+
+      transform: translateZ(12px);
+
+      transform-style: preserve-3d;
+    }
+
+    .copy-badge-face svg {
+      width: 14px;
+      height: 14px;
+
+      flex-shrink: 0;
+
+      transform: translateZ(1px);
+    }
+
+    /* =========================================================
+       Final CTA actions
+       ========================================================= */
+
+    .final-actions {
+      display: flex;
+      align-items: center;
+
+      gap: 12px;
+
+      margin-top: 32px;
+    }
+
+    .press-button {
+      position: relative;
+
+      display: inline-flex;
+      flex-direction: column;
+
+      width: fit-content;
+
+      padding: 0 0 8px;
+
+      border-radius: 9999px;
+
+      background: transparent;
+
+      cursor: pointer;
+
+      touch-action: manipulation;
+
+      outline: none;
+    }
+
+    .press-button:focus-visible {
+      outline: 2px solid var(--orange);
+      outline-offset: 4px;
+    }
+
+    .press-back {
+      position: absolute;
+      inset: 8px 0 0;
+
+      border-radius: 9999px;
+
+      pointer-events: none;
+
+      background:
+        linear-gradient(
+          180deg,
+          color-mix(in srgb, var(--press-side) 72%, white),
+          var(--press-side)
+        );
+
+      box-shadow:
+        0 12px 20px -10px rgba(0, 0, 0, 0.22);
+    }
+
+    .press-front {
+      position: relative;
+
+      display: block;
+
+      height: 48px;
+
+      padding: 0 24px;
+
+      border-radius: 9999px;
+
+      background: var(--press-face);
+
+      color: var(--press-text);
+
+      font-size: 15px;
+      font-weight: 600;
+      line-height: 48px;
+
+      white-space: nowrap;
+
+      transform-origin: 50% 50%;
+
+      will-change:
+        transform;
+    }
+
+    .press-highlight {
+      position: absolute;
+      inset: 0;
+
+      border-radius: inherit;
+
+      background:
+        linear-gradient(
+          180deg,
+          rgba(255, 255, 255, 0.24),
+          rgba(255, 255, 255, 0) 55%
+        );
+
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.45),
+        inset 0 -2px 0 rgba(0, 0, 0, 0.06);
+
+      pointer-events: none;
+    }
+
+    .press-label {
+      position: relative;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      width: 100%;
+      height: 100%;
+    }
+
+    .press-dark {
+      --press-face: #2b2b2b;
+      --press-side: #0a0a0a;
+      --press-text: #ffffff;
+    }
+
+    .press-light {
+      --press-face: #ffffff;
+      --press-side: #c9c9d1;
+      --press-text: #000000;
+    }
+
+    /* =========================================================
+       Footer
+       ========================================================= */
+
+    .final-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      margin-top: 96px;
+
+      color: rgba(0, 0, 0, 0.4);
+
+      font-size: 13px;
+      line-height: 19.5px;
+    }
+
+    .footer-logo {
+      display: block;
+
+      width: 93px;
+      height: 22px;
+
+      overflow: visible;
+    }
+
+    .footer-note {
+      margin: 0;
+    }
+
+    /* =========================================================
+       Accessibility
+       ========================================================= */
+
+    .nav-link:focus-visible,
+    .sign-in:focus-visible,
+    .demo-button:focus-visible,
+    .brand:focus-visible {
+      outline: 2px solid var(--ink);
+      outline-offset: 2px;
+    }
+
+    /* =========================================================
+       Responsive
+       ========================================================= */
+
+    @media (min-width: 400px) {
+      .sign-in {
+        display: inline-flex;
+      }
+    }
+
+    @media (min-width: 640px) {
+      .navbar {
+        padding-left: 16px;
+        padding-right: 8px;
+      }
+
+      .command-code {
+        font-size: 13.5px;
+      }
+    }
+
+    @media (min-width: 768px) {
+      .nav-links {
+        display: flex;
+      }
+
+      .final-cta-heading {
+        font-size: 64px;
+        line-height: 64px;
+        letter-spacing: -2.24px;
+      }
+    }
+
+    @media (max-width: 767px) {
+      .final-cta {
+        padding-top: 100px;
+      }
+
+      .command-wrap {
+        width: 100%;
+      }
+
+      .final-actions {
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+    }
+
+    @media (max-width: 639px) {
+      .final-cta {
+        padding-left: 20px;
+        padding-right: 20px;
+      }
+
+      .command-face {
+        padding-left: 16px;
+      }
+
+      .copy-control {
+        padding-left: 14px;
+        padding-right: 14px;
+      }
+    }
+
+    @media (max-width: 399px) {
+      .nav-wrapper {
+        padding-left: 16px;
+        padding-right: 16px;
+      }
+
+      .navbar {
+        gap: 8px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .nav-link,
+      .press-button {
+        transition: none;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="landing">
+
+    <!-- =========================================================
+         Fixed navigation
+         ========================================================= -->
+
+    <div class="nav-wrapper">
+      <nav class="navbar" aria-label="Primary navigation">
+
+        <a
+          class="brand"
+          href="/"
+          aria-label="mtioon"
+        >
+          <svg
+            viewBox="-10 -59 712 169"
+            height="26"
+            role="img"
+            aria-label="mtioon"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <g fill="#111111" fill-rule="evenodd">
+
+              <g transform="translate(0 0)">
+                <g>
+                  <path d="M0 53 H44 V86 A14 14 0 0 1 30 100 H14 A14 14 0 0 1 0 86 V53 Z" />
+                  <path d="M62 53 H106 V86 A14 14 0 0 1 92 100 H76 A14 14 0 0 1 62 86 V53 Z" />
+                  <path d="M124 53 H168 V86 A14 14 0 0 1 154 100 H138 A14 14 0 0 1 124 86 V53 Z" />
+                  <path d="M0 53 A53 53 0 0 1 106 53 H62 A9 9 0 0 0 44 53 Z" />
+                  <path d="M62 53 A53 53 0 0 1 168 53 H124 A9 9 0 0 0 106 53 Z" />
+                </g>
+              </g>
+
+              <g transform="translate(176 0)">
+                <g>
+                  <path d="M28 -26 H44 A14 14 0 0 1 58 -12 V50.5 H14 V-12 A14 14 0 0 1 28 -26 Z" />
+                  <path d="M14 50 A50 50 0 0 0 64 100 V56 A6 6 0 0 1 58 50 Z" />
+                  <path d="M54 56 H62 A14 14 0 0 1 76 70 V86 A14 14 0 0 1 62 100 H54 V56 Z" />
+                  <path d="M10 0 H66 A10 10 0 0 1 76 10 V20 A10 10 0 0 1 66 30 H10 A10 10 0 0 1 0 20 V10 A10 10 0 0 1 10 0 Z" />
+                </g>
+              </g>
+
+              <g transform="translate(266 0)">
+                <g>
+                  <path d="M14 0 H30 A14 14 0 0 1 44 14 V86 A14 14 0 0 1 30 100 H14 A14 14 0 0 1 0 86 V14 A14 14 0 0 1 14 0 Z" />
+                  <path d="M1 -28 A21 21 0 1 0 43 -28 A21 21 0 1 0 1 -28 Z" />
+                </g>
+              </g>
+
+              <g
+                data-k="o1"
+                transform="translate(322 0)"
+              >
+                <g data-rise="">
+                  <path
+                    data-k="p1"
+                    d="M0 39.5 A60.5 60.5 0 1 0 121 39.5 A60.5 60.5 0 1 0 0 39.5 Z M22.5 34 A26 26 0 1 0 74.5 34 A26 26 0 1 0 22.5 34 Z"
+                  />
+                </g>
+              </g>
+
+              <g
+                data-k="o2"
+                transform="translate(453 0)"
+              >
+                <g data-rise="">
+                  <path
+                    data-k="p2"
+                    d="M0 39.5 A60.5 60.5 0 1 0 121 39.5 A60.5 60.5 0 1 0 0 39.5 Z M22.5 34 A26 26 0 1 0 74.5 34 A26 26 0 1 0 22.5 34 Z"
+                  />
+                </g>
+              </g>
+
+              <g transform="translate(586 0)">
+                <g>
+                  <path d="M0 53 H44 V86 A14 14 0 0 1 30 100 H14 A14 14 0 0 1 0 86 V53 Z" />
+                  <path d="M62 53 H106 V86 A14 14 0 0 1 92 100 H76 A14 14 0 0 1 62 86 V53 Z" />
+                  <path d="M0 53 A53 53 0 0 1 106 53 H62 A9 9 0 0 0 44 53 Z" />
+                </g>
+              </g>
+
+            </g>
+          </svg>
+        </a>
+
+        <div class="nav-links">
+          <a class="nav-link" href="#kit">Your repo</a>
+          <a class="nav-link" href="#inside">Inside</a>
+          <a class="nav-link" href="#reels">Reels</a>
+          <a class="nav-link" href="#how">How it works</a>
+          <a class="nav-link" href="/guide">Guide</a>
+          <a class="nav-link" href="#pricing">Pricing</a>
+        </div>
+
+        <div class="nav-actions">
+          <a
+            class="sign-in"
+            href="/login?next=/dashboard"
+          >
+            Sign in
+          </a>
+
+          <a
+            class="demo-button"
+            href="/p/demo"
+          >
+            Open the demo
+          </a>
+        </div>
+
+      </nav>
+    </div>
+
+    <!-- =========================================================
+         Final CTA
+         ========================================================= -->
+
+    <section
+      class="final-cta"
+      aria-labelledby="final-cta-heading"
+    >
+      <div class="final-cta-content">
+
+        <h2
+          id="final-cta-heading"
+          class="final-cta-heading"
+        >
+          Say it. Then watch it move.
+        </h2>
+
+        <p class="final-cta-description">
+          Connect Claude Code with one command. The demo project is already waiting in the editor.
+        </p>
+
+        <!-- =====================================================
+             Command pill
+             ===================================================== -->
+
+        <div
+          class="command-wrap"
+          id="command-wrap"
+        >
+          <button
+            type="button"
+            class="command-button"
+            id="copy-command"
+            aria-label="Copy: claude mcp add --scope user --transport http mtioon https://mtioon.com/api/mcp"
+          >
+
+            <span
+              class="command-depth depth-0"
+              aria-hidden="true"
+            ></span>
+
+            <span
+              class="command-depth depth-1"
+              aria-hidden="true"
+            ></span>
+
+            <span
+              class="command-depth depth-2"
+              aria-hidden="true"
+            ></span>
+
+            <span
+              class="command-depth depth-3"
+              aria-hidden="true"
+            ></span>
+
+            <span
+              class="command-depth depth-4"
+              aria-hidden="true"
+            ></span>
+
+            <span
+              class="command-depth depth-5"
+              aria-hidden="true"
+            ></span>
+
+            <span
+              class="command-depth depth-6"
+              aria-hidden="true"
+            ></span>
+
+            <span
+              class="command-depth depth-7"
+              aria-hidden="true"
+            ></span>
+
+            <span class="command-face">
+
+              <code class="command-code">
+                <span class="command-prefix">$</span>claude mcp add --scope user --transport http mtioon https://mtioon.com/api/mcp
+              </code>
+
+              <span
+                class="copy-control"
+                id="copy-control"
+                aria-hidden="true"
+              >
+                <span
+                  class="copy-label"
+                  id="copy-label"
+                >
+                  Copy
+                </span>
+
+                <span
+                  class="copy-check"
+                  id="copy-check"
+                >
+                  <svg
+                    width="18"
+                    height="18"
+                    viewBox="0 0 16 16"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2.4"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                  >
+                    <path d="M3 8.5l3.2 3.2L13 4.8" />
+                  </svg>
+                </span>
+              </span>
+
+            </span>
+          </button>
+
+          <span
+            id="copy-status"
+            class="copy-status"
+            role="status"
+            aria-live="polite"
+          ></span>
+        </div>
+
+        <!-- =====================================================
+             CTA buttons
+             ===================================================== -->
+
+        <div class="final-actions">
+
+          <a
+            class="press-button press-dark"
+            data-press
+            href="/p/demo"
+          >
+            <span
+              class="press-back"
+              aria-hidden="true"
+            ></span>
+
+            <span class="press-front">
+              <span
+                class="press-highlight"
+                aria-hidden="true"
+              ></span>
+
+              <span class="press-label">
+                Open the demo
+              </span>
+            </span>
+          </a>
+
+          <button
+            type="button"
+            class="press-button press-light"
+            data-press
+          >
+            <span
+              class="press-back"
+              aria-hidden="true"
+            ></span>
+
+            <span class="press-front">
+              <span
+                class="press-highlight"
+                aria-hidden="true"
+              ></span>
+
+              <span class="press-label">
+                New project
+              </span>
+            </span>
+          </button>
+
+        </div>
+      </div>
+
+      <!-- =======================================================
+           Footer
+           ======================================================= -->
+
+      <footer class="final-footer">
+
+        <svg
+          class="footer-logo"
+          viewBox="-10 -59 712 169"
+          height="22"
+          role="img"
+          aria-label="mtioon"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <g fill="#525252" fill-rule="evenodd">
+
+            <g transform="translate(0 0)">
+              <g>
+                <path d="M0 53 H44 V86 A14 14 0 0 1 30 100 H14 A14 14 0 0 1 0 86 V53 Z" />
+                <path d="M62 53 H106 V86 A14 14 0 0 1 92 100 H76 A14 14 0 0 1 62 86 V53 Z" />
+                <path d="M124 53 H168 V86 A14 14 0 0 1 154 100 H138 A14 14 0 0 1 124 86 V53 Z" />
+                <path d="M0 53 A53 53 0 0 1 106 53 H62 A9 9 0 0 0 44 53 Z" />
+                <path d="M62 53 A53 53 0 0 1 168 53 H124 A9 9 0 0 0 106 53 Z" />
+              </g>
+            </g>
+
+            <g transform="translate(176 0)">
+              <g>
+                <path d="M28 -26 H44 A14 14 0 0 1 58 -12 V50.5 H14 V-12 A14 14 0 0 1 28 -26 Z" />
+                <path d="M14 50 A50 50 0 0 0 64 100 V56 A6 6 0 0 1 58 50 Z" />
+                <path d="M54 56 H62 A14 14 0 0 1 76 70 V86 A14 14 0 0 1 62 100 H54 V56 Z" />
+                <path d="M10 0 H66 A10 10 0 0 1 76 10 V20 A10 10 0 0 1 66 30 H10 A10 10 0 0 1 0 20 V10 A10 10 0 0 1 10 0 Z" />
+              </g>
+            </g>
+
+            <g transform="translate(266 0)">
+              <g>
+                <path d="M14 0 H30 A14 14 0 0 1 44 14 V86 A14 14 0 0 1 30 100 H14 A14 14 0 0 1 0 86 V14 A14 14 0 0 1 14 0 Z" />
+                <path d="M1 -28 A21 21 0 1 0 43 -28 A21 21 0 1 0 1 -28 Z" />
+              </g>
+            </g>
+
+            <g transform="translate(322 0)">
+              <g>
+                <path
+                  d="M0 39.5 A60.5 60.5 0 1 0 121 39.5 A60.5 60.5 0 1 0 0 39.5 Z M22.5 34 A26 26 0 1 0 74.5 34 A26 26 0 1 0 22.5 34 Z"
+                />
+              </g>
+            </g>
+
+            <g transform="translate(453 0)">
+              <g>
+                <path
+                  d="M0 39.5 A60.5 60.5 0 1 0 121 39.5 A60.5 60.5 0 1 0 0 39.5 Z M22.5 34 A26 26 0 1 0 74.5 34 A26 26 0 1 0 22.5 34 Z"
+                />
+              </g>
+            </g>
+
+            <g transform="translate(586 0)">
+              <g>
+                <path d="M0 53 H44 V86 A14 14 0 0 1 30 100 H14 A14 14 0 0 1 0 86 V53 Z" />
+                <path d="M62 53 H106 V86 A14 14 0 0 1 92 100 H76 A14 14 0 0 1 62 86 V53 Z" />
+                <path d="M0 53 A53 53 0 0 1 106 53 H62 A9 9 0 0 0 44 53 Z" />
+              </g>
+            </g>
+
+          </g>
+        </svg>
+
+        <p class="footer-note">
+          motion, by prompt. Two o's, two eyes.
+        </p>
+
+      </footer>
+    </section>
+  </main>
+
+  <!--
+    Motion's current official documentation supports loading the
+    browser build directly from a script tag. The version is pinned
+    rather than using @latest so the animation engine cannot change
+    underneath the clone.
+  -->
+  <script type="module">
+    import {
+      animate
+    } from "https://cdn.jsdelivr.net/npm/motion@13.4.3/+esm";
+
+    (() => {
+      "use strict";
+
+      /* =========================================================
+         Shared configuration
+         ========================================================= */
+
+      const COMMAND =
+        "claude mcp add --scope user --transport http mtioon https://mtioon.com/api/mcp";
+
+      const COLORS = {
+        orange: "#FF5A1F",
+        orangeDark: "#B8400F",
+
+        green: "#3DC46B",
+        greenDark: "#23934A",
+
+        black: "#2B2B2B",
+        blackSide: "#0A0A0A"
+      };
+
+      const TRANSITIONS = {
+        command: {
+          type: "spring",
+          stiffness: 320,
+          damping: 20,
+          mass: 0.8
+        },
+
+        press: {
+          type: "spring",
+          bounce: 0.45,
+          duration: 0.5
+        },
+
+        copyState: {
+          type: "spring",
+          duration: 0.4,
+          bounce: 0.2
+        },
+
+        copiedBadge: {
+          type: "spring",
+          stiffness: 380,
+          damping: 17,
+          mass: 0.9
+        }
+      };
+
+      const prefersReducedMotion =
+        window.matchMedia(
+          "(prefers-reduced-motion: reduce)"
+        );
+
+      const state = {
+        reducedMotion:
+          prefersReducedMotion.matches
+      };
+
+      /* =========================================================
+         Motion helpers
+         ========================================================= */
+
+      const animations =
+        new WeakMap();
+
+      const stopAnimation = (
+        element,
+        key
+      ) => {
+        const elementAnimations =
+          animations.get(element);
+
+        if (!elementAnimations) {
+          return;
+        }
+
+        const animation =
+          elementAnimations.get(key);
+
+        if (animation) {
+          animation.stop();
+          elementAnimations.delete(key);
+        }
+      };
+
+      const runAnimation = (
+        element,
+        key,
+        values,
+        transition
+      ) => {
+        stopAnimation(
+          element,
+          key
+        );
+
+        const animation =
+          animate(
+            element,
+            values,
+            transition
+          );
+
+        let elementAnimations =
+          animations.get(element);
+
+        if (!elementAnimations) {
+          elementAnimations =
+            new Map();
+
+          animations.set(
+            element,
+            elementAnimations
+          );
+        }
+
+        elementAnimations.set(
+          key,
+          animation
+        );
+
+        return animation;
+      };
+
+      const transformTransition = (
+        transition
+      ) =>
+        state.reducedMotion
+          ? { duration: 0 }
+          : transition;
+
+      const setReducedMotion = () => {
+        state.reducedMotion =
+          prefersReducedMotion.matches;
+      };
+
+      prefersReducedMotion.addEventListener?.(
+        "change",
+        setReducedMotion
+      );
+
+      /* =========================================================
+         Analytics hook
+         ========================================================= */
+
+      const track = (
+        name,
+        properties
+      ) => {
+        /*
+          Extension point for the original site's analytics.
+
+          Keeping this local no-op means the clone remains standalone
+          while preserving the same event boundary as the source.
+        */
+
+        void name;
+        void properties;
+      };
+
+      /* =========================================================
+         Exact navbar eye tracking
+         ========================================================= */
+
+      const LOGO = {
+        width: 692,
+        top: -49,
+
+        o1: 322,
+        o2: 453,
+
+        eyeRadius: 60.5,
+        pupilRadius: 26,
+
+        centerX: 60.5,
+        centerY: 39.5,
+
+        gaze: {
+          x: -12,
+          y: -5.5
+        },
+
+        gazeLimit: 22.5,
+
+        pointerRange: 300,
+
+        smoothing: 0.12
+      };
+
+      const round =
+        value =>
+          Math.round(
+            value * 100
+          ) / 100;
+
+      const offCentre = (
+        position,
+        width,
+        height = width
+      ) => {
+        const distance =
+          Math.hypot(
+            position.x / width,
+            position.y / height
+          );
+
+        if (distance >= 0.55) {
+          return position;
+        }
+
+        if (distance < 1e-4) {
+          return {
+            x: 0,
+            y: 0.55 * height
+          };
+        }
+
+        const scale =
+          0.55 / distance;
+
+        return {
+          x: position.x * scale,
+          y: position.y * scale
+        };
+      };
+
+      const circlePath = (
+        centerX,
+        centerY,
+        radius
+      ) => {
+        return [
+          `M${round(centerX - radius)} ${round(centerY)}`,
+          `A${round(radius)} ${round(radius)} 0 1 0 ${round(centerX + radius)} ${round(centerY)}`,
+          `A${round(radius)} ${round(radius)} 0 1 0 ${round(centerX - radius)} ${round(centerY)}`,
+          "Z"
+        ].join(" ");
+      };
+
+      const createEyePath = ({
+        centerX,
+        centerY,
+        radius,
+        pupilRadius,
+        offsetX,
+        offsetY,
+        pupilYRadius
+      }) => {
+        const pupilCenterX =
+          centerX + offsetX;
+
+        const pupilCenterY =
+          centerY + offsetY;
+
+        const outerPath =
+          circlePath(
+            centerX,
+            centerY,
+            radius
+          );
+
+        const pupilPath = [
+          `M${round(pupilCenterX - pupilRadius)} ${round(pupilCenterY)}`,
+          `A${round(pupilRadius)} ${round(pupilYRadius)} 0 1 0 ${round(pupilCenterX + pupilRadius)} ${round(pupilCenterY)}`,
+          `A${round(pupilRadius)} ${round(pupilYRadius)} 0 1 0 ${round(pupilCenterX - pupilRadius)} ${round(pupilCenterY)}`,
+          "Z"
+        ].join(" ");
+
+        return `${outerPath} ${pupilPath}`;
+      };
+
+      const easeOutBack = (
+        progress
+      ) => {
+        const c1 = 1.70158;
+        const c3 = c1 + 1;
+
+        return (
+          1 +
+          c3 *
+            Math.pow(
+              progress - 1,
+              3
+            ) +
+          c1 *
+            Math.pow(
+              progress - 1,
+              2
+            )
+        );
+      };
+
+      const clampUnit = value =>
+        Math.min(
+          1,
+          Math.max(0, value)
+        );
+
+      const createEyeTracker = svg => {
+        const leftEye =
+          svg.querySelector(
+            '[data-k="p1"]'
+          );
+
+        const rightEye =
+          svg.querySelector(
+            '[data-k="p2"]'
+          );
+
+        if (
+          !leftEye ||
+          !rightEye
+        ) {
+          return () => {};
+        }
+
+        const target = {
+          x: LOGO.gaze.x,
+          y: LOGO.gaze.y
+        };
+
+        const current = {
+          x: target.x,
+          y: target.y
+        };
+
+        let frameId = null;
+
+        let blinkStart = -1;
+
+        let nextBlink =
+          performance.now() + 1800;
+
+        const handlePointerMove =
+          event => {
+            const bounds =
+              svg.getBoundingClientRect();
+
+            const scale =
+              bounds.width /
+              (LOGO.width + 20);
+
+            const centerX =
+              bounds.left +
+              (
+                10 +
+                (
+                  LOGO.o1 +
+                  LOGO.o2
+                ) / 2 +
+                LOGO.centerX
+              ) *
+                scale;
+
+            const centerY =
+              bounds.top +
+              (
+                10 -
+                LOGO.top +
+                LOGO.centerY
+              ) *
+                scale;
+
+            const dx =
+              event.clientX -
+              centerX;
+
+            const dy =
+              event.clientY -
+              centerY;
+
+            const distance =
+              Math.hypot(
+                dx,
+                dy
+              ) || 1;
+
+            const amount =
+              Math.min(
+                1,
+                distance /
+                  LOGO.pointerRange
+              );
+
+            target.x =
+              (
+                dx / distance
+              ) *
+              LOGO.gazeLimit *
+              amount;
+
+            target.y =
+              (
+                dy / distance
+              ) *
+              LOGO.gazeLimit *
+              amount;
+          };
+
+        const render = timestamp => {
+          current.x +=
+            (
+              target.x -
+              current.x
+            ) *
+            LOGO.smoothing;
+
+          current.y +=
+            (
+              target.y -
+              current.y
+            ) *
+            LOGO.smoothing;
+
+          if (
+            timestamp >
+            nextBlink
+          ) {
+            blinkStart =
+              timestamp;
+
+            nextBlink =
+              timestamp +
+              2200 +
+              2600 *
+                Math.random();
+          }
+
+          const blinkProgress =
+            blinkStart > 0
+              ? (
+                  timestamp -
+                  blinkStart
+                ) / 160
+              : 2;
+
+          const blinkScale =
+            blinkProgress < 1
+              ? 1 -
+                0.92 *
+                  Math.sin(
+                    Math.PI *
+                    blinkProgress
+                  )
+              : 1;
+
+          const offset =
+            offCentre(
+              current,
+              LOGO.gazeLimit
+            );
+
+          const path =
+            createEyePath({
+              centerX:
+                LOGO.centerX,
+
+              centerY:
+                LOGO.centerY,
+
+              radius:
+                LOGO.eyeRadius,
+
+              pupilRadius:
+                Math.max(
+                  0.01,
+                  LOGO.pupilRadius
+                ),
+
+              offsetX:
+                offset.x,
+
+              offsetY:
+                offset.y,
+
+              pupilYRadius:
+                LOGO.pupilRadius *
+                blinkScale
+            });
+
+          leftEye.setAttribute(
+            "d",
+            path
+          );
+
+          rightEye.setAttribute(
+            "d",
+            path
+          );
+
+          frameId =
+            requestAnimationFrame(
+              render
+            );
+        };
+
+        window.addEventListener(
+          "pointermove",
+          handlePointerMove,
+          { passive: true }
+        );
+
+        frameId =
+          requestAnimationFrame(
+            render
+          );
+
+        return () => {
+          window.removeEventListener(
+            "pointermove",
+            handlePointerMove
+          );
+
+          if (
+            frameId !== null
+          ) {
+            cancelAnimationFrame(
+              frameId
+            );
+          }
+        };
+      };
+
+      const initializeEyeTracking =
+        () => {
+          const logo =
+            document.querySelector(
+              ".brand svg"
+            );
+
+          if (!logo) {
+            return;
+          }
+
+          createEyeTracker(
+            logo
+          );
+        };
+
+      /* =========================================================
+         Command pill
+         ========================================================= */
+
+      const initializeCommand =
+        () => {
+          const button =
+            document.querySelector(
+              "#copy-command"
+            );
+
+          const commandWrap =
+            document.querySelector(
+              "#command-wrap"
+            );
+
+          const copyControl =
+            document.querySelector(
+              "#copy-control"
+            );
+
+          const copyLabel =
+            document.querySelector(
+              "#copy-label"
+            );
+
+          const copyCheck =
+            document.querySelector(
+              "#copy-check"
+            );
+
+          const status =
+            document.querySelector(
+              "#copy-status"
+            );
+
+          if (
+            !button ||
+            !commandWrap ||
+            !copyControl ||
+            !copyLabel ||
+            !copyCheck ||
+            !status
+          ) {
+            return;
+          }
+
+          const baseState = {
+            rotateX: 22,
+            y: 0,
+            scale: 1
+          };
+
+          const hoverState = {
+            rotateX: 12,
+            y: -3,
+            scale: 1.01
+          };
+
+          const tapState = {
+            rotateX: 4,
+            y: 5,
+            scale: 0.985
+          };
+
+          let pointerInside = false;
+          let copied = false;
+
+          let resetTimer = null;
+          let badgeExitTimer = null;
+
+          const animateCommand =
+            values => {
+              runAnimation(
+                button,
+                "command",
+                values,
+                transformTransition(
+                  TRANSITIONS.command
+                )
+              );
+            };
+
+          const setRest = () => {
+            animateCommand(
+              baseState
+            );
+          };
+
+          const setHover = () => {
+            if (
+              state.reducedMotion
+            ) {
+              animateCommand(
+                baseState
+              );
+
+              return;
+            }
+
+            animateCommand(
+              hoverState
+            );
+          };
+
+          const setTap = () => {
+            animateCommand(
+              tapState
+            );
+          };
+
+          button.addEventListener(
+            "pointerenter",
+            () => {
+              pointerInside =
+                true;
+
+              setHover();
+            }
+          );
+
+          button.addEventListener(
+            "pointerleave",
+            () => {
+              pointerInside =
+                false;
+
+              setRest();
+            }
+          );
+
+          button.addEventListener(
+            "pointerdown",
+            () => {
+              setTap();
+            }
+          );
+
+          button.addEventListener(
+            "pointerup",
+            () => {
+              pointerInside
+                ? setHover()
+                : setRest();
+            }
+          );
+
+          button.addEventListener(
+            "pointercancel",
+            () => {
+              pointerInside
+                ? setHover()
+                : setRest();
+            }
+          );
+
+          const animateCopyControl =
+            isCopied => {
+              runAnimation(
+                copyControl,
+                "copy-control",
+                {
+                  backgroundColor:
+                    isCopied
+                      ? COLORS.green
+                      : COLORS.orange,
+
+                  boxShadow:
+                    isCopied
+                      ? `inset 0 1px 0 rgba(255,255,255,0.3), 0 3px 0 ${COLORS.greenDark}`
+                      : `inset 0 1px 0 rgba(255,255,255,0.3), 0 3px 0 ${COLORS.orangeDark}`
+                },
+                {
+                  duration: 0.25
+                }
+              );
+            };
+
+          const animateCopyLabel =
+            isCopied => {
+              const transition =
+                state.reducedMotion
+                  ? { duration: 0.01 }
+                  : TRANSITIONS.copyState;
+
+              runAnimation(
+                copyLabel,
+                "copy-label",
+                {
+                  opacity:
+                    isCopied
+                      ? 0
+                      : 1,
+
+                  scale:
+                    isCopied
+                      ? 0.6
+                      : 1
+                },
+                transition
+              );
+
+              runAnimation(
+                copyCheck,
+                "copy-check",
+                {
+                  opacity:
+                    isCopied
+                      ? 1
+                      : 0,
+
+                  scale:
+                    isCopied
+                      ? 1
+                      : 0.4
+                },
+                transition
+              );
+            };
+
+          const createCopiedBadge =
+            () => {
+              const badge =
+                document.createElement(
+                  "span"
+                );
+
+              badge.className =
+                "copy-badge";
+
+              badge.setAttribute(
+                "aria-hidden",
+                "true"
+              );
+
+              for (
+                let depth = 0;
+                depth < 12;
+                depth += 2
+              ) {
+                const layer =
+                  document.createElement(
+                    "span"
+                  );
+
+                layer.className =
+                  `copy-badge-layer depth-${depth / 2}`;
+
+                badge.appendChild(
+                  layer
+                );
+              }
+
+              const face =
+                document.createElement(
+                  "span"
+                );
+
+              face.className =
+                "copy-badge-face";
+
+              const icon =
+                document.createElementNS(
+                  "http://www.w3.org/2000/svg",
+                  "svg"
+                );
+
+              icon.setAttribute(
+                "viewBox",
+                "0 0 16 16"
+              );
+
+              icon.setAttribute(
+                "fill",
+                "none"
+              );
+
+              icon.setAttribute(
+                "stroke",
+                "currentColor"
+              );
+
+              icon.setAttribute(
+                "stroke-width",
+                "2.4"
+              );
+
+              icon.setAttribute(
+                "stroke-linecap",
+                "round"
+              );
+
+              icon.setAttribute(
+                "stroke-linejoin",
+                "round"
+              );
+
+              const check =
+                document.createElementNS(
+                  "http://www.w3.org/2000/svg",
+                  "path"
+                );
+
+              check.setAttribute(
+                "d",
+                "M3 8.5l3.2 3.2L13 4.8"
+              );
+
+              icon.appendChild(
+                check
+              );
+
+              const text =
+                document.createElement(
+                  "span"
+                );
+
+              text.textContent =
+                "Copied";
+
+              face.appendChild(
+                icon
+              );
+
+              face.appendChild(
+                text
+              );
+
+              badge.appendChild(
+                face
+              );
+
+              commandWrap.appendChild(
+                badge
+              );
+
+              return badge;
+            };
+
+          const animateBadgeEnter =
+            badge => {
+              runAnimation(
+                badge,
+                "badge",
+                {
+                  opacity: 0,
+                  y: 34,
+                  scale: 0.35,
+                  rotateX: 0,
+                  rotateZ: -8
+                },
+                {
+                  duration: 0
+                }
+              );
+
+              const transformTransition =
+                state.reducedMotion
+                  ? { duration: 0 }
+                  : TRANSITIONS.copiedBadge;
+
+              runAnimation(
+                badge,
+                "badge-transform",
+                {
+                  y: -44,
+                  scale: 1,
+                  rotateX: 28,
+                  rotateZ: 4
+                },
+                transformTransition
+              );
+
+              runAnimation(
+                badge,
+                "badge-opacity",
+                {
+                  opacity: 1
+                },
+                {
+                  duration: 0.12
+                }
+              );
+            };
+
+          const animateBadgeExit =
+            badge => {
+              if (!badge) {
+                return;
+              }
+
+              runAnimation(
+                badge,
+                "badge-transform",
+                {
+                  y: -78,
+                  scale: 0.9,
+                  rotateX: 28,
+                  rotateZ: 4
+                },
+                state.reducedMotion
+                  ? { duration: 0 }
+                  : {
+                      type: "spring",
+                      stiffness: 380,
+                      damping: 17,
+                      mass: 0.9
+                    }
+              );
+
+              const exit =
+                runAnimation(
+                  badge,
+                  "badge-opacity",
+                  {
+                    opacity: 0,
+                    filter: "blur(4px)"
+                  },
+                  {
+                    duration: 0.35,
+                    ease: [
+                      0.32,
+                      0.72,
+                      0,
+                      1
+                    ]
+                  }
+                );
+
+              exit.finished
+                .catch(() => {})
+                .finally(() => {
+                  if (
+                    badge.isConnected
+                  ) {
+                    badge.remove();
+                  }
+                });
+            };
+
+          const showCopied =
+            () => {
+              copied = true;
+
+              animateCopyControl(
+                true
+              );
+
+              animateCopyLabel(
+                true
+              );
+
+              status.textContent =
+                "Copied";
+
+              const badge =
+                createCopiedBadge();
+
+              animateBadgeEnter(
+                badge
+              );
+
+              window.clearTimeout(
+                resetTimer
+              );
+
+              window.clearTimeout(
+                badgeExitTimer
+              );
+
+              resetTimer =
+                window.setTimeout(
+                  () => {
+                    copied = false;
+
+                    animateCopyControl(
+                      false
+                    );
+
+                    animateCopyLabel(
+                      false
+                    );
+
+                    status.textContent =
+                      "";
+
+                    badgeExitTimer =
+                      window.setTimeout(
+                        () => {
+                          animateBadgeExit(
+                            badge
+                          );
+                        },
+                        0
+                      );
+                  },
+                  1700
+                );
+            };
+
+          button.addEventListener(
+            "click",
+            () => {
+              navigator.clipboard
+                ?.writeText(COMMAND)
+                .catch(() => {});
+
+              track(
+                "mcp_command_copied",
+                {
+                  where: "landing"
+                }
+              );
+
+              showCopied();
+            }
+          );
+
+          void copied;
+        };
+
+      /* =========================================================
+         Shared Press / Candy buttons
+         ========================================================= */
+
+      const initializePressButtons =
+        () => {
+          const buttons =
+            document.querySelectorAll(
+              "[data-press]"
+            );
+
+          buttons.forEach(
+            button => {
+              const back =
+                button.querySelector(
+                  ".press-back"
+                );
+
+              const front =
+                button.querySelector(
+                  ".press-front"
+                );
+
+              if (
+                !back ||
+                !front
+              ) {
+                return;
+              }
+
+              const restFront = {
+                y: 0,
+                scaleX: 1,
+                scaleY: 1
+              };
+
+              const hoverFront = {
+                y: -4,
+                scaleX: 1,
+                scaleY: 1
+              };
+
+              const tapFront = {
+                y: 6,
+                scaleX: 1.02,
+                scaleY: 0.97
+              };
+
+              const restShadow =
+                "0 12px 20px -10px rgba(0,0,0,0.22)";
+
+              const hoverShadow =
+                "0 20px 30px -12px rgba(0,0,0,0.26)";
+
+              const tapShadow =
+                "0 4px 8px -4px rgba(0,0,0,0.18)";
+
+              const animateFront =
+                values => {
+                  runAnimation(
+                    front,
+                    "front",
+                    values,
+                    transformTransition(
+                      TRANSITIONS.press
+                    )
+                  );
+                };
+
+              const animateShadow =
+                shadow => {
+                  runAnimation(
+                    back,
+                    "shadow",
+                    {
+                      boxShadow:
+                        shadow
+                    },
+                    state.reducedMotion
+                      ? {
+                          duration: 0.01
+                        }
+                      : TRANSITIONS.press
+                  );
+                };
+
+              const rest = () => {
+                animateFront(
+                  restFront
+                );
+
+                animateShadow(
+                  restShadow
+                );
+              };
+
+              const hover = () => {
+                animateFront(
+                  hoverFront
+                );
+
+                animateShadow(
+                  hoverShadow
+                );
+              };
+
+              const tap = () => {
+                animateFront(
+                  tapFront
+                );
+
+                animateShadow(
+                  tapShadow
+                );
+              };
+
+              button.addEventListener(
+                "pointerenter",
+                hover
+              );
+
+              button.addEventListener(
+                "pointerleave",
+                rest
+              );
+
+              button.addEventListener(
+                "pointerdown",
+                tap
+              );
+
+              button.addEventListener(
+                "pointerup",
+                hover
+              );
+
+              button.addEventListener(
+                "pointercancel",
+                rest
+              );
+
+              button.addEventListener(
+                "dragstart",
+                event =>
+                  event.preventDefault()
+              );
+
+              rest();
+            }
+          );
+        };
+
+      /* =========================================================
+         Initialization
+         ========================================================= */
+
+      const initialize =
+        () => {
+          initializeEyeTracking();
+          initializeCommand();
+          initializePressButtons();
+        };
+
+      if (
+        document.readyState ===
+        "loading"
+      ) {
+        document.addEventListener(
+          "DOMContentLoaded",
+          initialize,
+          { once: true }
+        );
+      } else {
+        initialize();
+      }
+    })();
+  </script>
+</body>
+</html>

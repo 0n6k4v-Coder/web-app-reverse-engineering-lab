@@ -1107,7 +1107,7 @@
     .pricing-price-char {
       position: relative;
       display: inline-flex;
-      overflow: hidden;
+      overflow: visible;
       height: 1em;
       min-width: .34em;
       align-items: center;
@@ -1352,45 +1352,83 @@
 
     .pricing-toy {
       position: absolute;
-      display: inline-block;
+      cursor: default;
       transform-style: preserve-3d;
-      animation: pricing-toy-bob var(--toy-bob,5s) ease-in-out infinite;
+      user-select: none;
+      touch-action: none;
     }
 
-    .pricing-toy--one { top: 0; right: 6px; --toy-bob: 5.2s; }
-    .pricing-toy--two { top: 42px; right: 62px; --toy-bob: 6.1s; }
-    .pricing-toy--three { top: 80px; right: 0; --toy-bob: 4.6s; }
+    .pricing-toy--one { top: 0; right: 6px; --toy-bob: 5.2s; --toy-rotate: 6deg; --toy-face:#FF6A2B; --toy-side:#C43E0C; }
+    .pricing-toy--two { top: 42px; right: 62px; --toy-bob: 6.1s; --toy-rotate: -5deg; --toy-face:#9A5BF5; --toy-side:#6B37C4; }
+    .pricing-toy--three { top: 80px; right: 0; --toy-bob: 4.6s; --toy-rotate: 4deg; --toy-face:#3ECFAF; --toy-side:#21A088; }
 
-    .pricing-toy-inner { transform-style: preserve-3d; }
+    .pricing-toy-inner {
+      position: relative;
+      display: inline-block;
+      transform-style: preserve-3d;
+      transform: rotateX(40deg) rotateZ(var(--toy-rotate, 0deg));
+    }
+
+    .pricing-toy-bob {
+      transform-style: preserve-3d;
+      animation: pricing-toy-bob var(--toy-bob, 5s) ease-in-out infinite;
+    }
+
+    .pricing-toy-stack {
+      position: relative;
+      display: inline-block;
+      flex-shrink: 0;
+      transform-style: preserve-3d;
+    }
+
+    .pricing-toy-layer {
+      position: absolute;
+      inset: 0;
+      border-radius: 9999px;
+      background: var(--toy-side);
+    }
+
+    .pricing-toy-layer:nth-child(1) {
+      transform: translateZ(0px);
+      box-shadow: 0 14px 20px -10px rgba(0,0,0,.35);
+    }
+    .pricing-toy-layer:nth-child(2) { transform: translateZ(2px); }
+    .pricing-toy-layer:nth-child(3) { transform: translateZ(4px); }
+    .pricing-toy-layer:nth-child(4) { transform: translateZ(6px); }
+    .pricing-toy-layer:nth-child(5) { transform: translateZ(8px); }
+    .pricing-toy-layer:nth-child(6) { transform: translateZ(10px); }
+    .pricing-toy-layer:nth-child(7) { transform: translateZ(12px); }
+
     .pricing-toy-label {
       position: relative;
       display: flex;
       align-items: center;
+      flex-shrink: 0;
       height: 32px;
       gap: 6px;
       padding: 0 14px;
-      border-radius: 9999px;
       color: #fff;
+      font-family: var(--font-sans);
       font-size: 12.5px;
       font-weight: 600;
-      line-height: 1;
+      line-height: 18.75px;
+      letter-spacing: normal;
       white-space: nowrap;
-      background: linear-gradient(180deg, rgba(255,255,255,.16) 0%, rgba(255,255,255,0) 60%), var(--toy-face);
+      text-rendering: optimizeLegibility;
+      -webkit-font-smoothing: antialiased;
+      border-radius: 9999px;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.16) 0%, rgba(255,255,255,0) 60%),
+        var(--toy-face);
       box-shadow: inset 0 1px 0 rgba(255,255,255,.28);
-      transform: translateZ(14px) rotateX(40deg) rotateZ(var(--toy-rotate,0deg));
-      transform-style: preserve-3d;
+      transform: translateZ(14px);
     }
 
-    .pricing-toy-label::before,
-    .pricing-toy-label::after { content: ""; position: absolute; inset: 0; border-radius: inherit; background: var(--toy-side); z-index: -1; transform-style: preserve-3d; }
-    .pricing-toy-label::before { transform: translateZ(2px); }
-    .pricing-toy-label::after { box-shadow: 0 14px 20px -10px rgba(0,0,0,.35); transform: translateZ(12px); }
-
-    .pricing-toy--one { --toy-face:#FF6A2B; --toy-side:#C43E0C; --toy-rotate:6deg; }
-    .pricing-toy--two { --toy-face:#9A5BF5; --toy-side:#6B37C4; --toy-rotate:-5deg; }
-    .pricing-toy--three { --toy-face:#3ECFAF; --toy-side:#21A088; --toy-rotate:4deg; }
-
-    .pricing-toy-label svg { width: 13px; height: 13px; flex: 0 0 13px; }
+    .pricing-toy-label svg {
+      width: 13px;
+      height: 13px;
+      flex-shrink: 0;
+    }
 
     @keyframes pricing-toy-bob {
       0%,100% { transform: translateY(0); }
@@ -1783,10 +1821,55 @@
         </article>
 
         <article class="pricing-card" data-plan="unlimited">
-          <div class="pricing-unlimited-toys" aria-hidden="true">
-            <span class="pricing-toy pricing-toy--one"><span class="pricing-toy-label"><svg viewBox="0 0 16 16" fill="currentColor"><path d="M9.5 1L3 9h4l-.5 6L13 7H9z" fill-rule="evenodd"></path></svg>∞ credits</span></span>
-            <span class="pricing-toy pricing-toy--two"><span class="pricing-toy-label"><svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 1l1.6 4.4L14 7l-4.4 1.6L8 13l-1.6-4.4L2 7l4.4-1.6zM13 11l.7 1.8 1.8.7-1.8.7z" fill-rule="evenodd"></path></svg>Unlimited</span></span>
-            <span class="pricing-toy pricing-toy--three"><span class="pricing-toy-label"><svg viewBox="0 0 16 16" fill="currentColor"><path d="M7.25 1.5h1.5v13h-1.5zM4 4.5h1.5v7H4zM10.5 3.5H12v9h-1.5zM1 6.5h1.5v3H1zM13.5 6h1.5v4h-1.5z" fill-rule="evenodd"></path></svg>AI narrator</span></span>
+          <div class="pricing-unlimited-toys" aria-hidden="true" style="perspective:1000px">
+            <div class="pricing-toy pricing-toy--one">
+              <div class="pricing-toy-inner">
+                <div class="pricing-toy-bob">
+                  <span class="pricing-toy-stack">
+                    <span class="pricing-toy-layer" aria-hidden="true"></span>
+                    <span class="pricing-toy-layer" aria-hidden="true"></span>
+                    <span class="pricing-toy-layer" aria-hidden="true"></span>
+                    <span class="pricing-toy-layer" aria-hidden="true"></span>
+                    <span class="pricing-toy-layer" aria-hidden="true"></span>
+                    <span class="pricing-toy-layer" aria-hidden="true"></span>
+                    <span class="pricing-toy-layer" aria-hidden="true"></span>
+                    <span class="pricing-toy-label"><svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M9.5 1L3 9h4l-.5 6L13 7H9z" fill-rule="evenodd"></path></svg>∞ credits</span>
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div class="pricing-toy pricing-toy--two">
+              <div class="pricing-toy-inner">
+                <div class="pricing-toy-bob">
+                  <span class="pricing-toy-stack">
+                    <span class="pricing-toy-layer" aria-hidden="true"></span>
+                    <span class="pricing-toy-layer" aria-hidden="true"></span>
+                    <span class="pricing-toy-layer" aria-hidden="true"></span>
+                    <span class="pricing-toy-layer" aria-hidden="true"></span>
+                    <span class="pricing-toy-layer" aria-hidden="true"></span>
+                    <span class="pricing-toy-layer" aria-hidden="true"></span>
+                    <span class="pricing-toy-layer" aria-hidden="true"></span>
+                    <span class="pricing-toy-label"><svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 1l1.6 4.4L14 7l-4.4 1.6L8 13l-1.6-4.4L2 7l4.4-1.6zM13 11l.7 1.8 1.8.7-1.8.7L13 16l-.7-1.8-1.8-.7 1.8-.7z" fill-rule="evenodd"></path></svg>Unlimited</span>
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div class="pricing-toy pricing-toy--three">
+              <div class="pricing-toy-inner">
+                <div class="pricing-toy-bob">
+                  <span class="pricing-toy-stack">
+                    <span class="pricing-toy-layer" aria-hidden="true"></span>
+                    <span class="pricing-toy-layer" aria-hidden="true"></span>
+                    <span class="pricing-toy-layer" aria-hidden="true"></span>
+                    <span class="pricing-toy-layer" aria-hidden="true"></span>
+                    <span class="pricing-toy-layer" aria-hidden="true"></span>
+                    <span class="pricing-toy-layer" aria-hidden="true"></span>
+                    <span class="pricing-toy-layer" aria-hidden="true"></span>
+                    <span class="pricing-toy-label"><svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M7.25 1.5h1.5v13h-1.5zM4 4.5h1.5v7H4zM10.5 3.5H12v9h-1.5zM1 6.5h1.5v3H1zM13.5 6h1.5v4h-1.5z" fill-rule="evenodd"></path></svg>AI narrator</span>
+                  </span>
+                </div>
+              </div>
+            </div>
           </div>
 
           <div class="pricing-card-top">

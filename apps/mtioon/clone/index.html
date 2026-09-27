@@ -2510,8 +2510,9 @@
 
   .kit-command-stack {
     position: relative;
-    display: inline-block;
-    flex-shrink: 0;
+    display: block;
+    width: 100%;
+    min-width: 0;
     transform-style: preserve-3d;
   }
 
@@ -2552,19 +2553,22 @@
   }
 
   .kit-command-code {
-    flex: 1 1 auto;
+    flex: 1 1 0%;
     min-width: 0;
     margin: 0;
-    padding: 0;
+    padding: 0 24px 0 0;
     color: rgba(255,255,255,.85);
     font-family: ui-monospace, "SF Mono", Menlo, Monaco, Consolas, "Liberation Mono", monospace;
     font-size: 12.5px;
     font-weight: 400;
     line-height: 20.3125px;
     white-space: nowrap;
-    overflow: hidden;
+    overflow-x: auto;
+    scrollbar-width: none;
     text-overflow: clip;
   }
+
+  .kit-command-code::-webkit-scrollbar { display: none; }
 
   .kit-command-prefix {
     margin-right: 8px;
@@ -2629,6 +2633,7 @@
   }
 
   .kit-showcase-group { margin-top: 48px; }
+  .kit-showcase-group.is-visible { transition-delay: .1s; }
 
   .kit-showcase-card {
     width: 100%;
@@ -2654,7 +2659,6 @@
     width: 1072px;
     height: 440px;
     transform-origin: top left;
-    transform-style: preserve-3d;
   }
 
   .kit-showcase-shadow {
@@ -2663,7 +2667,7 @@
     top: 356px;
     width: 190px;
     height: 22px;
-    transform: translateX(-50%) scaleX(1.00041);
+    transform: translateX(-50%);
     background: radial-gradient(closest-side, rgba(0,0,0,.16), transparent);
   }
 
@@ -2678,15 +2682,16 @@
 
   .kit-folder-back { z-index: 1; }
   .kit-folder-front { z-index: 20; }
-  .kit-folder svg { display: block; width: 200px; height: 156px; overflow: visible; }
+  .kit-folder > svg:not(.kit-eyes) { display: block; width: 200px; height: 156px; overflow: visible; }
 
   .kit-conveyor {
     position: absolute;
     left: 0;
     top: 0;
     z-index: 2;
-    width: 1700px;
-    height: 236px;
+    width: 0;
+    height: 0;
+    transform-origin: 0 0;
     transform-style: preserve-3d;
     transform: translate3d(262px,322px,0) rotateX(48deg) rotateZ(-16deg);
   }
@@ -2699,7 +2704,6 @@
     height: 236px;
     border-radius: 44px;
     background: #e3e3e3;
-    transform-style: preserve-3d;
   }
 
   .kit-conveyor-layer.depth-0 { transform: translateZ(0); box-shadow: 0 30px 60px -24px rgba(0,0,0,.22); }
@@ -2793,6 +2797,7 @@
   .kit-candy-serif {
     font-family: "Instrument Serif", Georgia, serif;
     font-size: 18px;
+    font-weight: 600;
     line-height: 1;
   }
 
@@ -2828,27 +2833,33 @@
     background: #fff;
   }
 
-  .kit-candy-thumb::before {
-    content: "";
+  .kit-candy-thumb-top,
+  .kit-candy-thumb-mid,
+  .kit-candy-thumb-bottom {
     position: absolute;
     left: 4px;
+    border-radius: 9999px;
+  }
+
+  .kit-candy-thumb-top {
     top: 4px;
     width: 14px;
     height: 4px;
-    border-radius: 9999px;
     background: var(--thumb-ink);
   }
 
-  .kit-candy-thumb::after {
-    content: "";
-    position: absolute;
-    left: 4px;
-    bottom: 4px;
+  .kit-candy-thumb-mid {
+    top: 11px;
+    width: 22px;
+    height: 2.5px;
+    background: rgba(0,0,0,.15);
+  }
+
+  .kit-candy-thumb-bottom {
+    top: 15.5px;
     width: 16px;
     height: 2.5px;
-    border-radius: 9999px;
     background: rgba(0,0,0,.1);
-    box-shadow: 0 -4.5px 0 rgba(0,0,0,.15);
   }
 
   .kit-eyes {
@@ -2857,10 +2868,70 @@
     top: 64%;
     z-index: 21;
     width: 82px;
-    height: auto;
+    height: 41px;
     transform: translate(-50%,-50%);
     overflow: visible;
     pointer-events: none;
+  }
+
+  .kit-scene-caption {
+    position: absolute;
+    left: 20px;
+    top: 382px;
+    width: 260px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    color: #171717;
+    pointer-events: none;
+  }
+
+  .kit-scene-app {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+    font-size: 13.5px;
+    font-weight: 600;
+    line-height: 1;
+  }
+
+  .kit-scene-spinner {
+    position: relative;
+    display: inline-block;
+    width: 13px;
+    height: 13px;
+    flex: 0 0 13px;
+    transform-origin: 6.5px 6.5px;
+    animation: kit-scene-spinner-rotate 1s linear infinite;
+  }
+
+  .kit-scene-spinner i {
+    position: absolute;
+    left: 5px;
+    top: 1px;
+    width: 1.5px;
+    height: 3.796875px;
+    border-radius: 999px;
+    background: #8a8a8a;
+    transform-origin: 0.75px 6.5px;
+  }
+
+  @keyframes kit-scene-spinner-rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  .kit-scene-file {
+    position: relative;
+    width: 100%;
+    height: 16px;
+    text-align: center;
+    color: #8A8A8A;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-size: 11.5px;
+    line-height: 16px;
   }
 
   .kit-showcase-caption { padding: 8px 24px 28px; }
@@ -2891,16 +2962,10 @@
     .kit-showcase-caption { padding-left: 32px; padding-right: 32px; }
   }
 
-  @media (max-width: 767px) {
-    .kit-section { padding-top: 100px; }
-  }
-
   @media (max-width: 639px) {
     .kit-section { padding-left: 20px; padding-right: 20px; }
     .kit-command-face { padding-left: 16px; }
     .kit-copy-control { padding-left: 14px; padding-right: 14px; }
-    .kit-command-code { overflow-x: auto; scrollbar-width: none; }
-    .kit-command-code::-webkit-scrollbar { display: none; }
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -3077,18 +3142,18 @@
                   <path d="M4 62a12 12 0 0 1 12-12h168a12 12 0 0 1 12 12v74a14 14 0 0 1-14 14H18a14 14 0 0 1-14-14z" fill="url(#kit-folder-front-gradient)"></path>
                   <path d="M5.5 62a10.5 10.5 0 0 1 10.5-10.5h168a10.5 10.5 0 0 1 10.5 10.5" fill="none" stroke="rgba(255,255,255,0.55)" stroke-width="1.2"></path>
                 </svg>
-              </div>
 
-              <svg viewBox="0 0 320 160" class="kit-eyes" aria-hidden="true">
-                <g transform="translate(80 80)">
-                  <circle r="73" fill="#171717"></circle>
-                  <g data-kit-lid="0"><circle data-kit-eye-white="0" r="34" fill="#F5F5F5"></circle></g>
-                </g>
-                <g transform="translate(240 80)">
-                  <circle r="73" fill="#171717"></circle>
-                  <g data-kit-lid="1"><circle data-kit-eye-white="1" r="34" fill="#F5F5F5"></circle></g>
-                </g>
-              </svg>
+                <svg viewBox="0 0 320 160" class="kit-eyes" aria-hidden="true">
+                  <g transform="translate(80 80)">
+                    <circle r="73" fill="#171717"></circle>
+                    <g data-kit-lid="0"><circle data-kit-eye-white="0" r="34" fill="#F5F5F5"></circle></g>
+                  </g>
+                  <g transform="translate(240 80)">
+                    <circle r="73" fill="#171717"></circle>
+                    <g data-kit-lid="1"><circle data-kit-eye-white="1" r="34" fill="#F5F5F5"></circle></g>
+                  </g>
+                </svg>
+              </div>
             </div>
           </div>
 
@@ -3968,13 +4033,13 @@
         ensureLandingFont("Inter", 500, 56)
       ]);
 
-      const clamp01 = value => Math.max(0, Math.min(1, value));
+      const landingClamp01 = value => Math.max(0, Math.min(1, value));
       const smoothStep = value => {
-        const t = clamp01(value);
+        const t = landingClamp01(value);
         return t * t * (3 - 2 * t);
       };
       const easeOutBack = value => {
-        const t = clamp01(value) - 1;
+        const t = landingClamp01(value) - 1;
         const c1 = 1.70158;
         const c3 = c1 + 1;
         return 1 + c3 * t * t * t + c1 * t * t;
@@ -3991,7 +4056,7 @@
         );
       };
 
-      const landingLayerProgress = (time, start, duration) => clamp01((time - start) / duration);
+      const landingLayerProgress = (time, start, duration) => landingClamp01((time - start) / duration);
 
       const drawLandingText = (context, text, x, y, size, weight, family, fill, maxWidth) => {
         context.font = `${weight} ${size}px "${family}", sans-serif`;
@@ -4909,7 +4974,7 @@
       };
 
       const insidePresetSampleKeyframes = (track, progress) => {
-        const eased = (INSIDE_PRESET_EASES[track.ease] || INSIDE_PRESET_EASES.linear)(clamp01(progress));
+        const eased = (INSIDE_PRESET_EASES[track.ease] || INSIDE_PRESET_EASES.linear)(landingClamp01(progress));
         const keyframes = track.kf;
         if (keyframes.length === 1) return keyframes[0][1];
 
@@ -5041,7 +5106,7 @@
         context.save();
         context.translate(offsetX, offsetY);
         context.transform(transform.a, transform.b, transform.c, transform.d, 0, 0);
-        context.globalAlpha = clamp01(sampledState.opacity);
+        context.globalAlpha = landingClamp01(sampledState.opacity);
         if (sampledState.blur > 0) {
           context.filter = `blur(${(sampledState.blur * ref * scale * dpr).toFixed(2)}px)`;
         }
@@ -5112,7 +5177,7 @@
         context.save();
         context.translate(layer.x + sampledState.dx * ref, layer.y + sampledState.dy * ref);
         context.transform(transform.a, transform.b, transform.c, transform.d, 0, 0);
-        context.globalAlpha = clamp01(sampledState.opacity);
+        context.globalAlpha = landingClamp01(sampledState.opacity);
         context.filter = sampledState.blur > 0
           ? `blur(${(sampledState.blur * ref * scale * dpr).toFixed(2)}px)`
           : "none";
@@ -5815,7 +5880,7 @@
         let blinkStart = -1;
         let nextBlink = performance.now() + 1500;
 
-        const smooth = value => INSIDE_PRESET_EASES.smooth(clamp01(value));
+        const smooth = value => INSIDE_PRESET_EASES.smooth(landingClamp01(value));
         const randomBetween = (min, max) => min + Math.random() * (max - min);
 
         const randomPoint = previous => {
@@ -6070,7 +6135,7 @@
         );
         context.rotate(((layer.rotation || 0) + stateValue.rotate) * Math.PI / 180);
         context.scale(stateValue.sx, stateValue.sy);
-        context.globalAlpha = clamp01(stateValue.opacity);
+        context.globalAlpha = landingClamp01(stateValue.opacity);
 
         if (stateValue.blur > 0) {
           context.filter = `blur(${(stateValue.blur * ref).toFixed(2)}px)`;
@@ -6105,7 +6170,7 @@
         );
         context.rotate(((layer.rotation || 0) + stateValue.rotate) * Math.PI / 180);
         context.scale(stateValue.sx, stateValue.sy);
-        context.globalAlpha = clamp01(stateValue.opacity);
+        context.globalAlpha = landingClamp01(stateValue.opacity);
         context.shadowColor = layer.shadowColor || "transparent";
         context.shadowBlur = layer.shadowBlur || 0;
         context.shadowOffsetX = layer.shadowOffsetX || 0;
@@ -6348,6 +6413,7 @@
          Your repo
          ========================================================= */
 
+      /* Production #kit motion ported from mtioon.com/_next/static/chunks/26re73zp7qn2v.js */
       const initializeKit = () => {
         const section = document.querySelector("#kit");
         if (!section) return;
@@ -6362,13 +6428,47 @@
         const showcase = section.querySelector("[data-kit-showcase]");
         const visual = section.querySelector("[data-kit-visual]");
         const scene = section.querySelector("[data-kit-scene]");
+        const shadow = section.querySelector(".kit-showcase-shadow");
+        const folderBack = section.querySelector(".kit-folder-back");
+        const folderFront = section.querySelector(".kit-folder-front");
+        const conveyor = section.querySelector("[data-kit-conveyor]");
+        const grid = section.querySelector(".kit-conveyor-grid");
         const candies = [...section.querySelectorAll("[data-kit-candy]")];
+        const eyesSvg = section.querySelector(".kit-eyes");
         const whites = [...section.querySelectorAll("[data-kit-eye-white]")];
         const lids = [...section.querySelectorAll("[data-kit-lid]")];
 
-        if (!button || !copyControl || !copyLabel || !copyCheck || !status || !viewport || !showcase || !visual || !scene || candies.length !== 12) return;
+        if (!button || !copyControl || !copyLabel || !copyCheck || !status || !viewport || !showcase || !visual || !scene || !shadow || !folderBack || !folderFront || !conveyor || !grid || !eyesSvg || candies.length !== 12) return;
 
         const KIT_COMMAND = "claude mcp add --scope user --transport http mtioon https://mtioon.com/api/mcp";
+
+        const P = 150;
+        const X = 282;
+        const U = 190;
+        const H = 118;
+        const FOLDER_X = 262;
+        const FOLDER_Y = 322;
+        const LANES = [0, -70, 70];
+        const SIN = Math.sin(-16 * Math.PI / 180);
+        const COS = Math.cos(-16 * Math.PI / 180);
+        const COS48 = Math.cos(48 * Math.PI / 180);
+
+        const springValue = (time, duration, damping) => {
+          if (time <= 0) return 0;
+          const omega = 2 * Math.PI / duration;
+          const r = omega * Math.sqrt(1 - damping * damping);
+          return 1 - Math.exp(-damping * omega * time) * (
+            Math.cos(r * time) + damping * omega / r * Math.sin(r * time)
+          );
+        };
+        const clamp01 = value => Math.max(0, Math.min(1, value));
+        const offCentre = (point, maxX, maxY) => {
+          const nx = point.x / maxX;
+          const ny = point.y / maxY;
+          const length = Math.hypot(nx, ny);
+          if (length <= 1) return point;
+          return { x: point.x / length, y: point.y / length };
+        };
 
         const HUES = {
           blue: ["#3A8DF7", "#1F63CC"],
@@ -6384,19 +6484,21 @@
         };
 
         const CHIPS = [
-          { hue: "blue", lead: "doc", label: "README.md", mono: true },
-          { hue: "purple", lead: "display", label: "Sunghyun Sans", display: true },
-          { face: "#FF5A1F", side: "#C23E0C", lead: "dot" },
-          { hue: "black", lead: "logo", label: "" },
-          { hue: "green", lead: "quote", label: "Say it. Watch it move." },
-          { hue: "pink", lead: "thumb", ink: "#FF5A1F", label: "hero.png", mono: true },
-          { hue: "orange", lead: "serif", label: "Instrument Serif", serif: true },
-          { face: "#2A8CFF", side: "#1A62C2", lead: "dot" },
-          { hue: "mint", lead: "corner", label: "radius 28", mono: true },
-          { hue: "salmon", lead: "quote", label: "Every frame stays editable." },
-          { hue: "red", lead: "thumb", ink: "#2A8CFF", label: "editor.png", mono: true },
-          { face: "#F5C518", side: "#C29505", ink: "#171717", lead: "dot" }
+          { hue: "blue", lead: "doc", label: "README.md", mono: true, file: "README.md" },
+          { hue: "purple", lead: "display", label: "Sunghyun Sans", display: true, file: "app/globals.css" },
+          { face: "#FF5A1F", side: "#C23E0C", lead: "dot", file: "app/globals.css" },
+          { hue: "black", lead: "logo", label: "", file: "public/logo.svg" },
+          { hue: "green", lead: "quote", label: "Say it. Watch it move.", file: "app/page.js" },
+          { hue: "pink", lead: "thumb", ink: "#FF5A1F", label: "hero.png", mono: true, file: "public/screens/hero.png" },
+          { hue: "orange", lead: "serif", label: "Instrument Serif", serif: true, file: "app/layout.js" },
+          { face: "#2A8CFF", side: "#1A62C2", lead: "dot", file: "app/theme.css" },
+          { hue: "mint", lead: "corner", label: "radius 28", mono: true, file: "components/ui/Card.js" },
+          { hue: "salmon", lead: "quote", label: "Every frame stays editable.", file: "README.md" },
+          { hue: "red", lead: "thumb", ink: "#2A8CFF", label: "editor.png", mono: true, file: "public/screens/editor.png" },
+          { face: "#F5C518", side: "#C29505", ink: "#171717", lead: "dot", file: "app/globals.css" }
         ];
+        const R = CHIPS.length;
+        const C = 1.1 * R;
 
         const createSvg = (viewBox, markup, className) => {
           const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
@@ -6433,23 +6535,21 @@
           const thumb = document.createElement("span");
           thumb.className = "kit-candy-thumb";
           thumb.style.setProperty("--thumb-ink", ink);
+          thumb.innerHTML = `
+            <span class="kit-candy-thumb-top"></span>
+            <span class="kit-candy-thumb-mid"></span>
+            <span class="kit-candy-thumb-bottom"></span>
+          `;
           return thumb;
         };
 
         const createLogo = () => {
           const source = document.querySelector(".brand svg");
-          if (!source) {
-            const fallback = document.createElement("span");
-            fallback.textContent = "mtioon";
-            fallback.style.cssText = "color:#fff;font-family:Inter,sans-serif;font-size:16px;font-weight:900;line-height:1";
-            return fallback;
-          }
+          if (!source) return document.createTextNode("mtioon");
           const logo = source.cloneNode(true);
-          logo.classList.remove("brand");
           logo.classList.add("kit-candy-logo");
           logo.removeAttribute("role");
           logo.removeAttribute("aria-label");
-          logo.setAttribute("width", "82");
           logo.setAttribute("height", "19");
           logo.querySelectorAll("[fill]").forEach(node => node.setAttribute("fill", "#FFFFFF"));
           return logo;
@@ -6459,20 +6559,28 @@
           const chip = CHIPS[index];
           const [faceColor, sideColor] = chip.face ? [chip.face, chip.side] : HUES[chip.hue];
           root.innerHTML = "";
-          root.style.color = chip.ink || "#fff";
+          root.className = "kit-candy";
+          root.style.position = "absolute";
+          root.style.left = "0";
+          root.style.top = "0";
+          root.style.transformOrigin = "0 0";
+          root.style.transformStyle = "preserve-3d";
+          root.style.opacity = "0";
+          root.style.color = chip.ink || "#FFFFFF";
 
           for (let z = 0; z < 14; z += 2) {
             const layer = document.createElement("span");
             layer.className = `kit-candy-layer depth-${z / 2}`;
-            layer.style.background = sideColor;
             layer.style.transform = `translateZ(${z}px)`;
-            if (z === 0) layer.style.boxShadow = "0 10px 22px -8px rgba(0,0,0,.3)";
+            layer.style.background = sideColor;
+            if (z === 0) layer.style.boxShadow = "0 10px 22px -8px rgba(0,0,0,0.3)";
             root.appendChild(layer);
           }
 
           const face = document.createElement("span");
-          face.className = `kit-candy-face${chip.label ? "" : " no-label"}`;
-          face.style.background = `linear-gradient(180deg, rgba(255,255,255,.16) 0%, rgba(255,255,255,0) 60%), ${faceColor}`;
+          face.className = "kit-candy-face" + (chip.label ? "" : " no-label");
+          face.style.background = `linear-gradient(180deg, rgba(255,255,255,0.16) 0%, rgba(255,255,255,0) 60%), ${faceColor}`;
+          face.style.transform = "translateZ(14px)";
 
           let lead = null;
           if (chip.lead === "dot") {
@@ -6494,21 +6602,48 @@
           } else {
             lead = createGlyph(chip.lead);
           }
-
           if (lead) face.appendChild(lead);
 
           if (chip.label) {
             const label = document.createElement("span");
             label.className = chip.mono ? "kit-candy-label kit-candy-mono" : chip.serif ? "kit-candy-label kit-candy-serif" : "kit-candy-label kit-candy-ui";
             label.textContent = chip.label;
+            if (chip.display) {
+              label.style.fontFamily = "var(--font-display)";
+              label.style.fontWeight = "900";
+            } else if (chip.serif) {
+              label.style.fontFamily = "'Instrument Serif', Georgia, serif";
+              label.style.fontSize = "18px";
+            }
             face.appendChild(label);
           }
 
-          face.style.transform = "translateZ(14px)";
           root.appendChild(face);
         };
 
         candies.forEach(buildCandy);
+
+        const caption = document.createElement("div");
+        caption.className = "kit-scene-caption";
+        caption.innerHTML = `
+          <div class="kit-scene-app"><span class="kit-scene-spinner" aria-hidden="true"></span><span>your-app</span></div>
+          <div class="kit-scene-file" aria-live="polite"></div>
+        `;
+        scene.appendChild(caption);
+        const captionFile = caption.querySelector(".kit-scene-file");
+        const spinner = caption.querySelector(".kit-scene-spinner");
+        for (let i = 0; i < 8; i += 1) {
+          const tick = document.createElement("i");
+          tick.style.transform = `rotate(${45 * i}deg)`;
+          tick.style.opacity = String(0.2 + 0.8 * (i + 1) / 8);
+          spinner.appendChild(tick);
+        }
+
+        const setCaption = index => {
+          if (!captionFile) return;
+          captionFile.textContent = CHIPS[index]?.file || CHIPS[0].file;
+        };
+        setCaption(0);
 
         const baseState = { rotateX: 22, y: 0, scale: 1 };
         const hoverState = { rotateX: 12, y: -3, scale: 1.01 };
@@ -6549,18 +6684,15 @@
 
         const showCopiedBadge = () => {
           if (copiedBadge?.isConnected) copiedBadge.remove();
-
           const badge = document.createElement("span");
           badge.className = "kit-copied-badge";
           badge.setAttribute("aria-hidden", "true");
           badge.textContent = "Copied";
           viewport.appendChild(badge);
           copiedBadge = badge;
-
           runAnimation(badge, "kit-badge-base", { opacity: 0, y: 34, scale: .35, rotateX: 0, rotateZ: -8 }, { duration: 0 });
           runAnimation(badge, "kit-badge-transform", { y: -44, scale: 1, rotateX: 28, rotateZ: 4 }, state.reducedMotion ? { duration: 0 } : TRANSITIONS.copiedBadge);
           runAnimation(badge, "kit-badge-opacity", { opacity: 1 }, { duration: .12 });
-
           window.clearTimeout(badgeExitTimer);
           badgeExitTimer = window.setTimeout(() => {
             if (copiedBadge !== badge) return;
@@ -6584,13 +6716,11 @@
             textarea.select();
             try { document.execCommand("copy"); } finally { textarea.remove(); }
           }
-
           animateCopyControl(true);
           animateCopyState(true);
           status.textContent = "Copied";
           showCopiedBadge();
           track("mcp_command_copied", { where: "kit" });
-
           window.clearTimeout(resetTimer);
           resetTimer = window.setTimeout(() => {
             animateCopyControl(false);
@@ -6600,7 +6730,6 @@
         });
 
         const reveal = () => riseGroups.forEach(group => group.classList.add("is-visible"));
-
         if (state.reducedMotion) {
           reveal();
         } else if ("IntersectionObserver" in window) {
@@ -6617,104 +6746,138 @@
         const updateScene = () => {
           const width = visual.clientWidth || 1072;
           const scale = Math.max(.68, Math.min(1, width / 1072));
-          const translateX = -(1 - scale) / .32 * 36;
+          const translateX = -(1 - scale) / .31999999999999995 * 36;
           scene.style.transform = `scale(${scale}) translateX(${translateX}px)`;
           scene.style.width = `${width / scale - translateX}px`;
           visual.style.height = `${440 * scale}px`;
         };
-
-        window.addEventListener("resize", updateScene, { passive: true });
         updateScene();
+        const sceneResize = new ResizeObserver(updateScene);
+        sceneResize.observe(visual);
 
         showcase.addEventListener("pointerenter", () => {
           if (state.reducedMotion) return;
-          runAnimation(showcase, "kit-showcase-hover", {
-            y: -3,
-            boxShadow: "0 0 0 0.5px rgba(0,0,0,.08), 0 30px 60px -30px rgba(0,0,0,.3)"
-          }, { type: "spring", stiffness: 300, damping: 30 });
+          runAnimation(showcase, "kit-showcase-hover", { y: -3, boxShadow: "0 0 0 0.5px rgba(0,0,0,.08), 0 30px 60px -30px rgba(0,0,0,.3)" }, { type: "spring", stiffness: 300, damping: 30 });
         });
-
         showcase.addEventListener("pointerleave", () => {
-          runAnimation(showcase, "kit-showcase-hover", {
-            y: 0,
-            boxShadow: "0 0 0 0.5px rgba(0,0,0,.07), 0 20px 50px -30px rgba(0,0,0,.25)"
-          }, state.reducedMotion ? { duration: 0 } : { type: "spring", stiffness: 300, damping: 30 });
+          runAnimation(showcase, "kit-showcase-hover", { y: 0, boxShadow: "0 0 0 0.5px rgba(0,0,0,.07), 0 20px 50px -30px rgba(0,0,0,.25)" }, state.reducedMotion ? { duration: 0 } : { type: "spring", stiffness: 300, damping: 30 });
         });
 
-        const lanes = [0, -70, 70];
-        const angle = -16 * Math.PI / 180;
-        const sin = Math.sin(angle);
-        const cos = Math.cos(angle);
-        const startedAt = performance.now();
-        let frame = 0;
+        const candyWidths = candies.map(node => node.offsetWidth);
+        const refreshWidths = () => {
+          for (let i = 0; i < candies.length; i += 1) candyWidths[i] = candies[i]?.offsetWidth ?? candyWidths[i];
+        };
+        document.fonts?.ready.then(refreshWidths);
+        const candyResize = new ResizeObserver(refreshWidths);
+        candies.forEach(node => candyResize.observe(node));
 
-        const chipState = candies.map((element, index) => ({
-          element,
-          index,
-          lane: lanes[index % 3]
-        }));
+        let raf = 0;
+        let active = false;
+        let startTime = -1;
+        let lastCaptionIndex = -1;
+        let blinkAt = -1;
+        let blinkUntil = 0;
+        const eyeTarget = { x: 0, y: 0 };
+
+        const W = (index, time) => {
+          const lane = LANES[index % 3];
+          const s = springValue(time, .55, .62);
+          const r = springValue(time, .5, .58);
+          const n = springValue(time - 1.05, .8, .86);
+          const late = time - 1.4;
+          return {
+            u: n,
+            x: P + (U - P) * s + (FOLDER_X - U) * n,
+            y: X + (H - X) * s + (FOLDER_Y - H) * n,
+            tilt: -((1 - springValue(time, .7, .5)) * 8),
+            px: 24 * n + (late <= 0 ? 0 : late < .4 ? 88 * late * late / .8 : 88 * (late - .2)),
+            py: lane * n,
+            pz: 12 * n + 34 * Math.sin(Math.PI * clamp01(n)),
+            scale: (.25 + .85 * r) * (1 - .1 * clamp01(n)),
+            ref: candyWidths[index] / 2 * (1 - clamp01(n)),
+            z: time < .2 ? 5 : n < .9 ? 40 : 30 + LANES.indexOf(lane),
+            opacity: clamp01(time / .1)
+          };
+        };
 
         const renderScene = now => {
-          const elapsed = now - startedAt;
-          const time = elapsed / 7200;
-
-          chipState.forEach(chip => {
-            const progress = ((time + chip.index / chipState.length) % 1 + 1) % 1;
-            const travel = -150 + progress * 1300;
-            const x = 262 + travel * cos - chip.lane * sin;
-            const y = 322 + travel * sin + chip.lane * cos;
-            const entering = Math.min(1, progress / .08);
-            const leaving = Math.min(1, (1 - progress) / .1);
-            const opacity = Math.min(entering, leaving);
-            chip.element.style.opacity = state.reducedMotion ? "1" : String(opacity);
-            chip.element.style.transform = `translate3d(${x}px,${y}px,10px) rotateZ(-16deg)`;
-          });
-
-          let target = null;
-          let targetDistance = Infinity;
-
-          chipState.forEach(chip => {
-            const progress = ((time + chip.index / chipState.length) % 1 + 1) % 1;
-            const travel = -150 + progress * 1300;
-            const x = 262 + travel * cos - chip.lane * sin;
-            const y = 322 + travel * sin + chip.lane * cos;
-            const distance = Math.hypot(x - 150, y - 292);
-            if (distance < targetDistance) {
-              targetDistance = distance;
-              target = { x, y };
-            }
-          });
-
-          if (target && whites.length >= 2) {
-            const eyeX = Math.max(-11, Math.min(11, (target.x - 150) * .065));
-            const eyeY = Math.max(-8, Math.min(8, (target.y - 292) * .055));
-            whites[0].setAttribute("transform", `translate(${eyeX} ${eyeY})`);
-            whites[1].setAttribute("transform", `translate(${160 + eyeX} ${eyeY})`);
+          if (!active) return;
+          if (startTime < 0) startTime = now;
+          const t = (now - startTime) / 1000 + C;
+          const current = Math.floor(t / 1.1) % R;
+          if (current !== lastCaptionIndex) {
+            lastCaptionIndex = current;
+            setCaption(current);
           }
 
-          const blinkPhase = (elapsed % 5200) / 5200;
-          const blinking = blinkPhase > .92 && blinkPhase < .965;
-          lids.forEach(lid => lid.setAttribute("transform", blinking ? "scale(1 .08)" : "scale(1 1)"));
+          for (let index = 0; index < R; index += 1) {
+            const local = ((t - 1.1 * index) % C + C) % C;
+            const stateAt = W(index, local);
+            const node = candies[index];
+            node.style.transform = `translate3d(${stateAt.x}px, ${stateAt.y}px, 0) rotate(${stateAt.tilt}deg) rotateX(${48 * stateAt.u}deg) rotateZ(${-16 * stateAt.u}deg) translate3d(${stateAt.px}px, ${stateAt.py}px, ${stateAt.pz}px) scale(${stateAt.scale}) translate(${-stateAt.ref}px, -25px)`;
+            node.style.opacity = String(stateAt.opacity);
+            node.style.zIndex = String(stateAt.z);
+          }
 
-          if (!state.reducedMotion) frame = requestAnimationFrame(renderScene);
+          grid.style.transform = `translate3d(${88 * t % 36 - 36}px, 0, 0)`;
+          const localBeat = t % 1.1;
+          const wobble = .16 * Math.exp(-7 * localBeat) * Math.sin(15 * localBeat);
+          const folderScale = `scale(${1 + .25 * wobble}, ${1 - .2 * wobble})`;
+          folderBack.style.transform = folderScale;
+          folderFront.style.transform = `${folderScale} scaleY(${1 - wobble})`;
+          shadow.style.transform = `translateX(-50%) scaleX(${1 + .4 * wobble})`;
+
+          const currentState = W(current, localBeat);
+          const px = currentState.px + candyWidths[current] / 2 * currentState.u;
+          const py = currentState.py;
+          const projectedX = px * COS - py * SIN;
+          const projectedY = (px * SIN + py * COS) * COS48;
+          const targetX = currentState.x + projectedX * currentState.u - 150;
+          const targetY = currentState.y + projectedY * currentState.u - 312;
+          const distance = Math.hypot(targetX, targetY) || 1;
+          const mix = Math.min(1, distance / 160);
+          eyeTarget.x += (targetX / distance * 26 * mix - eyeTarget.x) * .18;
+          eyeTarget.y += (targetY / distance * 22 * mix - eyeTarget.y) * .18;
+          const eye = offCentre(eyeTarget, 26, 22);
+          whites.forEach(node => node.setAttribute("transform", `translate(${eye.x} ${eye.y})`));
+
+          if (!state.reducedMotion && t > blinkUntil && t > blinkAt) {
+            blinkAt = t + 2.2 + 3 * Math.random();
+            blinkUntil = blinkAt + .15;
+          }
+          const blinkPhase = (t - (blinkUntil - .15)) / .15;
+          const blinkScale = blinkPhase >= 0 && blinkPhase < 1 ? 1 - .92 * Math.sin(Math.PI * blinkPhase) : 1;
+          lids.forEach(node => node.setAttribute("transform", `scale(1 ${blinkScale})`));
+
+          if (!state.reducedMotion) raf = requestAnimationFrame(renderScene);
+        };
+
+        const reducedFrame = () => {
+          active = true;
+          startTime = 0;
+          for (let i = 0; i < 12; i += 1) renderScene(0);
+          active = false;
         };
 
         if (state.reducedMotion) {
-          chipState.forEach((chip, index) => {
-            const travel = -80 + index * 92;
-            const x = 262 + travel * cos - chip.lane * sin;
-            const y = 322 + travel * sin + chip.lane * cos;
-            chip.element.style.opacity = "1";
-            chip.element.style.transform = `translate3d(${x}px,${y}px,10px) rotateZ(-16deg)`;
-          });
+          reducedFrame();
         } else {
-          frame = requestAnimationFrame(renderScene);
+          const observer = new IntersectionObserver(([entry]) => {
+            active = entry.isIntersecting;
+            cancelAnimationFrame(raf);
+            if (active) {
+              if (startTime < 0) startTime = performance.now();
+              raf = requestAnimationFrame(renderScene);
+            }
+          });
+          observer.observe(visual);
+          window.addEventListener("beforeunload", () => {
+            observer.disconnect();
+            candyResize.disconnect();
+            sceneResize.disconnect();
+            cancelAnimationFrame(raf);
+          }, { once: true });
         }
-
-        window.addEventListener("beforeunload", () => {
-          cancelAnimationFrame(frame);
-          if (resizeObserver) resizeObserver.disconnect();
-        }, { once: true });
 
         setRest();
       };

@@ -912,6 +912,547 @@
 
 
     /* =========================================================
+       Inside
+       ========================================================= */
+
+    .inside-section {
+      width: 100%;
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 128px 20px 0;
+      scroll-margin-top: 24px;
+    }
+
+    .inside-intro {
+      max-width: 640px;
+      opacity: 0;
+      transform: translateY(24px);
+      filter: blur(8px);
+    }
+
+    .inside-intro.is-visible {
+      opacity: 1;
+      transform: none;
+      filter: blur(0);
+      transition: opacity .7s ease, transform .8s cubic-bezier(.22,1,.36,1), filter .7s ease;
+    }
+
+    .inside-heading {
+      margin: 0;
+      color: var(--ink);
+      font-family: var(--font-display);
+      font-size: 38px;
+      font-weight: 900;
+      line-height: 1.02;
+      letter-spacing: -.03em;
+    }
+
+    .inside-description {
+      max-width: 560px;
+      margin: 16px 0 0;
+      color: #525252;
+      font-size: 17px;
+      line-height: 1.625;
+    }
+
+    .inside-grid {
+      display: grid;
+      grid-auto-rows: 340px;
+      gap: 16px;
+      margin-top: 40px;
+    }
+
+    .inside-card {
+      position: relative;
+      display: flex;
+      min-width: 0;
+      min-height: 0;
+      flex-direction: column;
+      overflow: hidden;
+      border-radius: 28px;
+      background: #fff;
+      box-shadow: 0 0 0 .5px rgba(0,0,0,.07), 0 20px 50px -30px rgba(0,0,0,.25);
+      opacity: 0;
+      transform: translateY(24px);
+      filter: blur(8px);
+      will-change: transform, opacity;
+    }
+
+    .inside-card.inside-card-reveal {
+      opacity: 1;
+      transform: none;
+      filter: blur(0);
+      transition: opacity .7s ease, transform .8s cubic-bezier(.22,1,.36,1), filter .7s ease;
+    }
+
+    .inside-card-visual {
+      position: relative;
+      min-height: 0;
+      flex: 1 1 auto;
+    }
+
+    .inside-card-body {
+      padding: 16px 24px 24px;
+      flex: 0 0 auto;
+    }
+
+    .inside-card-title {
+      margin: 0;
+      color: var(--ink);
+      font-family: var(--font-display);
+      font-size: 22px;
+      font-weight: 900;
+      line-height: 1.05;
+      letter-spacing: -.02em;
+    }
+
+    .inside-card-copy {
+      margin: 6px 0 0;
+      color: #525252;
+      font-size: 14px;
+      line-height: 1.625;
+    }
+
+    .inside-canvas {
+      display: block;
+    }
+
+    .inside-preset-viewport {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .inside-canvas-contain {
+      max-width: 100%;
+      max-height: 100%;
+    }
+
+    .inside-canvas-badge {
+      position: absolute;
+      left: 20px;
+      top: 20px;
+      border-radius: 9999px;
+      padding: 4px 12px;
+      background: rgba(0,0,0,.05);
+      color: #525252;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      font-size: 11.5px;
+      line-height: 17.25px;
+      white-space: nowrap;
+    }
+
+    .inside-prompt-demo {
+      position: absolute;
+      inset: 0;
+    }
+
+    .inside-prompt-canvas-wrap {
+      position: absolute;
+      inset: 8px 0 64px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .inside-prompt-canvas {
+      max-width: 100%;
+      max-height: 100%;
+    }
+
+    .inside-prompt-bar {
+      position: absolute;
+      inset: auto 20px 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      height: 44px;
+      padding: 0 6px 0 16px;
+      border-radius: 9999px;
+      background: rgba(0,0,0,.05);
+      color: #171717;
+      font-size: 13.5px;
+    }
+
+    .inside-prompt-text {
+      min-width: 0;
+      flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .inside-prompt-caret {
+      display: inline-block;
+      width: 2px;
+      height: 1em;
+      margin-left: 1px;
+      vertical-align: text-bottom;
+      background: #171717;
+    }
+
+    .inside-prompt-tool {
+      display: flex;
+      height: 32px;
+      flex-shrink: 0;
+      align-items: center;
+      gap: 6px;
+      padding: 0 12px;
+      border-radius: 9999px;
+      background: #171717;
+      color: #fff;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      font-size: 11.5px;
+      line-height: 17.25px;
+      opacity: 0;
+      transform: translateX(6px) scale(.85);
+      transform-origin: center;
+      transition: opacity .25s ease, transform .35s cubic-bezier(.34,1.35,.64,1);
+    }
+
+    .inside-prompt-tool.is-visible {
+      opacity: 1;
+      transform: none;
+    }
+
+    .inside-prompt-tool-check { color: #ff8a5b; }
+
+    .inside-font-viewport {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .inside-font-canvas {
+      max-width: 100%;
+      max-height: 100%;
+    }
+
+    .inside-font-badge {
+      position: absolute;
+      left: 20px;
+      top: 20px;
+      border-radius: 9999px;
+      padding: 4px 12px;
+      background: rgba(0,0,0,.05);
+      color: #525252;
+      font-size: 11.5px;
+      font-weight: 500;
+      line-height: 17.25px;
+      white-space: nowrap;
+      animation: inside-pop-in .28s var(--spring) both;
+    }
+
+    .inside-inspection-viewport {
+      position: absolute;
+      inset: 0;
+      padding: 20px;
+    }
+
+    .inside-frame-grid {
+      position: relative;
+      display: grid;
+      width: 100%;
+      height: 100%;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .inside-frame {
+      display: block;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      align-self: center;
+      border-radius: 8px;
+      background: #f4f1ea;
+      box-shadow: 0 0 0 .5px rgba(0,0,0,.08);
+    }
+
+    .inside-inspection-outline {
+      position: absolute;
+      left: 0;
+      top: 0;
+      pointer-events: none;
+      border-radius: 10px;
+      box-shadow: 0 0 0 2.5px var(--orange);
+      opacity: 0;
+      transition: transform .6s cubic-bezier(.22,1,.36,1), width .6s, height .6s, opacity .4s;
+    }
+
+    .inside-inspection-eyes {
+      position: absolute;
+      left: 0;
+      top: 0;
+      z-index: 3;
+      width: 132px;
+      pointer-events: none;
+      overflow: visible;
+      opacity: 0;
+      transform: translate(-9999px,0);
+      transition: opacity .25s ease;
+    }
+
+    .inside-tool-viewport {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      perspective: 900px;
+    }
+
+    .inside-tool-plane {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%) rotateX(58deg) rotateZ(-12deg);
+      transform-style: preserve-3d;
+      min-width: 980px;
+    }
+
+    .inside-tool-row-wrap {
+      display: flex;
+      transform-style: preserve-3d;
+    }
+
+    .inside-tool-row {
+      display: flex;
+      flex-shrink: 0;
+      gap: 20px;
+      padding-left: var(--row-offset);
+      transform-style: preserve-3d;
+      animation: inside-tool-drift var(--inside-tool-duration) linear infinite;
+    }
+
+    .inside-tool-chip-row {
+      display: flex;
+      flex-shrink: 0;
+      gap: 20px;
+      transform-style: preserve-3d;
+    }
+
+    .inside-tool-chip {
+      position: relative;
+      display: inline-flex;
+      flex-shrink: 0;
+      transform-style: preserve-3d;
+      perspective: 700px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+    }
+
+    .inside-tool-chip .candy-wrap {
+      transform: rotateX(22deg);
+    }
+
+    .inside-tool-chip .candy-layer { transform-style: preserve-3d; }
+    .inside-tool-chip .candy-layer:nth-child(1) { transform: translateZ(0); }
+    .inside-tool-chip .candy-layer:nth-child(2) { transform: translateZ(2px); }
+    .inside-tool-chip .candy-layer:nth-child(3) { transform: translateZ(4px); }
+    .inside-tool-chip .candy-layer:nth-child(4) { transform: translateZ(6px); }
+
+    .inside-tool-chip .candy-face {
+      height: 54px;
+      gap: 12px;
+      padding: 0 24px 0 20px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      font-size: 17px;
+      font-weight: 400;
+      line-height: 25.5px;
+      transform: translateZ(12px);
+    }
+
+    .inside-tool-chip .candy-face svg {
+      width: 19px;
+      height: 19px;
+    }
+
+    .inside-export-demo {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      padding: 20px;
+    }
+
+    .inside-export-preview {
+      position: relative;
+      min-width: 0;
+      flex: 1;
+      align-self: center;
+      overflow: hidden;
+      width: 100%;
+      max-width: 320px;
+      border-radius: 14px;
+      background: #f4f1ea;
+      box-shadow: 0 0 0 .5px rgba(0,0,0,.1), 0 20px 40px -24px rgba(0,0,0,.4);
+    }
+
+    .inside-export-canvas {
+      display: block;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+    }
+
+    .inside-export-complete {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0,0,0,.55);
+      color: #fff;
+      opacity: 0;
+      backdrop-filter: blur(3px);
+      transition: opacity .3s ease;
+    }
+
+    .inside-export-complete.is-visible { opacity: 1; }
+
+    .inside-export-complete-pill {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 16px;
+      border-radius: 9999px;
+      background: #fff;
+      color: #171717;
+      font-size: 13px;
+      font-weight: 600;
+      line-height: 19.5px;
+    }
+
+    .inside-export-complete-pill span {
+      display: flex;
+      width: 20px;
+      height: 20px;
+      align-items: center;
+      justify-content: center;
+      border-radius: 9999px;
+      background: #171717;
+      color: #fff;
+      font-size: 11px;
+    }
+
+    .inside-export-info {
+      display: flex;
+      flex: 0 0 auto;
+      flex-direction: column;
+      justify-content: center;
+      gap: 8px;
+      color: #525252;
+      font-size: 12.5px;
+    }
+
+    .inside-export-info-head {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .inside-export-icon {
+      display: flex;
+      width: 36px;
+      height: 36px;
+      align-items: center;
+      justify-content: center;
+      border-radius: 11px;
+      background: #eaf2ff;
+      color: #2a8cff;
+      flex: 0 0 auto;
+    }
+
+    .inside-export-icon svg { width: 16px; height: 16px; }
+    .inside-export-info-title { margin: 0; color: #171717; font-weight: 600; }
+    .inside-export-info-meta { margin: 0; font-size: 11.5px; }
+
+    .inside-export-progress {
+      height: 8px;
+      overflow: hidden;
+      border-radius: 9999px;
+      background: rgba(0,0,0,.06);
+    }
+
+    .inside-export-progress-fill {
+      width: 100%;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, #2a8cff, #62adff);
+      transform: scaleX(0);
+      transform-origin: left center;
+    }
+
+    .inside-export-meta-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      font-size: 11.5px;
+      line-height: 17.25px;
+    }
+
+    @keyframes inside-pop-in {
+      0% { opacity: 0; transform: translateY(6px) scale(.97); }
+      100% { opacity: 1; transform: none; }
+    }
+
+    @keyframes inside-tool-drift {
+      from { transform: translate3d(0,0,0); }
+      to { transform: translate3d(calc(-1 * var(--inside-tool-width)),0,0); }
+    }
+
+    @media (min-width: 640px) {
+      .inside-section { padding-left: 24px; padding-right: 24px; }
+      .inside-heading { font-size: 52px; }
+      .inside-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
+      .inside-card-wide { grid-column: span 2; }
+      .inside-card-tall { grid-column: span 2; grid-row: span 2; }
+      .inside-export-demo { flex-direction: row; gap: 16px; }
+      .inside-export-info { width: 168px; gap: 12px; }
+    }
+
+    @media (min-width: 1024px) {
+      .inside-grid { grid-template-columns: repeat(4, minmax(0,1fr)); }
+      .inside-card-wide { grid-column: span 2; }
+      .inside-card-tall { grid-column: span 2; grid-row: span 2; }
+    }
+
+    @media (max-width: 767px) {
+      .inside-section { padding-top: 100px; }
+    }
+
+    @media (max-width: 639px) {
+      .inside-section { padding-left: 20px; padding-right: 20px; }
+      .inside-grid { grid-template-columns: minmax(0,1fr); }
+      .inside-card-wide,
+      .inside-card-tall { grid-column: auto; grid-row: auto; }
+      .inside-export-preview { max-width: 320px; }
+    }
+
+    @media (max-width: 399px) {
+      .inside-section { padding-left: 16px; padding-right: 16px; }
+      .inside-card-body { padding-left: 20px; padding-right: 20px; }
+      .inside-prompt-bar { left: 16px; right: 16px; }
+      .inside-inspection-viewport { padding: 16px; }
+      .inside-export-demo { padding: 16px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .inside-intro,
+      .inside-card,
+      .inside-prompt-tool,
+      .inside-inspection-outline,
+      .inside-inspection-eyes,
+      .inside-export-complete,
+      .inside-tool-row { transition: none !important; animation: none !important; }
+    }
+
+    /* =========================================================
        Reels
        ========================================================= */
 
@@ -1880,6 +2421,146 @@
     </div>
 
 
+
+    <!-- Inside -->
+    <section id="inside" class="inside-section" aria-labelledby="inside-heading">
+      <div class="inside-intro" data-inside-intro>
+        <h2 id="inside-heading" class="inside-heading">What is inside.</h2>
+        <p class="inside-description">The renderer, the presets, the fonts and the tools Claude works with. All of it lives in the project, and all of this is painted by it.</p>
+      </div>
+
+      <div class="inside-grid" data-inside-grid>
+        <article class="inside-card inside-card-tall" data-inside-card="presets">
+          <div class="inside-card-visual">
+            <div class="inside-preset-viewport">
+              <canvas class="inside-canvas inside-canvas-contain" data-inside-presets-canvas aria-label="Presets playing one after another"></canvas>
+              <span class="inside-canvas-badge" data-inside-presets-label>1 / 19 · fade</span>
+            </div>
+          </div>
+          <div class="inside-card-body">
+            <h3 class="inside-card-title">Every move has a name.</h3>
+            <p class="inside-card-copy">Thirty-three presets: ins, outs and loops. Say the name and Claude applies it.</p>
+          </div>
+        </article>
+
+        <article class="inside-card inside-card-wide" data-inside-card="prompt">
+          <div class="inside-card-visual">
+            <div class="inside-prompt-demo">
+              <div class="inside-prompt-canvas-wrap">
+                <canvas class="inside-canvas inside-prompt-canvas" data-inside-prompt-canvas aria-label="A layer changed by a typed prompt"></canvas>
+              </div>
+              <div class="inside-prompt-bar">
+                <span class="inside-prompt-text" data-inside-prompt-text></span><span class="inside-prompt-caret" data-inside-prompt-caret aria-hidden="true"></span>
+                <span class="inside-prompt-tool" data-inside-prompt-tool aria-hidden="true"><span class="inside-prompt-tool-check">✓</span> update_layers</span>
+              </div>
+            </div>
+          </div>
+          <div class="inside-card-body">
+            <h3 class="inside-card-title">Say it in words.</h3>
+            <p class="inside-card-copy">A prompt becomes one tool call, one undo step, and the layer changes in front of you.</p>
+          </div>
+        </article>
+
+        <article class="inside-card" data-inside-card="fonts">
+          <div class="inside-card-visual">
+            <div class="inside-font-viewport">
+              <canvas class="inside-canvas inside-font-canvas" data-inside-font-canvas aria-label="Specimen in Cabinet Grotesk"></canvas>
+              <span class="inside-font-badge" data-inside-font-label>Cabinet Grotesk · 800</span>
+            </div>
+          </div>
+          <div class="inside-card-body">
+            <h3 class="inside-card-title">Eleven families, self-hosted.</h3>
+            <p class="inside-card-copy">The same files in the browser and on the server, so frames match.</p>
+          </div>
+        </article>
+
+        <article class="inside-card" data-inside-card="inspection">
+          <div class="inside-card-visual">
+            <div class="inside-inspection-viewport">
+              <div class="inside-frame-grid" data-inside-frame-grid>
+                <canvas class="inside-frame" data-inside-frame="0" aria-label="Frame at 0.4s"></canvas>
+                <canvas class="inside-frame" data-inside-frame="1" aria-label="Frame at 1.6s"></canvas>
+                <canvas class="inside-frame" data-inside-frame="2" aria-label="Frame at 4.2s"></canvas>
+                <canvas class="inside-frame" data-inside-frame="3" aria-label="Frame at 7.9s"></canvas>
+                <span class="inside-inspection-outline" data-inside-inspection-outline aria-hidden="true"></span>
+                <svg class="inside-inspection-eyes" data-inside-inspection-eyes viewBox="0 0 320 160" aria-hidden="true">
+                  <g data-inside-eye-left transform="translate(80 80)">
+                    <circle r="73" fill="#171717"></circle>
+                    <circle data-pupil r="34" fill="#F5F5F5"></circle>
+                  </g>
+                  <g data-inside-eye-right transform="translate(240 80)">
+                    <circle r="73" fill="#171717"></circle>
+                    <circle data-pupil r="34" fill="#F5F5F5"></circle>
+                  </g>
+                </svg>
+              </div>
+            </div>
+          </div>
+          <div class="inside-card-body">
+            <h3 class="inside-card-title">Claude looks before it answers.</h3>
+            <p class="inside-card-copy">After every change it renders frames and checks each one.</p>
+          </div>
+        </article>
+
+        <article class="inside-card inside-card-wide" data-inside-card="tools">
+          <div class="inside-card-visual">
+            <div class="inside-tool-viewport" aria-label="The eighteen tools, drifting past">
+              <div class="inside-tool-plane" data-inside-tool-plane>
+                <div class="inside-tool-row-wrap">
+                  <div class="inside-tool-row" data-inside-tool-row="0" style="--inside-tool-duration:30s;--row-offset:0px;--inside-tool-width:1110px"></div>
+                </div>
+                <div class="inside-tool-row-wrap">
+                  <div class="inside-tool-row" data-inside-tool-row="1" style="--inside-tool-duration:36s;--row-offset:72px;--inside-tool-width:1110px"></div>
+                </div>
+                <div class="inside-tool-row-wrap">
+                  <div class="inside-tool-row" data-inside-tool-row="2" style="--inside-tool-duration:33s;--row-offset:144px;--inside-tool-width:1110px"></div>
+                </div>
+                <div class="inside-tool-row-wrap">
+                  <div class="inside-tool-row" data-inside-tool-row="3" style="--inside-tool-duration:39s;--row-offset:216px;--inside-tool-width:1110px"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="inside-card-body">
+            <h3 class="inside-card-title">Eighteen tools, all of them.</h3>
+            <p class="inside-card-copy">Twelve edit, five read, one looks at the frames. Select a layer and “this” means that layer.</p>
+          </div>
+        </article>
+
+        <article class="inside-card inside-card-wide" data-inside-card="export">
+          <div class="inside-card-visual">
+            <div class="inside-export-demo">
+              <div class="inside-export-preview">
+                <canvas class="inside-export-canvas" data-inside-export-canvas aria-label="The demo, rendering frame by frame"></canvas>
+                <div class="inside-export-complete" data-inside-export-complete>
+                  <div class="inside-export-complete-pill"><span>✓</span>hello-mtioon.mp4</div>
+                </div>
+              </div>
+              <div class="inside-export-info">
+                <div class="inside-export-info-head">
+                  <span class="inside-export-icon" aria-hidden="true">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M8 1l4 4H9.5v5h-3V5H4zM2 12h12v2.5H2z"></path></svg>
+                  </span>
+                  <div>
+                    <p class="inside-export-info-title">Exporting MP4</p>
+                    <p class="inside-export-info-meta">60 fps · same renderer</p>
+                  </div>
+                </div>
+                <div class="inside-export-progress"><div class="inside-export-progress-fill" data-inside-export-progress></div></div>
+                <div class="inside-export-meta-row">
+                  <span data-inside-export-frame>0 / 480</span>
+                  <span>1920 × 1080</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="inside-card-body">
+            <h3 class="inside-card-title">Export in the browser.</h3>
+            <p class="inside-card-copy">H.264 through WebCodecs, frame by frame, with the same function that paints the preview. Nothing leaves your machine.</p>
+          </div>
+        </article>
+      </div>
+    </section>
 
     <!-- Reels -->
     <section id="reels" class="reels-section" aria-labelledby="reels-heading">
@@ -3022,6 +3703,648 @@
 
 
       /* =========================================================
+         Inside
+         ========================================================= */
+
+      const INSIDE_PRESET_LABELS = [
+        "fade", "rise", "pop", "slide", "blur", "slam", "drop", "wipe", "drift",
+        "float", "swing", "zoom", "spin", "flip", "bounce", "reveal", "fall", "lift", "grow"
+      ];
+
+      const INSIDE_PROMPTS = [
+        { say: "Make it say hello.", text: "Hello.", font: "Sunghyun Sans", weight: 900, size: 240, fill: "#171717", duration: .5 },
+        { say: "Set it in Instrument Serif.", text: "Hello.", font: "Instrument Serif", weight: 400, size: 240, fill: "#171717", duration: .7 },
+        { say: "Orange, please.", text: "Hello.", font: "Instrument Serif", weight: 400, size: 240, fill: "#FF5A1F", duration: .4 },
+        { say: "Bigger. Slam it in.", text: "Hello.", font: "Sunghyun Sans", weight: 900, size: 280, fill: "#FF5A1F", duration: .5 },
+        { say: "Back to black, calmer.", text: "Hello.", font: "Sunghyun Sans", weight: 900, size: 200, fill: "#171717", duration: .8 }
+      ];
+
+      const INSIDE_FONT_FAMILIES = [
+        ["Sunghyun Sans", 900],
+        ["Clash Display", 600],
+        ["Instrument Serif", 400],
+        ["Anton", 400],
+        ["Bricolage Grotesque", 800],
+        ["DM Serif Display", 400],
+        ["Space Grotesk", 700],
+        ["Bebas Neue", 400],
+        ["Playfair Display", 700],
+        ["Cabinet Grotesk", 800],
+        ["Inter", 800]
+      ];
+
+      const INSIDE_TOOLS = [
+        ["get_catalog", "purple", "grid"],
+        ["list_projects", "blue", "folder"],
+        ["create_project", "green", "plus"],
+        ["get_project", "purple", "folder"],
+        ["get_selection", "salmon", "cursor"],
+        ["add_layers", "green", "layers"],
+        ["update_layers", "red", "pencil"],
+        ["delete_layers", "blue", "trash"],
+        ["duplicate_layers", "mint", "copy"],
+        ["apply_motion", "orange", "bolt"],
+        ["set_motion_style", "yellow", "sparkle"],
+        ["set_sections", "pink", "sections"],
+        ["replace_section", "orange", "swap"],
+        ["set_camera", "blue", "camera"],
+        ["update_project", "purple", "settings"],
+        ["retime", "yellow", "clock"],
+        ["render_frames", "black", "eye"],
+        ["history", "salmon", "undo"]
+      ];
+
+      const INSIDE_TOOL_HUES = {
+        purple: ["#8B5CF6", "#6D28D9"],
+        blue: ["#3B82F6", "#1D4ED8"],
+        green: ["#3DC46B", "#23934A"],
+        salmon: ["#FF8A7A", "#C85C4F"],
+        red: ["#F43F5E", "#BE123C"],
+        mint: ["#34D399", "#059669"],
+        orange: ["#FF6A2B", "#C43E0C"],
+        yellow: ["#F4C430", "#B98B00"],
+        pink: ["#EC4899", "#BE185D"],
+        black: ["#171717", "#050505"]
+      };
+
+      const INSIDE_ICON_PATHS = {
+        grid: '<rect x="2" y="2" width="5" height="5" rx="1"/><rect x="9" y="2" width="5" height="5" rx="1"/><rect x="2" y="9" width="5" height="5" rx="1"/><rect x="9" y="9" width="5" height="5" rx="1"/>',
+        folder: '<path d="M1.5 4.5h5l1.5 1.8h6.5v6.7a1.5 1.5 0 0 1-1.5 1.5h-11a1.5 1.5 0 0 1-1.5-1.5z"/><path d="M1.5 4.5V3.8A1.3 1.3 0 0 1 2.8 2.5h3.1l1.6 1.7h5.9a1.3 1.3 0 0 1 1.3 1.3v.8"/>',
+        plus: '<path d="M8 2v12M2 8h12"/>',
+        cursor: '<path d="m4 2 9 7-4.2.7L7 14z"/><path d="m9 11 2 2"/>',
+        layers: '<path d="m8 1.8 6 3.2-6 3.2-6-3.2z"/><path d="m2 8 6 3.2L14 8"/><path d="m2 11 6 3.2 6-3.2"/>',
+        pencil: '<path d="m3 11.5-.5 2.5 2.5-.5 7.9-7.9-2-2z"/><path d="m10.2 3.6 2 2"/>',
+        trash: '<path d="M3.5 4.5h9l-.7 9H4.2z"/><path d="M6 4.5V3h4v1.5M2.5 4.5h11"/>',
+        copy: '<rect x="4" y="4" width="8" height="9" rx="1.2"/><path d="M7 2.5h6a1 1 0 0 1 1 1v7.2"/>',
+        bolt: '<path d="m9.5 1.5-5 6h3.2L6.5 14.5l5-6H8.3z"/>',
+        sparkle: '<path d="m8 1 1.1 4.1L13 6.2 9.1 7.3 8 11.5 6.9 7.3 3 6.2l3.9-1.1z"/><path d="m13 10 .5 1.8 1.8.5-1.8.5-.5 1.8-.5-1.8-1.8-.5 1.8-.5z"/>',
+        sections: '<rect x="2" y="2" width="12" height="3" rx="1"/><rect x="2" y="6.5" width="12" height="3" rx="1"/><rect x="2" y="11" width="7" height="3" rx="1"/>',
+        swap: '<path d="M2 5h10M9 2l3 3-3 3M14 11H4M7 8l-3 3 3 3"/>',
+        camera: '<rect x="2" y="4" width="12" height="9" rx="1.5"/><circle cx="8" cy="8.5" r="2.5"/><path d="M5 4 6 2.5h4L11 4"/>',
+        settings: '<path d="M8 2.2v1.5M8 12.3v1.5M2.2 8h1.5M12.3 8h1.5M3.9 3.9l1.1 1.1M11 11l1.1 1.1M12.1 3.9 11 5M5 11l-1.1 1.1"/><circle cx="8" cy="8" r="2.5"/>',
+        clock: '<circle cx="8" cy="8" r="5.8"/><path d="M8 4.8v3.8l2.3 1.4"/>',
+        eye: '<path d="M1.5 8s2.5-4 6.5-4 6.5 4 6.5 4-2.5 4-6.5 4-6.5-4-6.5-4Z"/><circle cx="8" cy="8" r="1.8" fill="currentColor" stroke="none"/>',
+        undo: '<path d="M6 5 3 8l3 3"/><path d="M3 8h6.5a3.5 3.5 0 1 1 0 7"/>'
+      };
+
+      const createInsideToolChip = ([name, hueName, iconName]) => {
+        const [face, side] = INSIDE_TOOL_HUES[hueName] || INSIDE_TOOL_HUES.blue;
+        const chip = document.createElement("span");
+        chip.className = "inside-tool-chip";
+        chip.innerHTML = `
+          <span class="candy-wrap" style="--candy-face:${face};--candy-side:${side}">
+            <span class="candy-layer" aria-hidden="true"></span>
+            <span class="candy-layer" aria-hidden="true"></span>
+            <span class="candy-layer" aria-hidden="true"></span>
+            <span class="candy-layer" aria-hidden="true"></span>
+            <span class="candy-face">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${INSIDE_ICON_PATHS[iconName] || INSIDE_ICON_PATHS.grid}</svg>
+              ${name}
+            </span>
+          </span>`;
+        return chip;
+      };
+
+      const sizeInsideCanvas = (canvas, logicalWidth, logicalHeight, contain = false) => {
+        if (!canvas) return null;
+        const parent = contain ? canvas.parentElement : canvas;
+        const width = Math.max(1, parent?.clientWidth || canvas.clientWidth || 1);
+        const height = Math.max(1, parent?.clientHeight || canvas.clientHeight || 1);
+        const scale = contain
+          ? Math.max(.01, Math.min(width / logicalWidth, height / logicalHeight))
+          : Math.max(.01, width / logicalWidth);
+        const dpr = Math.min(2, window.devicePixelRatio || 1);
+        const bitmapWidth = Math.max(1, Math.round(logicalWidth * scale * dpr));
+        const bitmapHeight = Math.max(1, Math.round(logicalHeight * scale * dpr));
+        if (canvas.width !== bitmapWidth) canvas.width = bitmapWidth;
+        if (canvas.height !== bitmapHeight) canvas.height = bitmapHeight;
+        return { scale, dpr, width, height, bitmapWidth, bitmapHeight };
+      };
+
+      const drawInsideRoundedRect = (context, x, y, width, height, radius) => {
+        const r = Math.min(radius, width / 2, height / 2);
+        context.beginPath();
+        context.moveTo(x + r, y);
+        context.arcTo(x + width, y, x + width, y + height, r);
+        context.arcTo(x + width, y + height, x, y + height, r);
+        context.arcTo(x, y + height, x, y, r);
+        context.arcTo(x, y, x + width, y, r);
+        context.closePath();
+      };
+
+      const drawInsideText = (context, text, x, y, size, weight, family, fill, align = "center") => {
+        context.font = `${weight} ${size}px "${family}", Inter, Arial, sans-serif`;
+        context.textAlign = align;
+        context.textBaseline = "middle";
+        context.fillStyle = fill;
+        context.fillText(text, x, y);
+      };
+
+      const drawInsideBackground = (context, width, height, fill = "#F4F1EA") => {
+        context.clearRect(0, 0, width, height);
+        context.fillStyle = fill;
+        context.fillRect(0, 0, width, height);
+      };
+
+      const presetProgress = (time, duration = 2.2) => {
+        const cycle = (time % duration) / duration;
+        const t = clamp01(cycle);
+        return t;
+      };
+
+      const drawInsidePreset = (canvas, labelIndex, time) => {
+        const metrics = sizeInsideCanvas(canvas, 1000, 1000, true);
+        if (!metrics) return;
+        const context = canvas.getContext("2d");
+        if (!context) return;
+        const { scale, dpr } = metrics;
+        const width = 1000;
+        const height = 1000;
+        context.setTransform(scale * dpr, 0, 0, scale * dpr, 0, 0);
+        drawInsideBackground(context, width, height);
+
+        const label = INSIDE_PRESET_LABELS[labelIndex];
+        const phase = presetProgress(time);
+        const direction = labelIndex % 3;
+        const eased = easeOutBack(Math.min(1, phase / .35));
+        let offsetX = 0;
+        let offsetY = 0;
+        if (direction === 0) offsetY = (1 - eased) * -160;
+        if (direction === 1) offsetX = (1 - eased) * 220;
+        if (direction === 2) offsetY = (1 - eased) * 120;
+        const pulse = phase > .35 ? 1 + .03 * Math.sin((phase - .35) * Math.PI * 2) : .94 + .06 * eased;
+
+        context.save();
+        context.translate(width / 2 + offsetX, height / 2 + offsetY);
+        context.scale(pulse, pulse);
+        context.globalAlpha = clamp01(phase / .18);
+        drawInsideText(context, label, 0, 0, Math.min(240, 850 / Math.max(.85 * label.length, 1)), 900, "Sunghyun Sans", "#171717");
+        context.restore();
+      };
+
+      const drawInsidePrompt = (canvas, prompt, elapsed) => {
+        const metrics = sizeInsideCanvas(canvas, 1200, 675, true);
+        if (!metrics) return;
+        const context = canvas.getContext("2d");
+        if (!context) return;
+        const { scale, dpr } = metrics;
+        context.setTransform(scale * dpr, 0, 0, scale * dpr, 0, 0);
+        drawInsideBackground(context, 1200, 675, "#F4F1EA");
+
+        const motion = easeOutBack(clamp01(elapsed / Math.max(prompt.duration, .1)));
+        context.save();
+        context.translate(600, 338 - (1 - motion) * 28);
+        context.globalAlpha = clamp01(elapsed / .12);
+        context.filter = elapsed < prompt.duration ? `blur(${Math.max(0, (1 - clamp01(elapsed / prompt.duration)) * 4)}px)` : "none";
+        context.fillStyle = prompt.fill;
+        context.font = `${prompt.weight} ${prompt.size}px "${prompt.font}", Inter, Arial, sans-serif`;
+        context.textAlign = "center";
+        context.textBaseline = "middle";
+        context.fillText(prompt.text, 0, 0);
+        context.restore();
+      };
+
+      const drawInsideFont = (canvas, family, weight) => {
+        const metrics = sizeInsideCanvas(canvas, 1000, 800, true);
+        if (!metrics) return;
+        const context = canvas.getContext("2d");
+        if (!context) return;
+        const { scale, dpr } = metrics;
+        context.setTransform(scale * dpr, 0, 0, scale * dpr, 0, 0);
+        drawInsideBackground(context, 1000, 800);
+        drawInsideText(context, "Aa", 500, 420, 300, weight, family, "#171717");
+      };
+
+      const ensureInsideFont = (family, weight, size = 300) => document.fonts.load(`${weight} ${size}px "${family}"`).catch(() => []);
+
+      const drawInsideFrames = card => {
+        const frames = [0.4, 1.6, 4.2, 7.9];
+        card.querySelectorAll("[data-inside-frame]").forEach((canvas, index) => {
+          const rect = canvas.getBoundingClientRect();
+          const width = Math.max(1, rect.width);
+          const height = Math.max(1, rect.height);
+          const dpr = Math.min(2, window.devicePixelRatio || 1);
+          const scale = width / LANDING_FRAME_DOC.canvas.width;
+          canvas.width = Math.max(1, Math.round(LANDING_FRAME_DOC.canvas.width * scale * dpr));
+          canvas.height = Math.max(1, Math.round(LANDING_FRAME_DOC.canvas.height * scale * dpr));
+          const context = canvas.getContext("2d");
+          if (!context) return;
+          context.setTransform(scale * dpr, 0, 0, scale * dpr, 0, 0);
+          drawInsideBentoFrame(context, frames[index]);
+        });
+      };
+
+      const drawInsideBentoFrame = (context, time) => {
+        const logicalWidth = LANDING_FRAME_DOC.canvas.width;
+        const logicalHeight = LANDING_FRAME_DOC.canvas.height;
+        drawInsideBackground(context, logicalWidth, logicalHeight, LANDING_FRAME_DOC.canvas.background);
+
+        if (time < 2.5) {
+          context.fillStyle = "#111111";
+          context.fillRect(0, 0, logicalWidth, logicalHeight);
+          const progress = landingLayerProgress(time, .3, .45);
+          const scale = .72 + .28 * easeOutBack(progress);
+          context.save();
+          context.translate(960, 500);
+          context.scale(scale, scale);
+          drawInsideText(context, "Say it.", 0, 0, 360, 900, "Sunghyun Sans", "#F4F1EA");
+          context.restore();
+          if (time > 1.1) {
+            const subtitle = clamp01((time - 1.1) / .5);
+            context.save();
+            context.globalAlpha = subtitle;
+            drawInsideText(context, "then watch it move", 960, 740 + (1 - easeOutBack(subtitle)) * 26, 56, 500, "Inter", "#FF5A1F");
+            context.restore();
+          }
+          return;
+        }
+
+        if (time < 5.5) {
+          const titleProgress = clamp01((time - 2.6) / .6);
+          context.save();
+          context.globalAlpha = titleProgress;
+          context.filter = titleProgress < 1 ? `blur(${(1 - titleProgress) * 7}px)` : "none";
+          drawInsideText(context, "Every frame stays editable.", 960, 230, 96, 400, "Instrument Serif", "#111111");
+          context.restore();
+
+          LANDING_FRAME_DOC.layers.cards.forEach(card => {
+            const progress = clamp01((time - card.start) / .9);
+            const drop = easeOutBack(progress);
+            const y = card.y + (1 - drop) * -140;
+            const textProgress = clamp01((time - card.start - .2) / .4);
+            context.save();
+            context.translate(card.x, y);
+            context.rotate(card.rotation * Math.PI / 180);
+            context.globalAlpha = progress;
+            context.shadowColor = "rgba(0,0,0,.2)";
+            context.shadowBlur = 40;
+            context.shadowOffsetY = 20;
+            context.fillStyle = card.fill;
+            drawInsideRoundedRect(context, -card.w/2, -card.h/2, card.w, card.h, 36);
+            context.fill();
+            context.shadowColor = "transparent";
+            context.globalAlpha = textProgress;
+            drawInsideText(context, card.text, 0, (1 - easeOutBack(textProgress)) * 18, 58, 600, "Clash Display", card.textFill);
+            context.restore();
+          });
+          return;
+        }
+
+        context.fillStyle = "#171717";
+        context.fillRect(0, 0, logicalWidth, logicalHeight);
+        if (time < 8) {
+          const alpha = clamp01((time - 7) / .6);
+          context.globalAlpha = alpha;
+          drawInsideText(context, "motion, by prompt", 960, 760, 48, 500, "Inter", "#FF5A1F");
+          context.globalAlpha = 1;
+        }
+      };
+
+      const populateInsideToolRows = () => {
+        const groups = [INSIDE_TOOLS.slice(0,5), INSIDE_TOOLS.slice(5,10), INSIDE_TOOLS.slice(10,14), INSIDE_TOOLS.slice(14)];
+        document.querySelectorAll("[data-inside-tool-row]").forEach((row, index) => {
+          row.replaceChildren();
+          const fragment = document.createDocumentFragment();
+          for (let repeat = 0; repeat < 3; repeat += 1) {
+            const group = document.createElement("div");
+            group.className = "inside-tool-chip-row";
+            group.setAttribute("aria-hidden", repeat > 0 ? "true" : "false");
+            groups[index].forEach(tool => group.appendChild(createInsideToolChip(tool)));
+            fragment.appendChild(group);
+          }
+          row.appendChild(fragment);
+          requestAnimationFrame(() => {
+            const firstGroup = row.querySelector(".inside-tool-chip-row");
+            if (!firstGroup) return;
+            const width = firstGroup.getBoundingClientRect().width + 20;
+            row.style.setProperty("--inside-tool-width", `${width}px`);
+          });
+        });
+      };
+
+      const initializeInsidePresets = card => {
+        const canvas = card.querySelector("[data-inside-presets-canvas]");
+        const label = card.querySelector("[data-inside-presets-label]");
+        if (!canvas || !label) return;
+        let frame = 0;
+        let raf = 0;
+        let visible = false;
+        const started = { value: false };
+        const render = () => {
+          const now = performance.now() / 1000;
+          if (state.reducedMotion) {
+            frame = 0;
+            drawInsidePreset(canvas, frame, 1.2);
+          } else {
+            frame = Math.floor(now / 2.2) % INSIDE_PRESET_LABELS.length;
+            drawInsidePreset(canvas, frame, now % 2.2);
+          }
+          label.textContent = `${frame + 1} / ${INSIDE_PRESET_LABELS.length} · ${INSIDE_PRESET_LABELS[frame]}`;
+          if (visible && !state.reducedMotion) raf = requestAnimationFrame(render);
+        };
+        const observer = new IntersectionObserver(entries => {
+          visible = entries[0]?.isIntersecting === true;
+          if (visible && !started.value) {
+            started.value = true;
+            render();
+          } else if (visible && !state.reducedMotion) {
+            cancelAnimationFrame(raf);
+            render();
+          } else {
+            cancelAnimationFrame(raf);
+          }
+        }, { threshold: .2, rootMargin: "120px" });
+        observer.observe(canvas);
+        const resize = new ResizeObserver(render);
+        resize.observe(canvas.parentElement);
+        render();
+      };
+
+      const initializeInsidePrompt = card => {
+        const canvas = card.querySelector("[data-inside-prompt-canvas]");
+        const textNode = card.querySelector("[data-inside-prompt-text]");
+        const caret = card.querySelector("[data-inside-prompt-caret]");
+        const tool = card.querySelector("[data-inside-prompt-tool]");
+        if (!canvas || !textNode || !caret || !tool) return;
+
+        let step = 0;
+        let startedAt = 0;
+        let sequenceStart = performance.now();
+        let visible = false;
+        let raf = 0;
+        let lastStep = -1;
+        let typingStart = performance.now();
+
+        const getCycle = now => {
+          if (state.reducedMotion) return { step: 0, typing: 1, toolVisible: false, elapsed: 1.2 };
+          const cycleLengths = INSIDE_PROMPTS.map(item => item.say.length * .034 + .35 + .3 + 2.4);
+          const total = cycleLengths.reduce((sum, value) => sum + value, 0);
+          let time = ((now - sequenceStart) / 1000) % total;
+          let index = 0;
+          while (time > cycleLengths[index] && index < cycleLengths.length - 1) {
+            time -= cycleLengths[index];
+            index += 1;
+          }
+          const prompt = INSIDE_PROMPTS[index];
+          const typingDuration = prompt.say.length * .034;
+          const typing = Math.min(prompt.say.length, Math.max(0, Math.floor(time / .034)));
+          const showTool = time >= typingDuration + .35;
+          const elapsed = Math.max(0, time - typingDuration - .65);
+          return { step: index, typing, showTool, elapsed };
+        };
+
+        const render = () => {
+          const now = performance.now();
+          const cycle = getCycle(now);
+          const prompt = INSIDE_PROMPTS[cycle.step];
+          if (cycle.step !== lastStep) {
+            lastStep = cycle.step;
+            textNode.textContent = "";
+          }
+          textNode.textContent = state.reducedMotion ? prompt.say : prompt.say.slice(0, cycle.typing);
+          tool.classList.toggle("is-visible", cycle.showTool);
+          caret.style.display = cycle.typing < prompt.say.length && !state.reducedMotion ? "inline-block" : "none";
+          drawInsidePrompt(canvas, prompt, cycle.elapsed);
+          if (visible && !state.reducedMotion) raf = requestAnimationFrame(render);
+        };
+
+        const observer = new IntersectionObserver(entries => {
+          visible = entries[0]?.isIntersecting === true;
+          if (visible) {
+            sequenceStart = performance.now();
+            cancelAnimationFrame(raf);
+            render();
+          } else {
+            cancelAnimationFrame(raf);
+          }
+        }, { threshold: .15, rootMargin: "120px" });
+        observer.observe(canvas);
+        const resize = new ResizeObserver(render);
+        resize.observe(canvas.parentElement);
+        render();
+      };
+
+      const initializeInsideFonts = card => {
+        const canvas = card.querySelector("[data-inside-font-canvas]");
+        const label = card.querySelector("[data-inside-font-label]");
+        if (!canvas || !label) return;
+        let index = 9;
+        let interval = 0;
+        let visible = true;
+        const render = async () => {
+          const [family, weight] = INSIDE_FONT_FAMILIES[index];
+          label.textContent = `${family} · ${weight}`;
+          canvas.setAttribute("aria-label", `Specimen in ${family}`);
+          await ensureInsideFont(family, weight);
+          if (!visible) return;
+          drawInsideFont(canvas, family, weight);
+        };
+        const start = () => {
+          render();
+          if (state.reducedMotion) return;
+          interval = window.setInterval(() => {
+            index = (index + 1) % INSIDE_FONT_FAMILIES.length;
+            render();
+          }, 1300);
+        };
+        const observer = new IntersectionObserver(entries => {
+          visible = entries[0]?.isIntersecting === true;
+          if (!visible) return;
+          observer.disconnect();
+          start();
+        }, { threshold: .1, rootMargin: "120px" });
+        observer.observe(canvas);
+        const resize = new ResizeObserver(render);
+        resize.observe(canvas.parentElement);
+        render();
+        window.addEventListener("beforeunload", () => window.clearInterval(interval), { once: true });
+      };
+
+      const initializeInsideInspection = card => {
+        const grid = card.querySelector("[data-inside-frame-grid]");
+        const outline = card.querySelector("[data-inside-inspection-outline]");
+        const eyes = card.querySelector("[data-inside-inspection-eyes]");
+        if (!grid || !outline || !eyes) return;
+
+        drawInsideFrames(card);
+        const resize = new ResizeObserver(() => drawInsideFrames(card));
+        resize.observe(grid);
+
+        let frame = 0;
+        let nextMove = performance.now() + 1200;
+        let previous = null;
+        let target = null;
+        let lastBlink = performance.now() + 1500;
+        let blinkStart = -1;
+        let raf = 0;
+        let visible = true;
+
+        const randomPoint = fallback => {
+          const bounds = grid.getBoundingClientRect();
+          for (let tries = 0; tries < 12; tries += 1) {
+            const point = { x: bounds.width * (-.08 + Math.random() * 1.16), y: bounds.height * (-.12 + Math.random() * 1.24) };
+            if (!fallback || Math.hypot(point.x - fallback.x, point.y - fallback.y) > .4 * Math.hypot(bounds.width, bounds.height)) return point;
+          }
+          return { x: bounds.width / 2, y: bounds.height / 2 };
+        };
+
+        const pickTarget = now => {
+          const cards = [...grid.querySelectorAll(".inside-frame")];
+          const choice = cards[Math.floor(Math.random() * cards.length)];
+          const bounds = grid.getBoundingClientRect();
+          const rect = choice.getBoundingClientRect();
+          previous = target || { x: rect.left - bounds.left, y: rect.top - bounds.top, w: rect.width, h: rect.height };
+          if (Math.random() < .75) {
+            target = { x: rect.left - bounds.left, y: rect.top - bounds.top, w: rect.width, h: rect.height };
+          } else {
+            const point = randomPoint(previous);
+            target = { x: point.x, y: point.y, w: 94, h: 54 };
+          }
+          outline.style.opacity = target.w > 100 ? "1" : "0";
+          nextMove = now + 700 + Math.random() * 1200;
+        };
+
+        const render = now => {
+          if (!visible) return;
+          if (!target || now >= nextMove) pickTarget(now);
+          const bounds = grid.getBoundingClientRect();
+          const progress = Math.min(1, Math.max(0, (now - (nextMove - 700)) / 700));
+          const eased = smoothStep(progress);
+          const from = previous || target;
+          const to = target;
+          const x = from.x + (to.x - from.x) * eased;
+          const y = from.y + (to.y - from.y) * eased;
+          outline.style.transform = `translate(${x}px, ${y}px)`;
+          outline.style.width = `${to.w}px`;
+          outline.style.height = `${to.h}px`;
+
+          if (now > lastBlink) {
+            blinkStart = now;
+            lastBlink = now + 2200 + 2600 * Math.random();
+          }
+          const blink = blinkStart > 0 ? (now - blinkStart) / 160 : 2;
+          const blinkScale = blink < 1 ? 1 - .92 * Math.sin(Math.PI * blink) : 1;
+          const centerX = target.x + target.w / 2;
+          const centerY = target.y + target.h / 2;
+          eyes.style.opacity = target.w > 100 ? "1" : "0";
+          eyes.style.transform = `translate(${centerX - 66}px, ${centerY - 36}px)`;
+          eyes.querySelectorAll("[data-pupil]").forEach((pupil, index) => {
+            const orbit = index === 0 ? -8 : 8;
+            pupil.setAttribute("transform", `translate(${orbit * .5}px ${12 * blinkScale}px) scale(1 ${blinkScale})`);
+          });
+          frame += 1;
+          if (!state.reducedMotion) raf = requestAnimationFrame(render);
+        };
+
+        const observer = new IntersectionObserver(entries => {
+          visible = entries[0]?.isIntersecting === true;
+          if (visible && !state.reducedMotion) {
+            cancelAnimationFrame(raf);
+            raf = requestAnimationFrame(render);
+          }
+        }, { threshold: .1, rootMargin: "120px" });
+        observer.observe(grid);
+        if (state.reducedMotion) {
+          pickTarget(performance.now());
+          render(performance.now());
+        } else {
+          raf = requestAnimationFrame(render);
+        }
+      };
+
+      const initializeInsideTools = card => {
+        populateInsideToolRows();
+        if (state.reducedMotion) {
+          card.querySelectorAll(".inside-tool-row").forEach(row => { row.style.animation = "none"; row.style.transform = "translate3d(0,0,0)"; });
+        }
+      };
+
+      const initializeInsideExport = card => {
+        const canvas = card.querySelector("[data-inside-export-canvas]");
+        const progress = card.querySelector("[data-inside-export-progress]");
+        const frameNode = card.querySelector("[data-inside-export-frame]");
+        const complete = card.querySelector("[data-inside-export-complete]");
+        if (!canvas || !progress || !frameNode || !complete) return;
+        let visible = true;
+        let raf = 0;
+        const duration = 8;
+
+        const render = now => {
+          const elapsed = state.reducedMotion ? 7.99 : Math.min(duration, (1.6 * ((now / 1000) % (duration + 2.4))));
+          const ratio = elapsed / duration;
+          const rect = canvas.getBoundingClientRect();
+          const dpr = Math.min(2, window.devicePixelRatio || 1);
+          const scale = Math.max(.01, rect.width / LANDING_FRAME_DOC.canvas.width);
+          canvas.width = Math.max(1, Math.round(LANDING_FRAME_DOC.canvas.width * scale * dpr));
+          canvas.height = Math.max(1, Math.round(LANDING_FRAME_DOC.canvas.height * scale * dpr));
+          const context = canvas.getContext("2d");
+          if (context) {
+            context.setTransform(scale * dpr, 0, 0, scale * dpr, 0, 0);
+            drawInsideBentoFrame(context, elapsed);
+          }
+          progress.style.transform = `scaleX(${Math.min(1, ratio)})`;
+          const totalFrames = duration * 60;
+          const completeNow = elapsed >= duration - .001;
+          frameNode.textContent = `${completeNow ? totalFrames : Math.floor(60 * elapsed)} / ${totalFrames}`;
+          complete.classList.toggle("is-visible", completeNow);
+          if (visible && !state.reducedMotion) raf = requestAnimationFrame(render);
+        };
+
+        const observer = new IntersectionObserver(entries => {
+          visible = entries[0]?.isIntersecting === true;
+          if (visible && !state.reducedMotion) {
+            cancelAnimationFrame(raf);
+            raf = requestAnimationFrame(render);
+          } else {
+            cancelAnimationFrame(raf);
+          }
+        }, { threshold: .1, rootMargin: "120px" });
+        observer.observe(canvas);
+        const resize = new ResizeObserver(() => render(performance.now()));
+        resize.observe(canvas.parentElement);
+        render(performance.now());
+      };
+
+      const initializeInside = () => {
+        const section = document.querySelector("#inside");
+        const intro = section?.querySelector("[data-inside-intro]");
+        const grid = section?.querySelector("[data-inside-grid]");
+        const cards = section ? [...section.querySelectorAll("[data-inside-card]")] : [];
+        if (!section || !intro || !grid || !cards.length) return;
+
+        const reveal = () => {
+          intro.classList.add("is-visible");
+          cards.forEach((card, index) => {
+            window.setTimeout(() => card.classList.add("inside-card-reveal"), state.reducedMotion ? 0 : 100 + index * 60);
+          });
+        };
+
+        const revealObserver = new IntersectionObserver(entries => {
+          if (!entries.some(entry => entry.isIntersecting)) return;
+          reveal();
+          revealObserver.disconnect();
+        }, { threshold: .15 });
+        revealObserver.observe(section);
+
+        cards.forEach(card => {
+          card.addEventListener("pointerenter", () => {
+            if (state.reducedMotion) return;
+            runAnimation(card, "inside-hover", { y: -3, boxShadow: "0 0 0 0.5px rgba(0,0,0,.08), 0 30px 60px -30px rgba(0,0,0,.3)" }, { type: "spring", stiffness: 300, damping: 30 });
+          });
+          card.addEventListener("pointerleave", () => {
+            runAnimation(card, "inside-hover", { y: 0, boxShadow: "0 0 0 0.5px rgba(0,0,0,.07), 0 20px 50px -30px rgba(0,0,0,.25)" }, state.reducedMotion ? { duration: 0 } : { type: "spring", stiffness: 300, damping: 30 });
+          });
+        });
+
+        initializeInsidePresets(cards.find(card => card.dataset.insideCard === "presets"));
+        initializeInsidePrompt(cards.find(card => card.dataset.insideCard === "prompt"));
+        initializeInsideFonts(cards.find(card => card.dataset.insideCard === "fonts"));
+        initializeInsideInspection(cards.find(card => card.dataset.insideCard === "inspection"));
+        initializeInsideTools(cards.find(card => card.dataset.insideCard === "tools"));
+        initializeInsideExport(cards.find(card => card.dataset.insideCard === "export"));
+      };
+
+      /* =========================================================
          Reels
          ========================================================= */
 
@@ -3391,6 +4714,7 @@
       const initialize = () => {
         initializeLogoTracking();
         initializeHowAnimations();
+        initializeInside();
         initializeReels();
         initializePricing();
         initializeCommand();

@@ -18,3 +18,19 @@ Let's implement your finding to our sources code: https://github.com/0n6k4v-Code
 
 Don't update it directly to github. I need to see the code in this conversation. Proceed these task instead.
 ```
+
+```text
+Now we're working on this repository: https://github.com/0n6k4v-Coder/web-app-reverse-engineering-lab
+
+This is our cloned sources code:
+- https://github.com/0n6k4v-Coder/web-app-reverse-engineering-lab/blob/main/apps/mtioon/clone/index.html
+
+User Request:
+I want to clone pricing section.
+
+Crucial Skills:
+- https://github.com/0n6k4v-Coder/skills/tree/master/google/chrome-devtools-mcp/skills
+
+Your Task:
+Give me the Chrome DevTools CLI to inspect the target website’s source code. You must inspect both appearance, functionality, and everything necessary until you have enough context from the original target website’s source code. When you are ready, provide the generated code inside a fenced code block in the conversation.
+```

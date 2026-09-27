@@ -2420,6 +2420,231 @@
       .terminal-caret { animation: none; }
     }
   </style>
+
+<style id="kit-inserted-styles">
+  .kit-section {
+    width: 100%;
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 128px 24px 0;
+    scroll-margin-top: 96px;
+  }
+
+  .kit-intro {
+    max-width: 640px;
+    opacity: 0;
+    transform: translateY(24px);
+    filter: blur(8px);
+  }
+
+  .kit-intro.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+    transition: opacity .7s ease, transform .8s cubic-bezier(.22,1,.36,1), filter .7s ease;
+  }
+
+  .kit-heading {
+    margin: 0;
+    color: var(--ink);
+    font-family: "Sunghyun Sans", Inter, sans-serif;
+    font-size: 38px;
+    font-weight: 900;
+    line-height: 1.02;
+    letter-spacing: -.03em;
+    text-wrap: balance;
+  }
+
+  .kit-description {
+    max-width: 560px;
+    margin: 16px 0 0;
+    color: var(--muted-ink);
+    font-family: Inter,ui-sans-serif,system-ui,sans-serif;
+    font-size: 17px;
+    font-weight: 400;
+    line-height: 27.625px;
+  }
+
+  .kit-command-section { margin-top: 48px; }
+
+  .kit-command-outer {
+    width: fit-content;
+    max-width: 100%;
+    margin-top: 36px;
+  }
+
+  .kit-command-viewport {
+    position: relative;
+    width: 100%;
+    min-width: 0;
+    perspective: 1100px;
+    overflow: visible;
+  }
+
+  .kit-command-button {
+    position: relative;
+    display: block;
+    width: 100%;
+    min-width: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 9999px;
+    background: transparent;
+    color: var(--ink);
+    text-align: left;
+    cursor: pointer;
+    outline: none;
+    appearance: none;
+    -webkit-appearance: none;
+    transform-style: preserve-3d;
+    transform-origin: 50% 50%;
+    will-change: auto;
+  }
+
+  .kit-command-button:focus-visible {
+    outline: 2px solid var(--orange);
+    outline-offset: 4px;
+  }
+
+  .kit-command-stack {
+    position: relative;
+    display: inline-block;
+    flex-shrink: 0;
+    transform-style: preserve-3d;
+  }
+
+  .kit-command-depth {
+    position: absolute;
+    inset: 0;
+    border-radius: 9999px;
+    background: #0a0a0a;
+    transform-style: preserve-3d;
+    pointer-events: none;
+  }
+
+  .kit-command-depth.depth-0 { transform: translateZ(0); box-shadow: 0 26px 34px -18px rgba(0,0,0,.5); }
+  .kit-command-depth.depth-1 { transform: translateZ(2px); }
+  .kit-command-depth.depth-2 { transform: translateZ(4px); }
+  .kit-command-depth.depth-3 { transform: translateZ(6px); }
+  .kit-command-depth.depth-4 { transform: translateZ(8px); }
+  .kit-command-depth.depth-5 { transform: translateZ(10px); }
+  .kit-command-depth.depth-6 { transform: translateZ(12px); }
+  .kit-command-depth.depth-7 { transform: translateZ(14px); }
+
+  .kit-command-face {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    min-height: 60px;
+    gap: 12px;
+    padding: 10px 10px 10px 24px;
+    border-radius: 9999px;
+    background: linear-gradient(180deg,rgba(255,255,255,.16) 0%,rgba(255,255,255,0) 60%),#2b2b2b;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.28);
+    transform: translateZ(16px);
+    transform-style: preserve-3d;
+  }
+
+  .kit-command-code {
+    flex: 1 1 auto;
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    color: rgba(255,255,255,.85);
+    font-family: ui-monospace,"SF Mono",Menlo,monospace;
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 21.125px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: clip;
+  }
+
+  .kit-command-prefix {
+    margin-right: 8px;
+    color: rgba(255,255,255,.35);
+  }
+
+  .kit-copy-control {
+    position: relative;
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+    height: 40px;
+    padding: 0 16px;
+    border-radius: 9999px;
+    background: var(--orange);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.3),0 3px 0 var(--orange-dark);
+    color: #fff;
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 19.5px;
+    pointer-events: none;
+    transform-style: preserve-3d;
+  }
+
+  .kit-copy-label,.kit-copy-check { grid-area: 1/1; }
+  .kit-copy-label { opacity: 1; transform: scale(1); }
+  .kit-copy-check { display: flex; align-items: center; justify-content: center; opacity: 0; transform: scale(.4); }
+  .kit-copy-check svg { width: 18px; height: 18px; transform: translateZ(1px); }
+
+  .kit-copy-status {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0,0,0,0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  .kit-copied-badge {
+    position: absolute;
+    top: -42px;
+    right: 0;
+    z-index: 10;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 28px;
+    padding: 0 10px;
+    border-radius: 9999px;
+    background: #171717;
+    color: #fff;
+    font-family: Inter,ui-sans-serif,system-ui,sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 18px;
+    white-space: nowrap;
+    pointer-events: none;
+    transform-origin: 100% 100%;
+  }
+
+  @media (min-width: 640px) {
+    .kit-heading { font-size: 52px; line-height: 53.04px; letter-spacing: -1.56px; }
+    .kit-command-code { font-size: 13.5px; line-height: 21.9375px; }
+  }
+
+  @media (max-width: 767px) {
+    .kit-section { padding-top: 100px; }
+  }
+
+  @media (max-width: 639px) {
+    .kit-section { padding-left: 20px; padding-right: 20px; }
+    .kit-command-face { padding-left: 16px; }
+    .kit-copy-control { padding-left: 14px; padding-right: 14px; }
+    .kit-command-code { overflow-x: auto; scrollbar-width: none; }
+    .kit-command-code::-webkit-scrollbar { display: none; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .kit-intro { opacity: 1; transform: none; filter: none; }
+  }
+</style>
+
 </head>
 
 <body>
@@ -2491,6 +2716,45 @@
     </div>
 
 
+
+
+
+    <!-- Your repo -->
+    <section id="kit" class="kit-section" aria-labelledby="kit-heading">
+      <div class="kit-intro" data-kit-intro>
+        <h2 id="kit-heading" class="kit-heading">Your repo is the brief.</h2>
+        <p class="kit-description">Nothing to clone. You connect mtioon from inside your own project, and Claude reads all of it: the README, the copy on the page, your colours and fonts, the logo and screenshots in public/. Ask for a launch video and it is built from your context, not from a template.</p>
+      </div>
+
+      <div class="kit-command-section">
+        <div class="kit-command-outer">
+          <div class="kit-command-viewport">
+            <button type="button" id="kit-copy-command" class="kit-command-button" aria-label="Copy: claude mcp add --scope user --transport http mtioon http://localhost:3100/api/mcp" style="transform-style:preserve-3d;transform:rotateX(22deg)">
+              <span class="kit-command-stack" style="transform-style:preserve-3d;display:inline-block">
+                <span aria-hidden="true" class="kit-command-depth depth-0"></span>
+                <span aria-hidden="true" class="kit-command-depth depth-1"></span>
+                <span aria-hidden="true" class="kit-command-depth depth-2"></span>
+                <span aria-hidden="true" class="kit-command-depth depth-3"></span>
+                <span aria-hidden="true" class="kit-command-depth depth-4"></span>
+                <span aria-hidden="true" class="kit-command-depth depth-5"></span>
+                <span aria-hidden="true" class="kit-command-depth depth-6"></span>
+                <span aria-hidden="true" class="kit-command-depth depth-7"></span>
+                <span class="kit-command-face" style="transform:translateZ(16px)">
+                  <code class="kit-command-code"><span class="kit-command-prefix">~/your-app $</span>claude mcp add --scope user --transport http mtioon http://localhost:3100/api/mcp</code>
+                  <span id="kit-copy-control" class="kit-copy-control" aria-hidden="true">
+                    <span id="kit-copy-label" class="kit-copy-label">Copy</span>
+                    <span id="kit-copy-check" class="kit-copy-check">
+                      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8.5l3.2 3.2L13 4.8" /></svg>
+                    </span>
+                  </span>
+                </span>
+              </span>
+            </button>
+            <span id="kit-copy-status" class="kit-copy-status" role="status" aria-live="polite"></span>
+          </div>
+        </div>
+      </div>
+    </section>
 
     <!-- Inside -->
     <section id="inside" class="inside-section" aria-labelledby="inside-heading">
@@ -5733,6 +5997,168 @@
         );
       };
 
+
+
+      /* =========================================================
+         Your repo
+         ========================================================= */
+
+      const initializeKit = () => {
+        const section = document.querySelector("#kit");
+        const intro = section?.querySelector("[data-kit-intro]");
+        const button = section?.querySelector("#kit-copy-command");
+        const copyControl = section?.querySelector("#kit-copy-control");
+        const copyLabel = section?.querySelector("#kit-copy-label");
+        const copyCheck = section?.querySelector("#kit-copy-check");
+        const status = section?.querySelector("#kit-copy-status");
+        const viewport = section?.querySelector(".kit-command-viewport");
+        if (!section || !intro || !button || !copyControl || !copyLabel || !copyCheck || !status || !viewport) return;
+
+        const KIT_COMMAND = "claude mcp add --scope user --transport http mtioon http://localhost:3100/api/mcp";
+
+        const baseState = { rotateX: 22, y: 0, scale: 1 };
+        const hoverState = { rotateX: 12, y: -3, scale: 1.01 };
+        const tapState = { rotateX: 4, y: 5, scale: 0.985 };
+
+        let pointerInside = false;
+        let resetTimer = 0;
+        let copiedBadge = null;
+
+        const animateCommand = values => runAnimation(
+          button,
+          "kit-command",
+          values,
+          transformTransition(TRANSITIONS.command)
+        );
+
+        const setRest = () => animateCommand(baseState);
+        const setHover = () => animateCommand(state.reducedMotion ? baseState : hoverState);
+        const setTap = () => animateCommand(state.reducedMotion ? baseState : tapState);
+
+        const animateCopyControl = copied => runAnimation(
+          copyControl,
+          "kit-copy-control",
+          {
+            backgroundColor: copied ? COLORS.green : COLORS.orange,
+            boxShadow: copied
+              ? `inset 0 1px 0 rgba(255,255,255,.3), 0 3px 0 ${COLORS.greenDark}`
+              : `inset 0 1px 0 rgba(255,255,255,.3), 0 3px 0 ${COLORS.orangeDark}`
+          },
+          state.reducedMotion ? { duration: 0 } : { duration: .25 }
+        );
+
+        const animateCopyState = copied => {
+          const transition = state.reducedMotion ? { duration: 0 } : TRANSITIONS.copyState;
+          runAnimation(copyLabel, "kit-copy-label", {
+            opacity: copied ? 0 : 1,
+            scale: copied ? .6 : 1
+          }, transition);
+          runAnimation(copyCheck, "kit-copy-check", {
+            opacity: copied ? 1 : 0,
+            scale: copied ? 1 : .4
+          }, transition);
+        };
+
+        const showCopiedBadge = () => {
+          if (copiedBadge?.isConnected) copiedBadge.remove();
+
+          const badge = document.createElement("span");
+          badge.className = "kit-copied-badge";
+          badge.setAttribute("aria-hidden", "true");
+          badge.textContent = "Copied";
+          viewport.appendChild(badge);
+          copiedBadge = badge;
+
+          if (state.reducedMotion) {
+            badge.style.opacity = "1";
+            return;
+          }
+
+          runAnimation(badge, "enter", {
+            opacity: 1,
+            y: 0,
+            scale: 1
+          }, TRANSITIONS.copiedBadge);
+
+          window.setTimeout(() => {
+            if (copiedBadge !== badge) return;
+            copiedBadge = null;
+            runAnimation(badge, "exit", {
+              opacity: 0,
+              y: -6,
+              scale: .92
+            }, { duration: .22 });
+            window.setTimeout(() => badge.remove(), 230);
+          }, 1200);
+        };
+
+        button.addEventListener("pointerenter", () => {
+          pointerInside = true;
+          setHover();
+        });
+
+        button.addEventListener("pointerleave", () => {
+          pointerInside = false;
+          setRest();
+        });
+
+        button.addEventListener("pointerdown", setTap);
+
+        button.addEventListener("pointerup", () => {
+          if (pointerInside) setHover();
+          else setRest();
+        });
+
+        button.addEventListener("pointercancel", () => {
+          if (pointerInside) setHover();
+          else setRest();
+        });
+
+        button.addEventListener("click", async () => {
+          try {
+            await navigator.clipboard.writeText(KIT_COMMAND);
+          } catch {
+            const textarea = document.createElement("textarea");
+            textarea.value = KIT_COMMAND;
+            textarea.setAttribute("readonly", "");
+            textarea.style.position = "fixed";
+            textarea.style.opacity = "0";
+            document.body.appendChild(textarea);
+            textarea.select();
+            try { document.execCommand("copy"); }
+            finally { textarea.remove(); }
+          }
+
+          animateCopyControl(true);
+          animateCopyState(true);
+          status.textContent = "Copied";
+          showCopiedBadge();
+          track("mcp_command_copied", { where: "kit" });
+
+          window.clearTimeout(resetTimer);
+          resetTimer = window.setTimeout(() => {
+            animateCopyControl(false);
+            animateCopyState(false);
+            status.textContent = "";
+          }, 1200);
+        });
+
+        if (state.reducedMotion) {
+          intro.classList.add("is-visible");
+        } else if ("IntersectionObserver" in window) {
+          const observer = new IntersectionObserver(entries => {
+            if (!entries.some(entry => entry.isIntersecting)) return;
+            intro.classList.add("is-visible");
+            observer.disconnect();
+          }, { threshold: .15 });
+          observer.observe(intro);
+        } else {
+          intro.classList.add("is-visible");
+        }
+
+        setRest();
+      };
+
       const initializeInside = () => {
         const section = document.querySelector("#inside");
         const intro = section?.querySelector("[data-inside-intro]");
@@ -6142,6 +6568,7 @@
       const initialize = () => {
         initializeLogoTracking();
         initializeHowAnimations();
+        initializeKit();
         initializeInside();
         initializeReels();
         initializePricing();

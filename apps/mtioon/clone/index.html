@@ -1,12 +1,110 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="utf-8" />
+
   <meta
     name="viewport"
-    content="width=device-width, initial-scale=1.0"
+    content="width=device-width, initial-scale=1"
   />
-  <title>MTIOON Clone</title>
+
+  <title>mtioon · motion, by prompt</title>
+
+  <link
+    rel="icon"
+    href="https://mtioon.com/icon.png?icon.2rgw0wp3zuc1o.png"
+    type="image/png"
+    sizes="128x128"
+  />
+
+  <link
+    rel="apple-touch-icon"
+    href="https://mtioon.com/apple-icon.png?apple-icon.416yedyy4tum7.png"
+    type="image/png"
+    sizes="180x180"
+  />
+
+  <meta
+    name="description"
+    content="A motion design editor you drive by talking to Claude. Every frame stays editable."
+  />
+
+  <meta
+    property="og:title"
+    content="mtioon · motion, by prompt"
+  />
+
+  <meta
+    property="og:description"
+    content="A motion design editor you drive by talking to Claude. Every frame stays editable."
+  />
+
+  <meta
+    property="og:image"
+    content="https://mtioon.com/opengraph-image.png?opengraph-image.1qte1qv3kvhqd.png"
+  />
+
+  <meta
+    property="og:image:type"
+    content="image/png"
+  />
+
+  <meta
+    property="og:image:width"
+    content="2400"
+  />
+
+  <meta
+    property="og:image:height"
+    content="1260"
+  />
+
+  <meta
+    property="og:image:alt"
+    content="mtioon: the motion editor you drive by talking to Claude
+"
+  />
+
+  <meta
+    name="twitter:card"
+    content="summary_large_image"
+  />
+
+  <meta
+    name="twitter:title"
+    content="mtioon · motion, by prompt"
+  />
+
+  <meta
+    name="twitter:description"
+    content="A motion design editor you drive by talking to Claude. Every frame stays editable."
+  />
+
+  <meta
+    name="twitter:image"
+    content="https://mtioon.com/twitter-image.png?twitter-image.1qte1qv3kvhqd.png"
+  />
+
+  <meta
+    name="twitter:image:alt"
+    content="mtioon: the motion editor you drive by talking to Claude
+"
+  />
+
+  <meta
+    name="twitter:image:type"
+    content="image/png"
+  />
+
+  <meta
+    name="twitter:image:width"
+    content="2400"
+  />
+
+  <meta
+    name="twitter:image:height"
+    content="1260"
+  />
 
   <style>
     :root {
@@ -1261,7 +1359,6 @@
               </g>
             </g>
 
-            <!-- Fixed: footer eye nodes now match the original SVG structure. -->
             <g
               data-k="o1"
               transform="translate(322 0)"
@@ -1305,12 +1402,6 @@
     </section>
   </main>
 
-  <!--
-    Motion's current official documentation supports loading the
-    browser build directly from a script tag. The version is pinned
-    rather than using @latest so the animation engine cannot change
-    underneath the clone.
-  -->
   <script type="module">
     import {
       animate
@@ -1466,19 +1557,12 @@
         name,
         properties
       ) => {
-        /*
-          Extension point for the original site's analytics.
-
-          Keeping this local no-op means the clone remains standalone
-          while preserving the same event boundary as the source.
-        */
-
         void name;
         void properties;
       };
 
       /* =========================================================
-         Exact navbar eye tracking
+         Exact logo eye tracking
          ========================================================= */
 
       const LOGO = {
@@ -1825,22 +1909,6 @@
             window.requestAnimationFrame(
               render
             );
-
-          return () => {
-            window.removeEventListener(
-              "pointermove",
-              handlePointerMove,
-              true
-            );
-
-            if (
-              frameId !== null
-            ) {
-              window.cancelAnimationFrame(
-                frameId
-              );
-            }
-          };
         };
 
       /* =========================================================
@@ -1909,7 +1977,6 @@
           };
 
           let pointerInside = false;
-          let copied = false;
 
           let resetTimer = null;
           let badgeExitTimer = null;
@@ -1976,9 +2043,7 @@
 
           button.addEventListener(
             "pointerdown",
-            () => {
-              setTap();
-            }
+            setTap
           );
 
           button.addEventListener(
@@ -2199,7 +2264,7 @@
                 }
               );
 
-              const transformTransition =
+              const transition =
                 state.reducedMotion
                   ? { duration: 0 }
                   : TRANSITIONS.copiedBadge;
@@ -2213,7 +2278,7 @@
                   rotateX: 28,
                   rotateZ: 4
                 },
-                transformTransition
+                transition
               );
 
               runAnimation(
@@ -2285,8 +2350,6 @@
 
           const showCopied =
             () => {
-              copied = true;
-
               animateCopyControl(
                 true
               );
@@ -2316,8 +2379,6 @@
               resetTimer =
                 window.setTimeout(
                   () => {
-                    copied = false;
-
                     animateCopyControl(
                       false
                     );
@@ -2360,8 +2421,6 @@
               showCopied();
             }
           );
-
-          void copied;
         };
 
       /* =========================================================

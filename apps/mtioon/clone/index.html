@@ -37,9 +37,12 @@
       --green-dark: #23934a;
       --command-dark: #2b2b2b;
       --command-black: #0a0a0a;
+      --spring: cubic-bezier(.34, 1.4, .64, 1);
     }
 
-    * { box-sizing: border-box; }
+    * {
+      box-sizing: border-box;
+    }
 
     html,
     body {
@@ -47,7 +50,9 @@
       margin: 0;
     }
 
-    html { scroll-behavior: smooth; }
+    html {
+      scroll-behavior: smooth;
+    }
 
     body {
       min-width: 320px;
@@ -58,21 +63,33 @@
       text-rendering: optimizeLegibility;
     }
 
-    a { color: inherit; text-decoration: none; }
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
 
     button,
     input,
     textarea,
-    select { font: inherit; }
+    select {
+      font: inherit;
+    }
 
-    button { border: 0; }
+    button {
+      border: 0;
+    }
 
     .landing {
       position: relative;
       min-height: 100vh;
       overflow-x: clip;
       background-color: var(--surface);
-      background-image: radial-gradient(60% 40% at 50% 0%, rgba(255, 90, 31, 0.1), rgba(0, 0, 0, 0) 70%);
+      background-image:
+        radial-gradient(
+          60% 40% at 50% 0%,
+          rgba(255, 90, 31, 0.1),
+          rgba(0, 0, 0, 0) 70%
+        );
       background-repeat: no-repeat;
       background-position: center top;
       background-size: 100% 100%;
@@ -148,7 +165,9 @@
       transition: color 200ms ease;
     }
 
-    .nav-link:hover { color: var(--ink); }
+    .nav-link:hover {
+      color: var(--ink);
+    }
 
     .nav-actions {
       display: flex;
@@ -169,7 +188,9 @@
       transition: color 200ms ease;
     }
 
-    .sign-in:hover { color: var(--ink); }
+    .sign-in:hover {
+      color: var(--ink);
+    }
 
     .demo-button {
       display: inline-flex;
@@ -209,7 +230,10 @@
       opacity: 1;
       transform: translateY(0);
       filter: blur(0);
-      transition: opacity 0.7s ease, transform 0.8s cubic-bezier(0.22, 1, 0.36, 1), filter 0.7s ease;
+      transition:
+        opacity 0.7s ease,
+        transform 0.8s cubic-bezier(0.22, 1, 0.36, 1),
+        filter 0.7s ease;
     }
 
     .how-heading {
@@ -262,8 +286,13 @@
         filter 0.7s ease;
     }
 
-    .how-card:nth-child(2).is-visible { transition-delay: 0.12s; }
-    .how-card:nth-child(3).is-visible { transition-delay: 0.24s; }
+    .how-card:nth-child(2).is-visible {
+      transition-delay: 0.12s;
+    }
+
+    .how-card:nth-child(3).is-visible {
+      transition-delay: 0.24s;
+    }
 
     .how-card-visual {
       position: relative;
@@ -326,94 +355,155 @@
       overflow-wrap: anywhere;
     }
 
-    .terminal-prompt { color: rgba(255, 255, 255, 0.35); }
+    .terminal-prompt {
+      color: rgba(255, 255, 255, 0.35);
+    }
 
     .terminal-caret {
       display: inline-block;
+      vertical-align: text-bottom;
       width: 7px;
-      height: 1em;
-      margin-left: 1px;
-      vertical-align: -2px;
-      background: rgba(255, 255, 255, 0.7);
-      animation: how-caret 0.85s steps(1, end) infinite;
+      height: 1.1em;
+      margin-left: 2px;
+      background: #ff8a5b;
+      animation: 1s steps(2) infinite caret-blink;
     }
 
-    .terminal-connected {
-      margin: 6px 0;
-    }
-
-    .terminal-tools {
+    .terminal-tools,
+    .terminal-tools-node {
+      margin: 0;
       color: rgba(255, 255, 255, 0.5);
     }
 
-    .terminal-tools .terminal-prompt { color: rgba(255, 255, 255, 0.35); }
-    .terminal-tools strong { color: rgba(255, 255, 255, 0.85); font-weight: 400; }
+    .terminal-tools .terminal-prompt,
+    .terminal-tools-node .terminal-prompt {
+      color: rgba(255, 255, 255, 0.35);
+    }
+
+    .terminal-tools strong,
+    .terminal-tools-text {
+      color: rgba(255, 255, 255, 0.85);
+      font-weight: 400;
+    }
+
+    .terminal-connected-node {
+      margin: 6px 0;
+    }
 
     /* Candy controls */
 
-    .candy-wrap {
+    .candy-drop {
       display: inline-block;
+      animation:
+        0.55s cubic-bezier(0.3, 0.7, 0.4, 1)
+        0s 1 normal both running candy-drop;
+    }
+
+    .candy-wrap {
       position: relative;
-      perspective: 700px;
+      display: inline-block;
+      flex-shrink: 0;
       transform-style: preserve-3d;
+      transform: rotateX(22deg);
     }
 
     .candy-layer {
       position: absolute;
       inset: 0;
-      border-radius: inherit;
-      pointer-events: none;
+      border-radius: 9999px;
       background: var(--candy-side);
+      pointer-events: none;
+    }
+
+    .candy-layer:nth-child(1) {
       transform: translateZ(0);
     }
 
-    .candy-layer:nth-child(1) { transform: translateZ(2px); }
-    .candy-layer:nth-child(2) { transform: translateZ(4px); }
-    .candy-layer:nth-child(3) { transform: translateZ(6px); }
-    .candy-layer:nth-child(4) { transform: translateZ(8px); }
+    .candy-layer:nth-child(2) {
+      transform: translateZ(2px);
+    }
+
+    .candy-layer:nth-child(3) {
+      transform: translateZ(4px);
+    }
+
+    .candy-layer:nth-child(4) {
+      transform: translateZ(6px);
+    }
 
     .candy-face {
       position: relative;
-      display: inline-flex;
+      display: flex;
       align-items: center;
-      justify-content: center;
-      height: 30px;
+      height: 28px;
       gap: 6px;
       padding: 0 12px;
       border-radius: 9999px;
-      background: linear-gradient(180deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0) 60%), var(--candy-face);
-      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.28), 0 10px 16px -8px rgba(0, 0, 0, 0.3);
+      background:
+        linear-gradient(
+          180deg,
+          rgba(255, 255, 255, 0.16),
+          rgba(255, 255, 255, 0) 60%
+        ),
+        var(--candy-face);
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.28);
       color: #ffffff;
-      font-size: 11.5px;
+      font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+      font-size: 12px;
       font-weight: 600;
       line-height: 1;
       white-space: nowrap;
-      transform: translateZ(10px) rotateX(24deg);
-      transform-style: preserve-3d;
+      transform: translateZ(8px);
     }
 
-    .candy-face svg { width: 12px; height: 12px; flex-shrink: 0; }
-
-    .candy-drop {
-      opacity: 0;
-      transform: translateY(-10px) rotateX(-24deg) scale(0.92);
-    }
-
-    .candy-drop.is-visible {
-      opacity: 1;
-      transform: translateY(0) rotateX(0) scale(1);
-      transition: opacity 0.35s ease, transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+    .candy-face svg {
+      width: 12px;
+      height: 12px;
+      flex-shrink: 0;
     }
 
     .pop-in {
-      opacity: 0;
-      transform: translateY(8px) scale(0.98);
+      animation: pop-in .28s var(--spring) both;
     }
 
-    .pop-in.is-visible {
-      opacity: 1;
-      transform: translateY(0) scale(1);
-      transition: opacity 0.35s ease, transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+    @keyframes candy-drop {
+      0% {
+        opacity: 0;
+        transform: translateY(-26px) scale(0.6);
+      }
+
+      55% {
+        opacity: 1;
+        transform: translateY(3px) scale(1.04);
+      }
+
+      78% {
+        transform: translateY(-1.5px) scale(0.99);
+      }
+
+      100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    @keyframes pop-in {
+      0% {
+        opacity: 0;
+        transform: translateY(6px) scale(0.97);
+      }
+
+      100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    @keyframes caret-blink {
+      100% {
+        background: transparent;
+      }
     }
 
     /* Video card */
@@ -503,8 +593,16 @@
         0 0 0 0.5px rgba(0, 0, 0, 0.06);
     }
 
-    .inspector-title { margin: 0 0 8px; font-weight: 600; }
-    .inspector-label { margin: 0 0 4px; color: rgba(0, 0, 0, 0.45); font-size: 10px; }
+    .inspector-title {
+      margin: 0 0 8px;
+      font-weight: 600;
+    }
+
+    .inspector-label {
+      margin: 0 0 4px;
+      color: rgba(0, 0, 0, 0.45);
+      font-size: 10px;
+    }
 
     .inspector-select {
       display: flex;
@@ -539,7 +637,9 @@
       line-height: 28px;
     }
 
-    .inspector-chip-label { margin-top: 8px; }
+    .inspector-chip-label {
+      margin-top: 8px;
+    }
 
     /* =========================================================
        Final CTA
@@ -621,14 +721,38 @@
       pointer-events: none;
     }
 
-    .command-depth.depth-0 { transform: translateZ(0); box-shadow: 0 26px 34px -18px rgba(0, 0, 0, 0.5); }
-    .command-depth.depth-1 { transform: translateZ(2px); }
-    .command-depth.depth-2 { transform: translateZ(4px); }
-    .command-depth.depth-3 { transform: translateZ(6px); }
-    .command-depth.depth-4 { transform: translateZ(8px); }
-    .command-depth.depth-5 { transform: translateZ(10px); }
-    .command-depth.depth-6 { transform: translateZ(12px); }
-    .command-depth.depth-7 { transform: translateZ(14px); }
+    .command-depth.depth-0 {
+      transform: translateZ(0);
+      box-shadow: 0 26px 34px -18px rgba(0, 0, 0, 0.5);
+    }
+
+    .command-depth.depth-1 {
+      transform: translateZ(2px);
+    }
+
+    .command-depth.depth-2 {
+      transform: translateZ(4px);
+    }
+
+    .command-depth.depth-3 {
+      transform: translateZ(6px);
+    }
+
+    .command-depth.depth-4 {
+      transform: translateZ(8px);
+    }
+
+    .command-depth.depth-5 {
+      transform: translateZ(10px);
+    }
+
+    .command-depth.depth-6 {
+      transform: translateZ(12px);
+    }
+
+    .command-depth.depth-7 {
+      transform: translateZ(14px);
+    }
 
     .command-face {
       position: relative;
@@ -639,7 +763,13 @@
       gap: 12px;
       padding: 10px 10px 10px 24px;
       border-radius: 9999px;
-      background: linear-gradient(180deg, rgba(255, 255, 255, 0.16) 0%, rgba(255, 255, 255, 0) 60%), var(--command-dark);
+      background:
+        linear-gradient(
+          180deg,
+          rgba(255, 255, 255, 0.16) 0%,
+          rgba(255, 255, 255, 0) 60%
+        ),
+        var(--command-dark);
       box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.28);
       transform: translateZ(16px);
       transform-style: preserve-3d;
@@ -660,8 +790,14 @@
       -webkit-mask-image: linear-gradient(90deg, #000 calc(100% - 28px), transparent);
     }
 
-    .command-code::-webkit-scrollbar { display: none; }
-    .command-prefix { margin-right: 8px; color: rgba(255, 255, 255, 0.35); }
+    .command-code::-webkit-scrollbar {
+      display: none;
+    }
+
+    .command-prefix {
+      margin-right: 8px;
+      color: rgba(255, 255, 255, 0.35);
+    }
 
     .copy-control {
       position: relative;
@@ -672,7 +808,9 @@
       padding: 0 16px;
       border-radius: 9999px;
       background: var(--orange);
-      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3), 0 3px 0 var(--orange-dark);
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.3),
+        0 3px 0 var(--orange-dark);
       color: #ffffff;
       font-size: 13px;
       font-weight: 600;
@@ -683,10 +821,26 @@
     }
 
     .copy-label,
-    .copy-check { grid-area: 1 / 1; }
-    .copy-label { opacity: 1; transform: scale(1); }
-    .copy-check { display: flex; opacity: 0; transform: scale(0.4); }
-    .copy-check svg { width: 18px; height: 18px; transform: translateZ(1px); }
+    .copy-check {
+      grid-area: 1 / 1;
+    }
+
+    .copy-label {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    .copy-check {
+      display: flex;
+      opacity: 0;
+      transform: scale(0.4);
+    }
+
+    .copy-check svg {
+      width: 18px;
+      height: 18px;
+      transform: translateZ(1px);
+    }
 
     .copy-status {
       position: absolute;
@@ -721,12 +875,30 @@
       pointer-events: none;
     }
 
-    .copy-badge-layer.depth-0 { transform: translateZ(0); box-shadow: 0 14px 20px -10px rgba(0, 0, 0, 0.35); }
-    .copy-badge-layer.depth-1 { transform: translateZ(2px); }
-    .copy-badge-layer.depth-2 { transform: translateZ(4px); }
-    .copy-badge-layer.depth-3 { transform: translateZ(6px); }
-    .copy-badge-layer.depth-4 { transform: translateZ(8px); }
-    .copy-badge-layer.depth-5 { transform: translateZ(10px); }
+    .copy-badge-layer.depth-0 {
+      transform: translateZ(0);
+      box-shadow: 0 14px 20px -10px rgba(0, 0, 0, 0.35);
+    }
+
+    .copy-badge-layer.depth-1 {
+      transform: translateZ(2px);
+    }
+
+    .copy-badge-layer.depth-2 {
+      transform: translateZ(4px);
+    }
+
+    .copy-badge-layer.depth-3 {
+      transform: translateZ(6px);
+    }
+
+    .copy-badge-layer.depth-4 {
+      transform: translateZ(8px);
+    }
+
+    .copy-badge-layer.depth-5 {
+      transform: translateZ(10px);
+    }
 
     .copy-badge-face {
       position: relative;
@@ -737,7 +909,13 @@
       gap: 6px;
       padding: 0 14px;
       border-radius: 9999px;
-      background: linear-gradient(180deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0) 60%), var(--green);
+      background:
+        linear-gradient(
+          180deg,
+          rgba(255, 255, 255, 0.16),
+          rgba(255, 255, 255, 0) 60%
+        ),
+        var(--green);
       box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.28);
       color: #ffffff;
       font-size: 13px;
@@ -748,9 +926,19 @@
       transform-style: preserve-3d;
     }
 
-    .copy-badge-face svg { width: 14px; height: 14px; flex-shrink: 0; transform: translateZ(1px); }
+    .copy-badge-face svg {
+      width: 14px;
+      height: 14px;
+      flex-shrink: 0;
+      transform: translateZ(1px);
+    }
 
-    .final-actions { display: flex; align-items: center; gap: 12px; margin-top: 32px; }
+    .final-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-top: 32px;
+    }
 
     .press-button {
       position: relative;
@@ -765,14 +953,22 @@
       outline: none;
     }
 
-    .press-button:focus-visible { outline: 2px solid var(--orange); outline-offset: 4px; }
+    .press-button:focus-visible {
+      outline: 2px solid var(--orange);
+      outline-offset: 4px;
+    }
 
     .press-back {
       position: absolute;
       inset: 8px 0 0;
       border-radius: 9999px;
       pointer-events: none;
-      background: linear-gradient(180deg, color-mix(in srgb, var(--press-side) 72%, white), var(--press-side));
+      background:
+        linear-gradient(
+          180deg,
+          color-mix(in srgb, var(--press-side) 72%, white),
+          var(--press-side)
+        );
       box-shadow: 0 12px 20px -10px rgba(0, 0, 0, 0.22);
     }
 
@@ -796,8 +992,15 @@
       position: absolute;
       inset: 0;
       border-radius: inherit;
-      background: linear-gradient(180deg, rgba(255, 255, 255, 0.24), rgba(255, 255, 255, 0) 55%);
-      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.45), inset 0 -2px 0 rgba(0, 0, 0, 0.06);
+      background:
+        linear-gradient(
+          180deg,
+          rgba(255, 255, 255, 0.24),
+          rgba(255, 255, 255, 0) 55%
+        );
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.45),
+        inset 0 -2px 0 rgba(0, 0, 0, 0.06);
       pointer-events: none;
     }
 
@@ -810,8 +1013,17 @@
       height: 100%;
     }
 
-    .press-dark { --press-face: #2b2b2b; --press-side: #0a0a0a; --press-text: #ffffff; }
-    .press-light { --press-face: #ffffff; --press-side: #c9c9d1; --press-text: #000000; }
+    .press-dark {
+      --press-face: #2b2b2b;
+      --press-side: #0a0a0a;
+      --press-text: #ffffff;
+    }
+
+    .press-light {
+      --press-face: #ffffff;
+      --press-side: #c9c9d1;
+      --press-text: #000000;
+    }
 
     .final-footer {
       display: flex;
@@ -823,8 +1035,16 @@
       line-height: 19.5px;
     }
 
-    .footer-logo { display: block; width: 93px; height: 22px; overflow: visible; }
-    .footer-note { margin: 0; }
+    .footer-logo {
+      display: block;
+      width: 93px;
+      height: 22px;
+      overflow: visible;
+    }
+
+    .footer-note {
+      margin: 0;
+    }
 
     .nav-link:focus-visible,
     .sign-in:focus-visible,
@@ -834,70 +1054,138 @@
       outline-offset: 2px;
     }
 
-    @keyframes how-caret {
-      0%, 50% { opacity: 1; }
-      50.01%, 100% { opacity: 0; }
-    }
-
     @media (min-width: 400px) {
-      .sign-in { display: inline-flex; }
+      .sign-in {
+        display: inline-flex;
+      }
     }
 
     @media (min-width: 640px) {
-      .navbar { padding-left: 16px; padding-right: 8px; }
-      .command-code { font-size: 13.5px; }
-      .how-card-body { padding: 28px; }
+      .navbar {
+        padding-left: 16px;
+        padding-right: 8px;
+      }
+
+      .command-code {
+        font-size: 13.5px;
+      }
+
+      .how-card-body {
+        padding: 28px;
+      }
     }
 
     @media (min-width: 768px) {
-      .nav-links { display: flex; }
-      .how-heading { font-size: 52px; }
-      .how-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-      .final-cta-heading { font-size: 64px; line-height: 64px; letter-spacing: -2.24px; }
+      .nav-links {
+        display: flex;
+      }
+
+      .how-heading {
+        font-size: 52px;
+      }
+
+      .how-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .final-cta-heading {
+        font-size: 64px;
+        line-height: 64px;
+        letter-spacing: -2.24px;
+      }
     }
 
     @media (max-width: 767px) {
       .how-section,
-      .final-cta { padding-top: 100px; }
-      .final-actions { flex-wrap: wrap; justify-content: center; }
+      .final-cta {
+        padding-top: 100px;
+      }
+
+      .final-actions {
+        flex-wrap: wrap;
+        justify-content: center;
+      }
     }
 
     @media (max-width: 639px) {
       .how-section,
-      .final-cta { padding-left: 20px; padding-right: 20px; }
-      .command-face { padding-left: 16px; }
-      .copy-control { padding-left: 14px; padding-right: 14px; }
-      .how-card-visual { height: 280px; }
+      .final-cta {
+        padding-left: 20px;
+        padding-right: 20px;
+      }
+
+      .command-face {
+        padding-left: 16px;
+      }
+
+      .copy-control {
+        padding-left: 14px;
+        padding-right: 14px;
+      }
+
+      .how-card-visual {
+        height: 280px;
+      }
     }
 
     @media (max-width: 399px) {
-      .nav-wrapper { padding-left: 16px; padding-right: 16px; }
-      .navbar { gap: 8px; }
-      .tweak-inspector { right: 18px; }
-      .tweak-canvas { left: 18px; width: 60%; }
+      .nav-wrapper {
+        padding-left: 16px;
+        padding-right: 16px;
+      }
+
+      .navbar {
+        gap: 8px;
+      }
+
+      .tweak-inspector {
+        right: 18px;
+      }
+
+      .tweak-canvas {
+        left: 18px;
+        width: 60%;
+      }
     }
 
     @media (prefers-reduced-motion: reduce) {
-      html { scroll-behavior: auto; }
+      html {
+        scroll-behavior: auto;
+      }
+
       .nav-link,
       .press-button,
       .how-intro,
-      .how-card,
+      .how-card {
+        transition: none;
+      }
+
       .candy-drop,
-      .pop-in,
-      .terminal-caret { transition: none; animation: none; }
+      .terminal-caret {
+        animation: none;
+      }
     }
   </style>
 </head>
 
 <body>
   <main class="landing">
+
     <!-- Fixed navigation -->
+
     <div class="nav-wrapper">
       <nav class="navbar" aria-label="Primary navigation">
+
         <a class="brand" href="/" aria-label="mtioon">
-          <svg viewBox="-10 -59 712 169" height="26" role="img" aria-label="mtioon" xmlns="http://www.w3.org/2000/svg">
+          <svg
+            viewBox="-10 -59 712 169"
+            height="26"
+            role="img"
+            aria-label="mtioon"
+            xmlns="http://www.w3.org/2000/svg"
+          >
             <g fill="#111111" fill-rule="evenodd">
+
               <g transform="translate(0 0)">
                 <g>
                   <path d="M0 53 H44 V86 A14 14 0 0 1 30 100 H14 A14 14 0 0 1 0 86 V53 Z" />
@@ -907,6 +1195,7 @@
                   <path d="M62 53 A53 53 0 0 1 168 53 H124 A9 9 0 0 0 106 53 Z" />
                 </g>
               </g>
+
               <g transform="translate(176 0)">
                 <g>
                   <path d="M28 -26 H44 A14 14 0 0 1 58 -12 V50.5 H14 V-12 A14 14 0 0 1 28 -26 Z" />
@@ -915,22 +1204,32 @@
                   <path d="M10 0 H66 A10 10 0 0 1 76 10 V20 A10 10 0 0 1 66 30 H10 A10 10 0 0 1 0 20 V10 A10 10 0 0 1 10 0 Z" />
                 </g>
               </g>
+
               <g transform="translate(266 0)">
                 <g>
                   <path d="M14 0 H30 A14 14 0 0 1 44 14 V86 A14 14 0 0 1 30 100 H14 A14 14 0 0 1 0 86 V14 A14 14 0 0 1 14 0 Z" />
                   <path d="M1 -28 A21 21 0 1 0 43 -28 A21 21 0 1 0 1 -28 Z" />
                 </g>
               </g>
+
               <g data-k="o1" transform="translate(322 0)">
                 <g data-rise="">
-                  <path data-k="p1" d="M0 39.5 A60.5 60.5 0 1 0 121 39.5 A60.5 60.5 0 1 0 0 39.5 Z M22.5 34 A26 26 0 1 0 74.5 34 A26 26 0 1 0 22.5 34 Z" />
+                  <path
+                    data-k="p1"
+                    d="M0 39.5 A60.5 60.5 0 1 0 121 39.5 A60.5 60.5 0 1 0 0 39.5 Z M22.5 34 A26 26 0 1 0 74.5 34 A26 26 0 1 0 22.5 34 Z"
+                  />
                 </g>
               </g>
+
               <g data-k="o2" transform="translate(453 0)">
                 <g data-rise="">
-                  <path data-k="p2" d="M0 39.5 A60.5 60.5 0 1 0 121 39.5 A60.5 60.5 0 1 0 0 39.5 Z M22.5 34 A26 26 0 1 0 74.5 34 A26 26 0 1 0 22.5 34 Z" />
+                  <path
+                    data-k="p2"
+                    d="M0 39.5 A60.5 60.5 0 1 0 121 39.5 A60.5 60.5 0 1 0 0 39.5 Z M22.5 34 A26 26 0 1 0 74.5 34 A26 26 0 1 0 22.5 34 Z"
+                  />
                 </g>
               </g>
+
               <g transform="translate(586 0)">
                 <g>
                   <path d="M0 53 H44 V86 A14 14 0 0 1 30 100 H14 A14 14 0 0 1 0 86 V53 Z" />
@@ -938,6 +1237,7 @@
                   <path d="M0 53 A53 53 0 0 1 106 53 H62 A9 9 0 0 0 44 53 Z" />
                 </g>
               </g>
+
             </g>
           </svg>
         </a>
@@ -955,107 +1255,250 @@
           <a class="sign-in" href="/login?next=/dashboard">Sign in</a>
           <a class="demo-button" href="/p/demo">Open the demo</a>
         </div>
+
       </nav>
     </div>
 
     <!-- How it works -->
-    <section id="how" class="how-section" aria-labelledby="how-heading">
+
+    <section
+      id="how"
+      class="how-section"
+      aria-labelledby="how-heading"
+    >
       <div class="how-intro" data-how-intro>
-        <h2 id="how-heading" class="how-heading">You talk. Claude builds. You tweak.</h2>
-        <p class="how-description">Claude is not a prompt box inside the editor. It is Claude Code, connected once, working on the same project you have open.</p>
+        <h2 id="how-heading" class="how-heading">
+          You talk. Claude builds. You tweak.
+        </h2>
+
+        <p class="how-description">
+          Claude is not a prompt box inside the editor. It is Claude Code, connected once, working on the same project you have open.
+        </p>
       </div>
 
       <div class="how-grid">
+
         <article class="how-card" data-how-card="connect">
           <div class="how-card-visual">
+
             <div class="terminal-window" aria-hidden="true">
               <div class="terminal-dots">
                 <span class="terminal-dot"></span>
                 <span class="terminal-dot"></span>
                 <span class="terminal-dot"></span>
               </div>
+
               <div class="terminal-line">
                 <span class="terminal-prompt">$ </span>
                 <span data-terminal-command></span><span class="terminal-caret" data-terminal-caret></span>
               </div>
-              <div class="terminal-connected" data-terminal-connected hidden></div>
-              <div class="terminal-tools" data-terminal-tools hidden>
-                <span class="terminal-prompt">$ </span>claude <strong>· 18 tools: add_layers, apply_motion, render_frames…</strong>
-              </div>
             </div>
+
           </div>
+
           <div class="how-card-body">
-            <h3 class="how-card-title">Connect it in your project</h3>
-            <p class="how-card-copy">One command, run inside your repo, adds mtioon as a tool in Claude Code. Your project is the context from then on.</p>
+            <h3 class="how-card-title">
+              Connect it in your project
+            </h3>
+
+            <p class="how-card-copy">
+              One command, run inside your repo, adds mtioon as a tool in Claude Code. Your project is the context from then on.
+            </p>
           </div>
         </article>
 
         <article class="how-card" data-how-card="video">
           <div class="how-card-visual">
+
             <div class="video-stack">
-              <div class="speech speech-user pop-in" data-video-message>Stop the scroll. One huge word slams in.</div>
-              <div class="tool-row" data-tool-row></div>
-              <div class="frames-panel pop-in" data-frames-panel>
-                <canvas class="frame-canvas" data-frame="0" aria-hidden="true"></canvas>
-                <canvas class="frame-canvas" data-frame="1" aria-hidden="true"></canvas>
-                <canvas class="frame-canvas" data-frame="2" aria-hidden="true"></canvas>
-                <canvas class="frame-canvas" data-frame="3" aria-hidden="true"></canvas>
+
+              <div
+                class="speech speech-user pop-in"
+                data-video-message
+              >
+                Stop the scroll. One huge word slams in.
               </div>
-              <div class="speech speech-note pop-in" data-video-note hidden>Looked at the frames. Hook lands on beat 1.</div>
+
+              <div
+                class="tool-row"
+                data-tool-row
+              ></div>
+
+              <div
+                class="frames-panel pop-in"
+                data-frames-panel
+              >
+                <canvas
+                  class="frame-canvas"
+                  data-frame="0"
+                  aria-hidden="true"
+                ></canvas>
+
+                <canvas
+                  class="frame-canvas"
+                  data-frame="1"
+                  aria-hidden="true"
+                ></canvas>
+
+                <canvas
+                  class="frame-canvas"
+                  data-frame="2"
+                  aria-hidden="true"
+                ></canvas>
+
+                <canvas
+                  class="frame-canvas"
+                  data-frame="3"
+                  aria-hidden="true"
+                ></canvas>
+              </div>
+
+              <div
+                class="speech speech-note pop-in"
+                data-video-note
+                hidden
+              >
+                Looked at the frames. Hook lands on beat 1.
+              </div>
+
             </div>
+
           </div>
+
           <div class="how-card-body">
-            <h3 class="how-card-title">Ask for a video</h3>
-            <p class="how-card-copy">Claude reads your copy, fonts, colours and assets, writes sections, layers and motion, then renders the frames and checks them.</p>
+            <h3 class="how-card-title">
+              Ask for a video
+            </h3>
+
+            <p class="how-card-copy">
+              Claude reads your copy, fonts, colours and assets, writes sections, layers and motion, then renders the frames and checks them.
+            </p>
           </div>
         </article>
 
         <article class="how-card" data-how-card="tweak">
           <div class="how-card-visual">
-            <canvas class="tweak-canvas" data-tweak-canvas aria-hidden="true"></canvas>
+
+            <canvas
+              class="tweak-canvas"
+              data-tweak-canvas
+              aria-hidden="true"
+            ></canvas>
+
             <div class="tweak-inspector">
-              <p class="inspector-title">Say it.</p>
-              <p class="inspector-label">Font</p>
-              <div class="inspector-select"><span data-font-name>Sunghyun Sans</span><span aria-hidden="true">⌄</span></div>
-              <div class="inspector-grid">
-                <div>
-                  <p class="inspector-label">Weight</p>
-                  <div class="inspector-value" data-font-weight>900</div>
-                </div>
-                <div>
-                  <p class="inspector-label">Size</p>
-                  <div class="inspector-value">230</div>
-                </div>
+              <p class="inspector-title">
+                Say it.
+              </p>
+
+              <p class="inspector-label">
+                Font
+              </p>
+
+              <div class="inspector-select">
+                <span data-font-name>Sunghyun Sans</span>
+                <span aria-hidden="true">⌄</span>
               </div>
-              <p class="inspector-label inspector-chip-label">In</p>
-              <div class="candy-wrap" style="--candy-face:#FF6A2B;--candy-side:#C43E0C">
+
+              <div class="inspector-grid">
+
+                <div>
+                  <p class="inspector-label">
+                    Weight
+                  </p>
+
+                  <div class="inspector-value" data-font-weight>
+                    900
+                  </div>
+                </div>
+
+                <div>
+                  <p class="inspector-label">
+                    Size
+                  </p>
+
+                  <div class="inspector-value">
+                    230
+                  </div>
+                </div>
+
+              </div>
+
+              <p class="inspector-label inspector-chip-label">
+                In
+              </p>
+
+              <div
+                class="candy-wrap"
+                style="--candy-face:#FF6A2B;--candy-side:#C43E0C"
+              >
                 <span class="candy-layer"></span>
                 <span class="candy-layer"></span>
                 <span class="candy-layer"></span>
                 <span class="candy-layer"></span>
+
                 <span class="candy-face">
-                  <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M8 2v12M4.5 5.5L8 2l3.5 3.5" /></svg>
+                  <svg
+                    viewBox="0 0 16 16"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    aria-hidden="true"
+                  >
+                    <path d="M8 2v12M4.5 5.5L8 2l3.5 3.5" />
+                  </svg>
+
                   Pop · 0.4 s
                 </span>
               </div>
+
             </div>
+
           </div>
+
           <div class="how-card-body">
-            <h3 class="how-card-title">Tweak anything</h3>
-            <p class="how-card-copy">Select a layer and edit it, or tell Claude what “this” should do. Every change is one undo step.</p>
+            <h3 class="how-card-title">
+              Tweak anything
+            </h3>
+
+            <p class="how-card-copy">
+              Select a layer and edit it, or tell Claude what “this” should do. Every change is one undo step.
+            </p>
           </div>
         </article>
+
       </div>
     </section>
 
     <!-- Final CTA -->
-    <section class="final-cta" aria-labelledby="final-cta-heading">
-      <div class="final-cta-content">
-        <h2 id="final-cta-heading" class="final-cta-heading">Say it. Then watch it move.</h2>
-        <p class="final-cta-description">Connect Claude Code with one command. The demo project is already waiting in the editor.</p>
 
-        <div class="command-wrap" id="command-wrap">
-          <button type="button" class="command-button" id="copy-command" aria-label="Copy: claude mcp add --scope user --transport http mtioon https://mtioon.com/api/mcp">
+    <section
+      class="final-cta"
+      aria-labelledby="final-cta-heading"
+    >
+      <div class="final-cta-content">
+
+        <h2
+          id="final-cta-heading"
+          class="final-cta-heading"
+        >
+          Say it. Then watch it move.
+        </h2>
+
+        <p class="final-cta-description">
+          Connect Claude Code with one command. The demo project is already waiting in the editor.
+        </p>
+
+        <div
+          class="command-wrap"
+          id="command-wrap"
+        >
+          <button
+            type="button"
+            class="command-button"
+            id="copy-command"
+            aria-label="Copy: claude mcp add --scope user --transport http mtioon https://mtioon.com/api/mcp"
+          >
             <span class="command-depth depth-0" aria-hidden="true"></span>
             <span class="command-depth depth-1" aria-hidden="true"></span>
             <span class="command-depth depth-2" aria-hidden="true"></span>
@@ -1064,34 +1507,118 @@
             <span class="command-depth depth-5" aria-hidden="true"></span>
             <span class="command-depth depth-6" aria-hidden="true"></span>
             <span class="command-depth depth-7" aria-hidden="true"></span>
+
             <span class="command-face">
-              <code class="command-code"><span class="command-prefix">$</span>claude mcp add --scope user --transport http mtioon https://mtioon.com/api/mcp</code>
-              <span class="copy-control" id="copy-control" aria-hidden="true">
-                <span class="copy-label" id="copy-label">Copy</span>
-                <span class="copy-check" id="copy-check">
-                  <svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8.5l3.2 3.2L13 4.8" /></svg>
+
+              <code class="command-code">
+                <span class="command-prefix">$</span>claude mcp add --scope user --transport http mtioon https://mtioon.com/api/mcp
+              </code>
+
+              <span
+                class="copy-control"
+                id="copy-control"
+                aria-hidden="true"
+              >
+                <span
+                  class="copy-label"
+                  id="copy-label"
+                >
+                  Copy
+                </span>
+
+                <span
+                  class="copy-check"
+                  id="copy-check"
+                >
+                  <svg
+                    width="18"
+                    height="18"
+                    viewBox="0 0 16 16"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2.4"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                  >
+                    <path d="M3 8.5l3.2 3.2L13 4.8" />
+                  </svg>
                 </span>
               </span>
+
             </span>
           </button>
-          <span id="copy-status" class="copy-status" role="status" aria-live="polite"></span>
+
+          <span
+            id="copy-status"
+            class="copy-status"
+            role="status"
+            aria-live="polite"
+          ></span>
         </div>
 
         <div class="final-actions">
-          <a class="press-button press-dark" data-press href="/p/demo">
-            <span class="press-back" aria-hidden="true"></span>
-            <span class="press-front"><span class="press-highlight" aria-hidden="true"></span><span class="press-label">Open the demo</span></span>
+
+          <a
+            class="press-button press-dark"
+            data-press
+            href="/p/demo"
+          >
+            <span
+              class="press-back"
+              aria-hidden="true"
+            ></span>
+
+            <span class="press-front">
+              <span
+                class="press-highlight"
+                aria-hidden="true"
+              ></span>
+
+              <span class="press-label">
+                Open the demo
+              </span>
+            </span>
           </a>
-          <button type="button" class="press-button press-light" data-press>
-            <span class="press-back" aria-hidden="true"></span>
-            <span class="press-front"><span class="press-highlight" aria-hidden="true"></span><span class="press-label">New project</span></span>
+
+          <button
+            type="button"
+            class="press-button press-light"
+            data-press
+          >
+            <span
+              class="press-back"
+              aria-hidden="true"
+            ></span>
+
+            <span class="press-front">
+              <span
+                class="press-highlight"
+                aria-hidden="true"
+              ></span>
+
+              <span class="press-label">
+                New project
+              </span>
+            </span>
           </button>
+
         </div>
+
       </div>
 
       <footer class="final-footer">
-        <svg class="footer-logo" viewBox="-10 -59 712 169" height="22" role="img" aria-label="mtioon" xmlns="http://www.w3.org/2000/svg">
+
+        <svg
+          class="footer-logo"
+          viewBox="-10 -59 712 169"
+          height="22"
+          role="img"
+          aria-label="mtioon"
+          xmlns="http://www.w3.org/2000/svg"
+        >
           <g fill="#525252" fill-rule="evenodd">
+
             <g transform="translate(0 0)">
               <g>
                 <path d="M0 53 H44 V86 A14 14 0 0 1 30 100 H14 A14 14 0 0 1 0 86 V53 Z" />
@@ -1101,6 +1628,7 @@
                 <path d="M62 53 A53 53 0 0 1 168 53 H124 A9 9 0 0 0 106 53 Z" />
               </g>
             </g>
+
             <g transform="translate(176 0)">
               <g>
                 <path d="M28 -26 H44 A14 14 0 0 1 58 -12 V50.5 H14 V-12 A14 14 0 0 1 28 -26 Z" />
@@ -1109,18 +1637,32 @@
                 <path d="M10 0 H66 A10 10 0 0 1 76 10 V20 A10 10 0 0 1 66 30 H10 A10 10 0 0 1 0 20 V10 A10 10 0 0 1 10 0 Z" />
               </g>
             </g>
+
             <g transform="translate(266 0)">
               <g>
                 <path d="M14 0 H30 A14 14 0 0 1 44 14 V86 A14 14 0 0 1 30 100 H14 A14 14 0 0 1 0 86 V14 A14 14 0 0 1 14 0 Z" />
                 <path d="M1 -28 A21 21 0 1 0 43 -28 A21 21 0 1 0 1 -28 Z" />
               </g>
             </g>
+
             <g data-k="o1" transform="translate(322 0)">
-              <g data-rise=""><path data-k="p1" d="M0 39.5 A60.5 60.5 0 1 0 121 39.5 A60.5 60.5 0 1 0 0 39.5 Z M22.5 34 A26 26 0 1 0 74.5 34 A26 26 0 1 0 22.5 34 Z" /></g>
+              <g data-rise="">
+                <path
+                  data-k="p1"
+                  d="M0 39.5 A60.5 60.5 0 1 0 121 39.5 A60.5 60.5 0 1 0 0 39.5 Z M22.5 34 A26 26 0 1 0 74.5 34 A26 26 0 1 0 22.5 34 Z"
+                />
+              </g>
             </g>
+
             <g data-k="o2" transform="translate(453 0)">
-              <g data-rise=""><path data-k="p2" d="M0 39.5 A60.5 60.5 0 1 0 121 39.5 A60.5 60.5 0 1 0 0 39.5 Z M22.5 34 A26 26 0 1 0 74.5 34 A26 26 0 1 0 22.5 34 Z" /></g>
+              <g data-rise="">
+                <path
+                  data-k="p2"
+                  d="M0 39.5 A60.5 60.5 0 1 0 121 39.5 A60.5 60.5 0 1 0 0 39.5 Z M22.5 34 A26 26 0 1 0 74.5 34 A26 26 0 1 0 22.5 34 Z"
+                />
+              </g>
             </g>
+
             <g transform="translate(586 0)">
               <g>
                 <path d="M0 53 H44 V86 A14 14 0 0 1 30 100 H14 A14 14 0 0 1 0 86 V53 Z" />
@@ -1128,22 +1670,31 @@
                 <path d="M0 53 A53 53 0 0 1 106 53 H62 A9 9 0 0 0 44 53 Z" />
               </g>
             </g>
+
           </g>
         </svg>
-        <p class="footer-note">motion, by prompt. Two o's, two eyes.</p>
+
+        <p class="footer-note">
+          motion, by prompt. Two o's, two eyes.
+        </p>
+
       </footer>
     </section>
   </main>
 
   <script type="module">
-    import { animate } from "https://cdn.jsdelivr.net/npm/motion@13.4.3/+esm";
+    import {
+      animate
+    } from "https://cdn.jsdelivr.net/npm/motion@13.4.3/+esm";
 
     (() => {
       "use strict";
 
-      const COMMAND = "claude mcp add --scope user --transport http mtioon https://mtioon.com/api/mcp";
-      const MOTION_ORIGIN = window.location.origin === "null" ? "https://mtioon.com" : window.location.origin;
-      const HOW_COMMAND = `claude mcp add --transport http mtioon ${MOTION_ORIGIN}/api/mcp`;
+      const COMMAND =
+        "claude mcp add --scope user --transport http mtioon https://mtioon.com/api/mcp";
+
+      const HOW_COMMAND =
+        "claude mcp add --transport http mtioon https://mtioon.com/api/mcp";
 
       const COLORS = {
         orange: "#FF5A1F",
@@ -1153,44 +1704,123 @@
       };
 
       const TRANSITIONS = {
-        command: { type: "spring", stiffness: 320, damping: 20, mass: 0.8 },
-        press: { type: "spring", bounce: 0.45, duration: 0.5 },
-        copyState: { type: "spring", duration: 0.4, bounce: 0.2 },
-        copiedBadge: { type: "spring", stiffness: 380, damping: 17, mass: 0.9 }
+        command: {
+          type: "spring",
+          stiffness: 320,
+          damping: 20,
+          mass: 0.8
+        },
+
+        press: {
+          type: "spring",
+          bounce: 0.45,
+          duration: 0.5
+        },
+
+        copyState: {
+          type: "spring",
+          duration: 0.4,
+          bounce: 0.2
+        },
+
+        copiedBadge: {
+          type: "spring",
+          stiffness: 380,
+          damping: 17,
+          mass: 0.9
+        }
       };
 
-      const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
-      const state = { reducedMotion: prefersReducedMotion.matches };
-      const animations = new WeakMap();
+      const prefersReducedMotion =
+        window.matchMedia(
+          "(prefers-reduced-motion: reduce)"
+        );
 
-      const stopAnimation = (element, key) => {
-        const elementAnimations = animations.get(element);
-        const animation = elementAnimations?.get(key);
-        if (!animation) return;
+      const state = {
+        reducedMotion:
+          prefersReducedMotion.matches
+      };
+
+      const animations =
+        new WeakMap();
+
+      const stopAnimation = (
+        element,
+        key
+      ) => {
+        const elementAnimations =
+          animations.get(element);
+
+        const animation =
+          elementAnimations?.get(key);
+
+        if (!animation) {
+          return;
+        }
+
         animation.stop();
         elementAnimations.delete(key);
       };
 
-      const runAnimation = (element, key, values, transition) => {
-        stopAnimation(element, key);
-        const animation = animate(element, values, transition);
-        let elementAnimations = animations.get(element);
+      const runAnimation = (
+        element,
+        key,
+        values,
+        transition
+      ) => {
+        stopAnimation(
+          element,
+          key
+        );
+
+        const animation =
+          animate(
+            element,
+            values,
+            transition
+          );
+
+        let elementAnimations =
+          animations.get(element);
+
         if (!elementAnimations) {
-          elementAnimations = new Map();
-          animations.set(element, elementAnimations);
+          elementAnimations =
+            new Map();
+
+          animations.set(
+            element,
+            elementAnimations
+          );
         }
-        elementAnimations.set(key, animation);
+
+        elementAnimations.set(
+          key,
+          animation
+        );
+
         return animation;
       };
 
-      const transformTransition = transition => state.reducedMotion ? { duration: 0 } : transition;
+      const transformTransition = (
+        transition
+      ) =>
+        state.reducedMotion
+          ? {
+              duration: 0
+            }
+          : transition;
+
       const track = () => {};
 
       const syncReducedMotion = () => {
-        state.reducedMotion = prefersReducedMotion.matches;
+        state.reducedMotion =
+          prefersReducedMotion.matches;
       };
 
-      prefersReducedMotion.addEventListener?.("change", syncReducedMotion);
+      prefersReducedMotion.addEventListener?.(
+        "change",
+        syncReducedMotion
+      );
 
       /* =========================================================
          Logo eye tracking
@@ -1212,107 +1842,328 @@
         smoothing: 0.12
       };
 
-      const round = value => Math.round(value * 100) / 100;
+      const round =
+        value =>
+          Math.round(value * 100) / 100;
 
-      const offCentre = (position, width, height = width) => {
-        const distance = Math.hypot(position.x / width, position.y / height);
-        if (distance >= 0.55) return position;
-        if (distance < 1e-4) return { x: 0, y: 0.55 * height };
-        const scale = 0.55 / distance;
-        return { x: position.x * scale, y: position.y * scale };
+      const offCentre = (
+        position,
+        width,
+        height = width
+      ) => {
+        const distance =
+          Math.hypot(
+            position.x / width,
+            position.y / height
+          );
+
+        if (distance >= 0.55) {
+          return position;
+        }
+
+        if (distance < 1e-4) {
+          return {
+            x: 0,
+            y: 0.55 * height
+          };
+        }
+
+        const scale =
+          0.55 / distance;
+
+        return {
+          x: position.x * scale,
+          y: position.y * scale
+        };
       };
 
-      const circlePath = (centerX, centerY, radius) => [
+      const circlePath = (
+        centerX,
+        centerY,
+        radius
+      ) => [
         `M${round(centerX - radius)} ${round(centerY)}`,
         `A${round(radius)} ${round(radius)} 0 1 0 ${round(centerX + radius)} ${round(centerY)}`,
         `A${round(radius)} ${round(radius)} 0 1 0 ${round(centerX - radius)} ${round(centerY)}`,
         "Z"
       ].join(" ");
 
-      const createEyePath = ({ centerX, centerY, radius, pupilRadius, offsetX, offsetY, pupilYRadius }) => {
-        const pupilCenterX = centerX + offsetX;
-        const pupilCenterY = centerY + offsetY;
+      const createEyePath = ({
+        centerX,
+        centerY,
+        radius,
+        pupilRadius,
+        offsetX,
+        offsetY,
+        pupilYRadius
+      }) => {
+        const pupilCenterX =
+          centerX + offsetX;
+
+        const pupilCenterY =
+          centerY + offsetY;
+
         const pupilPath = [
           `M${round(pupilCenterX - pupilRadius)} ${round(pupilCenterY)}`,
           `A${round(pupilRadius)} ${round(pupilYRadius)} 0 1 0 ${round(pupilCenterX + pupilRadius)} ${round(pupilCenterY)}`,
           `A${round(pupilRadius)} ${round(pupilYRadius)} 0 1 0 ${round(pupilCenterX - pupilRadius)} ${round(pupilCenterY)}`,
           "Z"
         ].join(" ");
+
         return `${circlePath(centerX, centerY, radius)} ${pupilPath}`;
       };
 
-      const createLogoTracker = svg => {
-        const leftEye = svg.querySelector('[data-k="p1"]');
-        const rightEye = svg.querySelector('[data-k="p2"]');
-        if (!leftEye || !rightEye) return null;
-        const initial = { x: LOGO.gazeX, y: LOGO.gazeY };
-        return {
-          svg,
-          leftEye,
-          rightEye,
-          target: { ...initial },
-          current: { ...initial },
-          blinkStart: -1,
-          nextBlink: performance.now() + 1800
+      const createLogoTracker =
+        svg => {
+          const leftEye =
+            svg.querySelector(
+              '[data-k="p1"]'
+            );
+
+          const rightEye =
+            svg.querySelector(
+              '[data-k="p2"]'
+            );
+
+          if (
+            !leftEye ||
+            !rightEye
+          ) {
+            return null;
+          }
+
+          const initial = {
+            x: LOGO.gazeX,
+            y: LOGO.gazeY
+          };
+
+          return {
+            svg,
+            leftEye,
+            rightEye,
+            target: {
+              ...initial
+            },
+            current: {
+              ...initial
+            },
+            blinkStart: -1,
+            nextBlink:
+              performance.now() + 1800
+          };
         };
-      };
 
-      const initializeLogoTracking = () => {
-        const logos = document.querySelectorAll(".brand svg, .footer-logo");
-        const trackers = Array.from(logos).map(createLogoTracker).filter(Boolean);
-        if (!trackers.length) return;
+      const initializeLogoTracking =
+        () => {
+          const logos =
+            document.querySelectorAll(
+              ".brand svg, .footer-logo"
+            );
 
-        const pointer = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
-        const handlePointerMove = event => {
-          pointer.x = event.clientX;
-          pointer.y = event.clientY;
-        };
+          const trackers =
+            Array
+              .from(logos)
+              .map(
+                createLogoTracker
+              )
+              .filter(Boolean);
 
-        const render = timestamp => {
-          trackers.forEach(tracker => {
-            const bounds = tracker.svg.getBoundingClientRect();
-            const scale = bounds.width / (LOGO.width + 20);
-            const centerX = bounds.left + (10 + (LOGO.o1 + LOGO.o2) / 2 + LOGO.centerX) * scale;
-            const centerY = bounds.top + (10 - LOGO.top + LOGO.centerY) * scale;
-            const dx = pointer.x - centerX;
-            const dy = pointer.y - centerY;
-            const distance = Math.hypot(dx, dy) || 1;
-            const amount = Math.min(1, distance / LOGO.pointerRange);
+          if (!trackers.length) {
+            return;
+          }
 
-            tracker.target.x = (dx / distance) * LOGO.gazeLimit * amount;
-            tracker.target.y = (dy / distance) * LOGO.gazeLimit * amount;
-            tracker.current.x += (tracker.target.x - tracker.current.x) * LOGO.smoothing;
-            tracker.current.y += (tracker.target.y - tracker.current.y) * LOGO.smoothing;
+          const pointer = {
+            x:
+              window.innerWidth / 2,
+            y:
+              window.innerHeight / 2
+          };
 
-            if (timestamp > tracker.nextBlink) {
-              tracker.blinkStart = timestamp;
-              tracker.nextBlink = timestamp + 2200 + 2600 * Math.random();
+          const handlePointerMove =
+            event => {
+              pointer.x =
+                event.clientX;
+
+              pointer.y =
+                event.clientY;
+            };
+
+          const render =
+            timestamp => {
+              trackers.forEach(
+                tracker => {
+                  const bounds =
+                    tracker.svg.getBoundingClientRect();
+
+                  const scale =
+                    bounds.width /
+                    (LOGO.width + 20);
+
+                  const centerX =
+                    bounds.left +
+                    (
+                      10 +
+                      (
+                        LOGO.o1 +
+                        LOGO.o2
+                      ) / 2 +
+                      LOGO.centerX
+                    ) *
+                      scale;
+
+                  const centerY =
+                    bounds.top +
+                    (
+                      10 -
+                      LOGO.top +
+                      LOGO.centerY
+                    ) *
+                      scale;
+
+                  const dx =
+                    pointer.x -
+                    centerX;
+
+                  const dy =
+                    pointer.y -
+                    centerY;
+
+                  const distance =
+                    Math.hypot(
+                      dx,
+                      dy
+                    ) || 1;
+
+                  const amount =
+                    Math.min(
+                      1,
+                      distance /
+                        LOGO.pointerRange
+                    );
+
+                  tracker.target.x =
+                    (
+                      dx /
+                      distance
+                    ) *
+                    LOGO.gazeLimit *
+                    amount;
+
+                  tracker.target.y =
+                    (
+                      dy /
+                      distance
+                    ) *
+                    LOGO.gazeLimit *
+                    amount;
+
+                  tracker.current.x +=
+                    (
+                      tracker.target.x -
+                      tracker.current.x
+                    ) *
+                    LOGO.smoothing;
+
+                  tracker.current.y +=
+                    (
+                      tracker.target.y -
+                      tracker.current.y
+                    ) *
+                    LOGO.smoothing;
+
+                  if (
+                    timestamp >
+                    tracker.nextBlink
+                  ) {
+                    tracker.blinkStart =
+                      timestamp;
+
+                    tracker.nextBlink =
+                      timestamp +
+                      2200 +
+                      2600 *
+                        Math.random();
+                  }
+
+                  const blinkProgress =
+                    tracker.blinkStart > 0
+                      ? (
+                          timestamp -
+                          tracker.blinkStart
+                        ) / 160
+                      : 2;
+
+                  const blinkScale =
+                    blinkProgress < 1
+                      ? 1 -
+                        0.92 *
+                          Math.sin(
+                            Math.PI *
+                            blinkProgress
+                          )
+                      : 1;
+
+                  const offset =
+                    offCentre(
+                      tracker.current,
+                      LOGO.gazeLimit
+                    );
+
+                  const path =
+                    createEyePath({
+                      centerX:
+                        LOGO.centerX,
+
+                      centerY:
+                        LOGO.centerY,
+
+                      radius:
+                        LOGO.eyeRadius,
+
+                      pupilRadius:
+                        LOGO.pupilRadius,
+
+                      offsetX:
+                        offset.x,
+
+                      offsetY:
+                        offset.y,
+
+                      pupilYRadius:
+                        LOGO.pupilRadius *
+                        blinkScale
+                    });
+
+                  tracker.leftEye.setAttribute(
+                    "d",
+                    path
+                  );
+
+                  tracker.rightEye.setAttribute(
+                    "d",
+                    path
+                  );
+                }
+              );
+
+              window.requestAnimationFrame(
+                render
+              );
+            };
+
+          window.addEventListener(
+            "pointermove",
+            handlePointerMove,
+            {
+              passive: true,
+              capture: true
             }
+          );
 
-            const blinkProgress = tracker.blinkStart > 0 ? (timestamp - tracker.blinkStart) / 160 : 2;
-            const blinkScale = blinkProgress < 1 ? 1 - 0.92 * Math.sin(Math.PI * blinkProgress) : 1;
-            const offset = offCentre(tracker.current, LOGO.gazeLimit);
-
-            const path = createEyePath({
-              centerX: LOGO.centerX,
-              centerY: LOGO.centerY,
-              radius: LOGO.eyeRadius,
-              pupilRadius: LOGO.pupilRadius,
-              offsetX: offset.x,
-              offsetY: offset.y,
-              pupilYRadius: LOGO.pupilRadius * blinkScale
-            });
-
-            tracker.leftEye.setAttribute("d", path);
-            tracker.rightEye.setAttribute("d", path);
-          });
-
-          window.requestAnimationFrame(render);
+          window.requestAnimationFrame(
+            render
+          );
         };
-
-        window.addEventListener("pointermove", handlePointerMove, { passive: true, capture: true });
-        window.requestAnimationFrame(render);
-      };
 
       /* =========================================================
          How it works
@@ -1333,573 +2184,1513 @@
       ];
 
       const ICONS = {
-        check: '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8.5l3.2 3.2L13 4.8" /></svg>',
-        bolt: '<svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M9.4 1 3.8 8h3.5L6.6 15 12.2 7H8.7L9.4 1Z" /></svg>',
-        eye: '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M1.4 8s2.5-4 6.6-4 6.6 4 6.6 4-2.5 4-6.6 4-6.6-4-6.6-4Z" /><circle cx="8" cy="8" r="1.8" fill="currentColor" stroke="none" /></svg>',
-        layers: '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><path d="m8 1.8 6 3.2-6 3.2-6-3.2 6-3.2Z"/><path d="m2 8 6 3.2L14 8"/><path d="m2 11 6 3.2 6-3.2"/></svg>'
+        check:
+          '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8.5l3.2 3.2L13 4.8" /></svg>',
+
+        bolt:
+          '<svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M9.4 1 3.8 8h3.5L6.6 15 12.2 7H8.7L9.4 1Z" /></svg>',
+
+        eye:
+          '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M1.4 8s2.5-4 6.6-4 6.6 4 6.6 4-2.5 4-6.6 4-6.6-4-6.6-4Z" /><circle cx="8" cy="8" r="1.8" fill="currentColor" stroke="none" /></svg>',
+
+        layers:
+          '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><path d="m8 1.8 6 3.2-6 3.2-6-3.2 6-3.2Z"/><path d="m2 8 6 3.2L14 8"/><path d="m2 11 6 3.2 6-3.2"/></svg>'
       };
 
-      const createCandy = (label, color, side, iconName) => {
-        const wrapper = document.createElement("span");
-        wrapper.className = "candy-drop";
+      const createCandy = (
+        label,
+        color,
+        side,
+        iconName
+      ) => {
+        const wrapper =
+          document.createElement(
+            "span"
+          );
+
+        wrapper.className =
+          "candy-drop";
+
         wrapper.innerHTML = `
-          <span class="candy-wrap" style="--candy-face:${color};--candy-side:${side}">
+          <span
+            class="candy-wrap"
+            style="--candy-face:${color};--candy-side:${side}"
+          >
             <span class="candy-layer"></span>
             <span class="candy-layer"></span>
             <span class="candy-layer"></span>
             <span class="candy-layer"></span>
-            <span class="candy-face">${ICONS[iconName]}${label}</span>
+            <span class="candy-face">
+              ${ICONS[iconName]}${label}
+            </span>
           </span>`;
+
         return wrapper;
       };
 
-      const framePainter = (index, context, width, height) => {
-        context.clearRect(0, 0, width, height);
-        context.fillStyle = "#F4F1EA";
-        context.fillRect(0, 0, width, height);
+      const framePainter = (
+        index,
+        context,
+        width,
+        height
+      ) => {
+        context.clearRect(
+          0,
+          0,
+          width,
+          height
+        );
+
+        context.fillStyle =
+          "#F4F1EA";
+
+        context.fillRect(
+          0,
+          0,
+          width,
+          height
+        );
+
         context.save();
-        context.translate(width / 2, height / 2);
-        context.fillStyle = index % 2 === 0 ? "#171717" : "#ff5a1f";
+
+        context.translate(
+          width / 2,
+          height / 2
+        );
+
+        context.fillStyle =
+          index % 2 === 0
+            ? "#171717"
+            : "#ff5a1f";
+
         context.beginPath();
-        context.arc((index - 1.5) * 12, (index % 2 ? -3 : 4), Math.max(6, height * 0.18), 0, Math.PI * 2);
+
+        context.arc(
+          (index - 1.5) * 12,
+          index % 2
+            ? -3
+            : 4,
+          Math.max(
+            6,
+            height * 0.18
+          ),
+          0,
+          Math.PI * 2
+        );
+
         context.fill();
-        context.font = `${Math.max(9, width * 0.17)}px Inter, Arial, sans-serif`;
-        context.fontWeight = "900";
-        context.textAlign = "center";
-        context.textBaseline = "middle";
-        context.fillStyle = index === 1 ? "#171717" : "#ffffff";
-        context.fillText(["STOP", "SCROLL", "HOOK", "BEAT"][index], 0, 0);
+
+        context.font =
+          `${Math.max(9, width * 0.17)}px Inter, Arial, sans-serif`;
+
+        context.fontWeight =
+          "900";
+
+        context.textAlign =
+          "center";
+
+        context.textBaseline =
+          "middle";
+
+        context.fillStyle =
+          index === 1
+            ? "#171717"
+            : "#ffffff";
+
+        context.fillText(
+          [
+            "STOP",
+            "SCROLL",
+            "HOOK",
+            "BEAT"
+          ][index],
+          0,
+          0
+        );
+
         context.restore();
       };
 
-      const drawFrameCanvases = card => {
-        card.querySelectorAll(".frame-canvas").forEach(canvas => {
-          const index = Number(canvas.dataset.frame || 0);
-          const rect = canvas.getBoundingClientRect();
-          const dpr = Math.min(2, window.devicePixelRatio || 1);
-          const width = Math.max(1, Math.round(rect.width * dpr));
-          const height = Math.max(1, Math.round(rect.height * dpr));
-          canvas.width = width;
-          canvas.height = height;
-          const context = canvas.getContext("2d");
-          if (!context) return;
-          context.setTransform(dpr, 0, 0, dpr, 0, 0);
-          framePainter(index, context, rect.width, rect.height);
-        });
-      };
+      const drawFrameCanvases =
+        card => {
+          card
+            .querySelectorAll(
+              ".frame-canvas"
+            )
+            .forEach(
+              canvas => {
+                const index =
+                  Number(
+                    canvas.dataset.frame ||
+                    0
+                  );
 
-      const drawTweakCanvas = (canvas, fontName, fontWeight) => {
-        const rect = canvas.getBoundingClientRect();
-        const dpr = Math.min(2, window.devicePixelRatio || 1);
-        const width = Math.max(1, Math.round(rect.width * dpr));
-        const height = Math.max(1, Math.round(rect.height * dpr));
-        canvas.width = width;
-        canvas.height = height;
+                const rect =
+                  canvas.getBoundingClientRect();
 
-        const context = canvas.getContext("2d");
-        if (!context) return;
+                const dpr =
+                  Math.min(
+                    2,
+                    window.devicePixelRatio ||
+                      1
+                  );
 
-        context.setTransform(dpr, 0, 0, dpr, 0, 0);
-        context.fillStyle = "#171717";
-        context.fillRect(0, 0, rect.width, rect.height);
-        context.fillStyle = "#F4F1EA";
-        context.font = `${fontWeight} ${Math.min(92, rect.width * 0.22)}px "${fontName}", Inter, Arial, sans-serif`;
-        context.textAlign = "center";
-        context.textBaseline = "middle";
-        context.fillText("Say it.", rect.width / 2, rect.height / 2 + 2);
-      };
+                const width =
+                  Math.max(
+                    1,
+                    Math.round(
+                      rect.width *
+                        dpr
+                    )
+                  );
 
-      const setupCanvasResize = (canvas, painter) => {
-        const redraw = () => painter();
-        const observer = new ResizeObserver(redraw);
-        observer.observe(canvas);
-        redraw();
-        return observer;
-      };
+                const height =
+                  Math.max(
+                    1,
+                    Math.round(
+                      rect.height *
+                        dpr
+                    )
+                  );
 
-      const initializeHowAnimations = () => {
-        const section = document.querySelector("#how");
-        const intro = section?.querySelector("[data-how-intro]");
-        const cards = section ? Array.from(section.querySelectorAll("[data-how-card]")) : [];
-        if (!section || !intro || !cards.length) return;
+                canvas.width =
+                  width;
 
-        const reveal = () => {
-          intro.classList.add("is-visible");
-          cards.forEach(card => card.classList.add("is-visible"));
+                canvas.height =
+                  height;
+
+                const context =
+                  canvas.getContext(
+                    "2d"
+                  );
+
+                if (!context) {
+                  return;
+                }
+
+                context.setTransform(
+                  dpr,
+                  0,
+                  0,
+                  dpr,
+                  0,
+                  0
+                );
+
+                framePainter(
+                  index,
+                  context,
+                  rect.width,
+                  rect.height
+                );
+              }
+            );
         };
 
-        const revealObserver = new IntersectionObserver(entries => {
-          if (!entries.some(entry => entry.isIntersecting)) return;
-          reveal();
-          revealObserver.disconnect();
-        }, { threshold: 0.15 });
+      const drawTweakCanvas =
+        (
+          canvas,
+          fontName,
+          fontWeight
+        ) => {
+          const rect =
+            canvas.getBoundingClientRect();
 
-        revealObserver.observe(section);
-
-        initializeConnectCard(cards[0]);
-        initializeVideoCard(cards[1]);
-        initializeTweakCard(cards[2]);
-      };
-
-      const initializeConnectCard = card => {
-        const commandNode = card.querySelector("[data-terminal-command]");
-        const caret = card.querySelector("[data-terminal-caret]");
-        const connected = card.querySelector("[data-terminal-connected]");
-        const tools = card.querySelector("[data-terminal-tools]");
-        if (!commandNode || !caret || !connected || !tools) return;
-
-        const start = () => {
-          const revealLength = HOW_COMMAND.length + 3;
-          const delay = state.reducedMotion ? 0 : 500;
-          const interval = state.reducedMotion ? 0 : 28;
-          let count = 0;
-
-          const step = () => {
-            count += 1;
-            commandNode.textContent = HOW_COMMAND.slice(0, Math.min(count, HOW_COMMAND.length));
-
-            const complete = count > HOW_COMMAND.length;
-            const toolsVisible = count > HOW_COMMAND.length + 1;
-
-            caret.hidden = complete;
-
-            if (complete && !connected.hasChildNodes()) {
-              connected.innerHTML = `
-                <span class="candy-wrap" style="--candy-face:#3DC46B;--candy-side:#23934A">
-                  <span class="candy-layer"></span>
-                  <span class="candy-layer"></span>
-                  <span class="candy-layer"></span>
-                  <span class="candy-layer"></span>
-                  <span class="candy-face">${ICONS.check}mtioon connected</span>
-                </span>`;
-            }
-
-            connected.hidden = !complete;
-            tools.hidden = !toolsVisible;
-
-            if (count < revealLength) {
-              window.setTimeout(step, interval);
-            }
-          };
-
-          window.setTimeout(step, delay);
-        };
-
-        const observer = new IntersectionObserver(entries => {
-          if (!entries[0]?.isIntersecting) return;
-          observer.disconnect();
-          start();
-        }, { threshold: 0.4 });
-
-        observer.observe(card);
-      };
-
-      const initializeVideoCard = card => {
-        const toolRow = card.querySelector("[data-tool-row]");
-        const framesPanel = card.querySelector("[data-frames-panel]");
-        const note = card.querySelector("[data-video-note]");
-        if (!toolRow || !framesPanel || !note) return;
-
-        let step = state.reducedMotion ? TOOL_DEFS.length + 1 : 0;
-        let started = false;
-
-        const render = () => {
-          toolRow.replaceChildren();
-
-          TOOL_DEFS.slice(0, Math.min(step, TOOL_DEFS.length)).forEach(([label, color, iconName]) => {
-            const chip = createCandy(
-              label,
-              color === "green" ? "#3DC46B" : color === "orange" ? "#FF6A2B" : "#171717",
-              color === "green" ? "#23934A" : color === "orange" ? "#C43E0C" : "#050505",
-              iconName
+          const dpr =
+            Math.min(
+              2,
+              window.devicePixelRatio ||
+                1
             );
 
-            chip.classList.add("is-visible");
-            toolRow.appendChild(chip);
-          });
+          const width =
+            Math.max(
+              1,
+              Math.round(
+                rect.width *
+                  dpr
+              )
+            );
 
-          const showFrames = step >= TOOL_DEFS.length;
-          const showNote = step >= TOOL_DEFS.length + 1;
+          const height =
+            Math.max(
+              1,
+              Math.round(
+                rect.height *
+                  dpr
+              )
+            );
 
-          framesPanel.classList.toggle("is-visible", showFrames);
-          note.hidden = !showNote;
-          note.classList.toggle("is-visible", showNote);
+          canvas.width =
+            width;
 
-          if (showFrames) {
-            drawFrameCanvases(card);
-          }
-        };
+          canvas.height =
+            height;
 
-        const start = () => {
-          if (started) return;
-          started = true;
+          const context =
+            canvas.getContext(
+              "2d"
+            );
 
-          if (state.reducedMotion) {
-            render();
+          if (!context) {
             return;
           }
 
-          let current = 0;
+          context.setTransform(
+            dpr,
+            0,
+            0,
+            dpr,
+            0,
+            0
+          );
 
-          const tick = () => {
-            current += 1;
-            step = current;
-            render();
+          context.fillStyle =
+            "#171717";
 
-            if (current < TOOL_DEFS.length + 1) {
-              window.setTimeout(tick, 700);
-            }
-          };
+          context.fillRect(
+            0,
+            0,
+            rect.width,
+            rect.height
+          );
 
-          window.setTimeout(tick, 500);
+          context.fillStyle =
+            "#F4F1EA";
+
+          context.font =
+            `${fontWeight} ${Math.min(92, rect.width * 0.22)}px "${fontName}", Inter, Arial, sans-serif`;
+
+          context.textAlign =
+            "center";
+
+          context.textBaseline =
+            "middle";
+
+          context.fillText(
+            "Say it.",
+            rect.width / 2,
+            rect.height / 2 + 2
+          );
         };
 
-        render();
+      const setupCanvasResize =
+        (
+          canvas,
+          painter
+        ) => {
+          const redraw =
+            () => painter();
 
-        const observer = new IntersectionObserver(entries => {
-          if (!entries[0]?.isIntersecting) return;
-          observer.disconnect();
-          start();
-        }, { threshold: 0.4 });
+          const observer =
+            new ResizeObserver(
+              redraw
+            );
 
-        observer.observe(card);
-      };
+          observer.observe(
+            canvas
+          );
 
-      const initializeTweakCard = card => {
-        const canvas = card.querySelector("[data-tweak-canvas]");
-        const fontNameNode = card.querySelector("[data-font-name]");
-        const fontWeightNode = card.querySelector("[data-font-weight]");
+          redraw();
 
-        if (!canvas || !fontNameNode || !fontWeightNode) return;
-
-        let index = 0;
-        let started = false;
-
-        const render = () => {
-          const [fontName, fontWeight] = HOW_FONTS[index % HOW_FONTS.length];
-          fontNameNode.textContent = fontName;
-          fontWeightNode.textContent = String(fontWeight);
-          drawTweakCanvas(canvas, fontName, fontWeight);
+          return observer;
         };
 
-        setupCanvasResize(canvas, render);
-        render();
+      const initializeHowAnimations =
+        () => {
+          const section =
+            document.querySelector(
+              "#how"
+            );
 
-        const start = () => {
-          if (started) return;
-          started = true;
+          const intro =
+            section?.querySelector(
+              "[data-how-intro]"
+            );
 
-          if (state.reducedMotion) {
-            index = 0;
-            render();
+          const cards =
+            section
+              ? Array.from(
+                  section.querySelectorAll(
+                    "[data-how-card]"
+                  )
+                )
+              : [];
+
+          if (
+            !section ||
+            !intro ||
+            !cards.length
+          ) {
             return;
           }
 
-          window.setInterval(() => {
-            index = (index + 1) % HOW_FONTS.length;
-            render();
-          }, 1400);
+          const reveal =
+            () => {
+              intro.classList.add(
+                "is-visible"
+              );
+
+              cards.forEach(
+                card =>
+                  card.classList.add(
+                    "is-visible"
+                  )
+              );
+            };
+
+          const revealObserver =
+            new IntersectionObserver(
+              entries => {
+                if (
+                  !entries.some(
+                    entry =>
+                      entry.isIntersecting
+                  )
+                ) {
+                  return;
+                }
+
+                reveal();
+
+                revealObserver.disconnect();
+              },
+              {
+                threshold: 0.15
+              }
+            );
+
+          revealObserver.observe(
+            section
+          );
+
+          initializeConnectCard(
+            cards[0]
+          );
+
+          initializeVideoCard(
+            cards[1]
+          );
+
+          initializeTweakCard(
+            cards[2]
+          );
         };
 
-        const observer = new IntersectionObserver(entries => {
-          if (!entries[0]?.isIntersecting) return;
-          observer.disconnect();
-          start();
-        }, { threshold: 0.4 });
+      const initializeConnectCard =
+        card => {
+          const commandNode =
+            card.querySelector(
+              "[data-terminal-command]"
+            );
 
-        observer.observe(card);
-      };
+          const caret =
+            card.querySelector(
+              "[data-terminal-caret]"
+            );
+
+          const terminal =
+            card.querySelector(
+              ".terminal-window"
+            );
+
+          if (
+            !commandNode ||
+            !caret ||
+            !terminal
+          ) {
+            return;
+          }
+
+          const createConnected =
+            () => {
+              const paragraph =
+                document.createElement(
+                  "p"
+                );
+
+              paragraph.className =
+                "candy-drop my-1.5";
+
+              paragraph.setAttribute(
+                "style",
+                "transform-style: preserve-3d; perspective: 600px;"
+              );
+
+              paragraph.innerHTML = `
+                <span
+                  class="candy-wrap"
+                  style="--candy-face:#3DC46B;--candy-side:#23934A"
+                >
+                  <span
+                    aria-hidden="true"
+                    class="candy-layer"
+                  ></span>
+
+                  <span
+                    aria-hidden="true"
+                    class="candy-layer"
+                  ></span>
+
+                  <span
+                    aria-hidden="true"
+                    class="candy-layer"
+                  ></span>
+
+                  <span
+                    aria-hidden="true"
+                    class="candy-layer"
+                  ></span>
+
+                  <span class="candy-face">
+                    ${ICONS.check}mtioon connected
+                  </span>
+                </span>`;
+
+              return paragraph;
+            };
+
+          const createTools =
+            () => {
+              const paragraph =
+                document.createElement(
+                  "p"
+                );
+
+              paragraph.className =
+                "pop-in text-white/50";
+
+              paragraph.innerHTML =
+                '<span class="terminal-prompt">$ </span>claude <span class="terminal-tools-text">· 18 tools: add_layers, apply_motion, render_frames…</span>';
+
+              return paragraph;
+            };
+
+          const start =
+            () => {
+              const target =
+                HOW_COMMAND.length +
+                3;
+
+              const initialDelay =
+                state.reducedMotion
+                  ? 0
+                  : 500;
+
+              const interval =
+                state.reducedMotion
+                  ? 0
+                  : 28;
+
+              let count = 0;
+
+              const step =
+                () => {
+                  count += 1;
+
+                  commandNode.textContent =
+                    HOW_COMMAND.slice(
+                      0,
+                      Math.min(
+                        count,
+                        HOW_COMMAND.length
+                      )
+                    );
+
+                  if (
+                    count >
+                    HOW_COMMAND.length
+                  ) {
+                    caret.remove();
+
+                    if (
+                      !terminal.querySelector(
+                        ".terminal-connected-node"
+                      )
+                    ) {
+                      const connected =
+                        createConnected();
+
+                      connected.classList.add(
+                        "terminal-connected-node"
+                      );
+
+                      terminal.appendChild(
+                        connected
+                      );
+                    }
+                  }
+
+                  if (
+                    count >
+                    HOW_COMMAND.length +
+                    1
+                  ) {
+                    if (
+                      !terminal.querySelector(
+                        ".terminal-tools-node"
+                      )
+                    ) {
+                      const tools =
+                        createTools();
+
+                      tools.classList.add(
+                        "terminal-tools-node"
+                      );
+
+                      terminal.appendChild(
+                        tools
+                      );
+                    }
+                  }
+
+                  if (
+                    count <
+                    target
+                  ) {
+                    window.setTimeout(
+                      step,
+                      interval
+                    );
+                  }
+                };
+
+              window.setTimeout(
+                step,
+                initialDelay
+              );
+            };
+
+          const observer =
+            new IntersectionObserver(
+              entries => {
+                if (
+                  !entries[0]?.isIntersecting
+                ) {
+                  return;
+                }
+
+                observer.disconnect();
+
+                start();
+              },
+              {
+                threshold: 0.4
+              }
+            );
+
+          observer.observe(
+            card
+          );
+        };
+
+      const initializeVideoCard =
+        card => {
+          const toolRow =
+            card.querySelector(
+              "[data-tool-row]"
+            );
+
+          const framesPanel =
+            card.querySelector(
+              "[data-frames-panel]"
+            );
+
+          const note =
+            card.querySelector(
+              "[data-video-note]"
+            );
+
+          if (
+            !toolRow ||
+            !framesPanel ||
+            !note
+          ) {
+            return;
+          }
+
+          let step =
+            state.reducedMotion
+              ? TOOL_DEFS.length +
+                1
+              : 0;
+
+          let started = false;
+
+          const render =
+            () => {
+              toolRow.replaceChildren();
+
+              TOOL_DEFS
+                .slice(
+                  0,
+                  Math.min(
+                    step,
+                    TOOL_DEFS.length
+                  )
+                )
+                .forEach(
+                  ([
+                    label,
+                    color,
+                    iconName
+                  ]) => {
+                    const chip =
+                      createCandy(
+                        label,
+                        color ===
+                          "green"
+                          ? "#3DC46B"
+                          : color ===
+                              "orange"
+                            ? "#FF6A2B"
+                            : "#171717",
+                        color ===
+                          "green"
+                          ? "#23934A"
+                          : color ===
+                              "orange"
+                            ? "#C43E0C"
+                            : "#050505",
+                        iconName
+                      );
+
+                    chip.classList.add(
+                      "is-visible"
+                    );
+
+                    toolRow.appendChild(
+                      chip
+                    );
+                  }
+                );
+
+              const showFrames =
+                step >=
+                TOOL_DEFS.length;
+
+              const showNote =
+                step >=
+                TOOL_DEFS.length +
+                1;
+
+              framesPanel.classList.toggle(
+                "is-visible",
+                showFrames
+              );
+
+              note.hidden =
+                !showNote;
+
+              note.classList.toggle(
+                "is-visible",
+                showNote
+              );
+
+              if (
+                showFrames
+              ) {
+                drawFrameCanvases(
+                  card
+                );
+              }
+            };
+
+          const start =
+            () => {
+              if (started) {
+                return;
+              }
+
+              started = true;
+
+              if (
+                state.reducedMotion
+              ) {
+                render();
+                return;
+              }
+
+              let current = 0;
+
+              const tick =
+                () => {
+                  current += 1;
+                  step = current;
+
+                  render();
+
+                  if (
+                    current <
+                    TOOL_DEFS.length +
+                    1
+                  ) {
+                    window.setTimeout(
+                      tick,
+                      700
+                    );
+                  }
+                };
+
+              window.setTimeout(
+                tick,
+                500
+              );
+            };
+
+          render();
+
+          const observer =
+            new IntersectionObserver(
+              entries => {
+                if (
+                  !entries[0]?.isIntersecting
+                ) {
+                  return;
+                }
+
+                observer.disconnect();
+
+                start();
+              },
+              {
+                threshold: 0.4
+              }
+            );
+
+          observer.observe(
+            card
+          );
+        };
+
+      const initializeTweakCard =
+        card => {
+          const canvas =
+            card.querySelector(
+              "[data-tweak-canvas]"
+            );
+
+          const fontNameNode =
+            card.querySelector(
+              "[data-font-name]"
+            );
+
+          const fontWeightNode =
+            card.querySelector(
+              "[data-font-weight]"
+            );
+
+          if (
+            !canvas ||
+            !fontNameNode ||
+            !fontWeightNode
+          ) {
+            return;
+          }
+
+          let index = 0;
+          let started = false;
+
+          const render =
+            () => {
+              const [
+                fontName,
+                fontWeight
+              ] =
+                HOW_FONTS[
+                  index %
+                    HOW_FONTS.length
+                ];
+
+              fontNameNode.textContent =
+                fontName;
+
+              fontWeightNode.textContent =
+                String(
+                  fontWeight
+                );
+
+              drawTweakCanvas(
+                canvas,
+                fontName,
+                fontWeight
+              );
+            };
+
+          setupCanvasResize(
+            canvas,
+            render
+          );
+
+          render();
+
+          const start =
+            () => {
+              if (started) {
+                return;
+              }
+
+              started = true;
+
+              if (
+                state.reducedMotion
+              ) {
+                index = 0;
+                render();
+                return;
+              }
+
+              window.setInterval(
+                () => {
+                  index =
+                    (
+                      index + 1
+                    ) %
+                    HOW_FONTS.length;
+
+                  render();
+                },
+                1400
+              );
+            };
+
+          const observer =
+            new IntersectionObserver(
+              entries => {
+                if (
+                  !entries[0]?.isIntersecting
+                ) {
+                  return;
+                }
+
+                observer.disconnect();
+
+                start();
+              },
+              {
+                threshold: 0.4
+              }
+            );
+
+          observer.observe(
+            card
+          );
+        };
 
       /* =========================================================
          Final CTA command pill
          ========================================================= */
 
-      const initializeCommand = () => {
-        const button = document.querySelector("#copy-command");
-        const commandWrap = document.querySelector("#command-wrap");
-        const copyControl = document.querySelector("#copy-control");
-        const copyLabel = document.querySelector("#copy-label");
-        const copyCheck = document.querySelector("#copy-check");
-        const status = document.querySelector("#copy-status");
+      const initializeCommand =
+        () => {
+          const button =
+            document.querySelector(
+              "#copy-command"
+            );
 
-        if (!button || !commandWrap || !copyControl || !copyLabel || !copyCheck || !status) return;
+          const commandWrap =
+            document.querySelector(
+              "#command-wrap"
+            );
 
-        const baseState = { rotateX: 22, y: 0, scale: 1 };
-        const hoverState = { rotateX: 12, y: -3, scale: 1.01 };
-        const tapState = { rotateX: 4, y: 5, scale: 0.985 };
+          const copyControl =
+            document.querySelector(
+              "#copy-control"
+            );
 
-        let pointerInside = false;
-        let resetTimer = null;
-        let badgeExitTimer = null;
+          const copyLabel =
+            document.querySelector(
+              "#copy-label"
+            );
 
-        const animateCommand = values =>
-          runAnimation(button, "command", values, transformTransition(TRANSITIONS.command));
+          const copyCheck =
+            document.querySelector(
+              "#copy-check"
+            );
 
-        const setRest = () => animateCommand(baseState);
-        const setHover = () => animateCommand(state.reducedMotion ? baseState : hoverState);
-        const setTap = () => animateCommand(tapState);
+          const status =
+            document.querySelector(
+              "#copy-status"
+            );
 
-        button.addEventListener("pointerenter", () => {
-          pointerInside = true;
-          setHover();
-        });
-
-        button.addEventListener("pointerleave", () => {
-          pointerInside = false;
-          setRest();
-        });
-
-        button.addEventListener("pointerdown", setTap);
-
-        button.addEventListener("pointerup", () => {
-          pointerInside ? setHover() : setRest();
-        });
-
-        button.addEventListener("pointercancel", () => {
-          pointerInside ? setHover() : setRest();
-        });
-
-        const animateCopyControl = isCopied =>
-          runAnimation(
-            copyControl,
-            "copy-control",
-            {
-              backgroundColor: isCopied ? COLORS.green : COLORS.orange,
-              boxShadow: isCopied
-                ? `inset 0 1px 0 rgba(255,255,255,0.3), 0 3px 0 ${COLORS.greenDark}`
-                : `inset 0 1px 0 rgba(255,255,255,0.3), 0 3px 0 ${COLORS.orangeDark}`
-            },
-            { duration: 0.25 }
-          );
-
-        const animateCopyLabel = isCopied => {
-          const transition = state.reducedMotion
-            ? { duration: 0.01 }
-            : TRANSITIONS.copyState;
-
-          runAnimation(
-            copyLabel,
-            "copy-label",
-            {
-              opacity: isCopied ? 0 : 1,
-              scale: isCopied ? 0.6 : 1
-            },
-            transition
-          );
-
-          runAnimation(
-            copyCheck,
-            "copy-check",
-            {
-              opacity: isCopied ? 1 : 0,
-              scale: isCopied ? 1 : 0.4
-            },
-            transition
-          );
-        };
-
-        const createCopiedBadge = () => {
-          const badge = document.createElement("span");
-          badge.className = "copy-badge";
-          badge.setAttribute("aria-hidden", "true");
-
-          for (let depth = 0; depth < 12; depth += 2) {
-            const layer = document.createElement("span");
-            layer.className = `copy-badge-layer depth-${depth / 2}`;
-            badge.appendChild(layer);
+          if (
+            !button ||
+            !commandWrap ||
+            !copyControl ||
+            !copyLabel ||
+            !copyCheck ||
+            !status
+          ) {
+            return;
           }
 
-          const face = document.createElement("span");
-          face.className = "copy-badge-face";
-          face.innerHTML = `${ICONS.check}<span>Copied</span>`;
-          badge.appendChild(face);
+          const baseState = {
+            rotateX: 22,
+            y: 0,
+            scale: 1
+          };
 
-          commandWrap.appendChild(badge);
+          const hoverState = {
+            rotateX: 12,
+            y: -3,
+            scale: 1.01
+          };
 
-          return badge;
-        };
+          const tapState = {
+            rotateX: 4,
+            y: 5,
+            scale: 0.985
+          };
 
-        const animateBadgeEnter = badge => {
-          runAnimation(
-            badge,
-            "badge",
-            {
-              opacity: 0,
-              y: 34,
-              scale: 0.35,
-              rotateX: 0,
-              rotateZ: -8
-            },
-            { duration: 0 }
-          );
+          let pointerInside =
+            false;
 
-          runAnimation(
-            badge,
-            "badge-transform",
-            {
-              y: -44,
-              scale: 1,
-              rotateX: 28,
-              rotateZ: 4
-            },
-            state.reducedMotion
-              ? { duration: 0 }
-              : TRANSITIONS.copiedBadge
-          );
+          let resetTimer =
+            null;
 
-          runAnimation(
-            badge,
-            "badge-opacity",
-            { opacity: 1 },
-            { duration: 0.12 }
-          );
-        };
+          let badgeExitTimer =
+            null;
 
-        const animateBadgeExit = badge => {
-          if (!badge) return;
+          const animateCommand =
+            values =>
+              runAnimation(
+                button,
+                "command",
+                values,
+                transformTransition(
+                  TRANSITIONS.command
+                )
+              );
 
-          runAnimation(
-            badge,
-            "badge-transform",
-            {
-              y: -78,
-              scale: 0.9,
-              rotateX: 28,
-              rotateZ: 4
-            },
-            state.reducedMotion
-              ? { duration: 0 }
-              : {
-                  type: "spring",
-                  stiffness: 380,
-                  damping: 17,
-                  mass: 0.9
-                }
-          );
+          const setRest =
+            () =>
+              animateCommand(
+                baseState
+              );
 
-          const exit = runAnimation(
-            badge,
-            "badge-opacity",
-            {
-              opacity: 0,
-              filter: "blur(4px)"
-            },
-            {
-              duration: 0.35,
-              ease: [0.32, 0.72, 0, 1]
+          const setHover =
+            () =>
+              animateCommand(
+                state.reducedMotion
+                  ? baseState
+                  : hoverState
+              );
+
+          const setTap =
+            () =>
+              animateCommand(
+                tapState
+              );
+
+          button.addEventListener(
+            "pointerenter",
+            () => {
+              pointerInside = true;
+              setHover();
             }
           );
 
-          exit.finished
-            .catch(() => {})
-            .finally(() => {
-              if (badge.isConnected) {
-                badge.remove();
+          button.addEventListener(
+            "pointerleave",
+            () => {
+              pointerInside = false;
+              setRest();
+            }
+          );
+
+          button.addEventListener(
+            "pointerdown",
+            setTap
+          );
+
+          button.addEventListener(
+            "pointerup",
+            () =>
+              pointerInside
+                ? setHover()
+                : setRest()
+          );
+
+          button.addEventListener(
+            "pointercancel",
+            () =>
+              pointerInside
+                ? setHover()
+                : setRest()
+          );
+
+          const animateCopyControl =
+            isCopied =>
+              runAnimation(
+                copyControl,
+                "copy-control",
+                {
+                  backgroundColor:
+                    isCopied
+                      ? COLORS.green
+                      : COLORS.orange,
+
+                  boxShadow:
+                    isCopied
+                      ? `inset 0 1px 0 rgba(255,255,255,0.3), 0 3px 0 ${COLORS.greenDark}`
+                      : `inset 0 1px 0 rgba(255,255,255,0.3), 0 3px 0 ${COLORS.orangeDark}`
+                },
+                {
+                  duration: 0.25
+                }
+              );
+
+          const animateCopyLabel =
+            isCopied => {
+              const transition =
+                state.reducedMotion
+                  ? {
+                      duration: 0.01
+                    }
+                  : TRANSITIONS.copyState;
+
+              runAnimation(
+                copyLabel,
+                "copy-label",
+                {
+                  opacity:
+                    isCopied
+                      ? 0
+                      : 1,
+
+                  scale:
+                    isCopied
+                      ? 0.6
+                      : 1
+                },
+                transition
+              );
+
+              runAnimation(
+                copyCheck,
+                "copy-check",
+                {
+                  opacity:
+                    isCopied
+                      ? 1
+                      : 0,
+
+                  scale:
+                    isCopied
+                      ? 1
+                      : 0.4
+                },
+                transition
+              );
+            };
+
+          const createCopiedBadge =
+            () => {
+              const badge =
+                document.createElement(
+                  "span"
+                );
+
+              badge.className =
+                "copy-badge";
+
+              badge.setAttribute(
+                "aria-hidden",
+                "true"
+              );
+
+              for (
+                let depth = 0;
+                depth < 12;
+                depth += 2
+              ) {
+                const layer =
+                  document.createElement(
+                    "span"
+                  );
+
+                layer.className =
+                  `copy-badge-layer depth-${depth / 2}`;
+
+                badge.appendChild(
+                  layer
+                );
               }
-            });
+
+              const face =
+                document.createElement(
+                  "span"
+                );
+
+              face.className =
+                "copy-badge-face";
+
+              face.innerHTML =
+                `${ICONS.check}<span>Copied</span>`;
+
+              badge.appendChild(
+                face
+              );
+
+              commandWrap.appendChild(
+                badge
+              );
+
+              return badge;
+            };
+
+          const animateBadgeEnter =
+            badge => {
+              runAnimation(
+                badge,
+                "badge",
+                {
+                  opacity: 0,
+                  y: 34,
+                  scale: 0.35,
+                  rotateX: 0,
+                  rotateZ: -8
+                },
+                {
+                  duration: 0
+                }
+              );
+
+              runAnimation(
+                badge,
+                "badge-transform",
+                {
+                  y: -44,
+                  scale: 1,
+                  rotateX: 28,
+                  rotateZ: 4
+                },
+                state.reducedMotion
+                  ? {
+                      duration: 0
+                    }
+                  : TRANSITIONS.copiedBadge
+              );
+
+              runAnimation(
+                badge,
+                "badge-opacity",
+                {
+                  opacity: 1
+                },
+                {
+                  duration: 0.12
+                }
+              );
+            };
+
+          const animateBadgeExit =
+            badge => {
+              if (!badge) {
+                return;
+              }
+
+              runAnimation(
+                badge,
+                "badge-transform",
+                {
+                  y: -78,
+                  scale: 0.9,
+                  rotateX: 28,
+                  rotateZ: 4
+                },
+                state.reducedMotion
+                  ? {
+                      duration: 0
+                    }
+                  : {
+                      type: "spring",
+                      stiffness: 380,
+                      damping: 17,
+                      mass: 0.9
+                    }
+              );
+
+              const exit =
+                runAnimation(
+                  badge,
+                  "badge-opacity",
+                  {
+                    opacity: 0,
+                    filter: "blur(4px)"
+                  },
+                  {
+                    duration: 0.35,
+                    ease: [
+                      0.32,
+                      0.72,
+                      0,
+                      1
+                    ]
+                  }
+                );
+
+              exit.finished
+                .catch(() => {})
+                .finally(
+                  () => {
+                    if (
+                      badge.isConnected
+                    ) {
+                      badge.remove();
+                    }
+                  }
+                );
+            };
+
+          const showCopied =
+            () => {
+              animateCopyControl(
+                true
+              );
+
+              animateCopyLabel(
+                true
+              );
+
+              status.textContent =
+                "Copied";
+
+              const badge =
+                createCopiedBadge();
+
+              animateBadgeEnter(
+                badge
+              );
+
+              window.clearTimeout(
+                resetTimer
+              );
+
+              window.clearTimeout(
+                badgeExitTimer
+              );
+
+              resetTimer =
+                window.setTimeout(
+                  () => {
+                    animateCopyControl(
+                      false
+                    );
+
+                    animateCopyLabel(
+                      false
+                    );
+
+                    status.textContent =
+                      "";
+
+                    badgeExitTimer =
+                      window.setTimeout(
+                        () =>
+                          animateBadgeExit(
+                            badge
+                          ),
+                        0
+                      );
+                  },
+                  1700
+                );
+            };
+
+          button.addEventListener(
+            "click",
+            () => {
+              navigator.clipboard
+                ?.writeText(
+                  COMMAND
+                )
+                .catch(() => {});
+
+              track(
+                "mcp_command_copied",
+                {
+                  where:
+                    "landing"
+                }
+              );
+
+              showCopied();
+            }
+          );
         };
-
-        const showCopied = () => {
-          animateCopyControl(true);
-          animateCopyLabel(true);
-          status.textContent = "Copied";
-
-          const badge = createCopiedBadge();
-          animateBadgeEnter(badge);
-
-          window.clearTimeout(resetTimer);
-          window.clearTimeout(badgeExitTimer);
-
-          resetTimer = window.setTimeout(() => {
-            animateCopyControl(false);
-            animateCopyLabel(false);
-            status.textContent = "";
-
-            badgeExitTimer = window.setTimeout(() => {
-              animateBadgeExit(badge);
-            }, 0);
-          }, 1700);
-        };
-
-        button.addEventListener("click", () => {
-          navigator.clipboard?.writeText(COMMAND).catch(() => {});
-          track("mcp_command_copied", { where: "landing" });
-          showCopied();
-        });
-      };
 
       /* =========================================================
          Shared press buttons
          ========================================================= */
 
-      const initializePressButtons = () => {
-        document.querySelectorAll("[data-press]").forEach(button => {
-          const back = button.querySelector(".press-back");
-          const front = button.querySelector(".press-front");
+      const initializePressButtons =
+        () => {
+          document
+            .querySelectorAll(
+              "[data-press]"
+            )
+            .forEach(
+              button => {
+                const back =
+                  button.querySelector(
+                    ".press-back"
+                  );
 
-          if (!back || !front) return;
+                const front =
+                  button.querySelector(
+                    ".press-front"
+                  );
 
-          const restFront = { y: 0, scaleX: 1, scaleY: 1 };
-          const hoverFront = { y: -4, scaleX: 1, scaleY: 1 };
-          const tapFront = { y: 6, scaleX: 1.02, scaleY: 0.97 };
+                if (
+                  !back ||
+                  !front
+                ) {
+                  return;
+                }
 
-          const restShadow = "0 12px 20px -10px rgba(0,0,0,0.22)";
-          const hoverShadow = "0 20px 30px -12px rgba(0,0,0,0.26)";
-          const tapShadow = "0 4px 8px -4px rgba(0,0,0,0.18)";
+                const restFront = {
+                  y: 0,
+                  scaleX: 1,
+                  scaleY: 1
+                };
 
-          const animateFront = values =>
-            runAnimation(
-              front,
-              "front",
-              values,
-              transformTransition(TRANSITIONS.press)
+                const hoverFront = {
+                  y: -4,
+                  scaleX: 1,
+                  scaleY: 1
+                };
+
+                const tapFront = {
+                  y: 6,
+                  scaleX: 1.02,
+                  scaleY: 0.97
+                };
+
+                const restShadow =
+                  "0 12px 20px -10px rgba(0,0,0,0.22)";
+
+                const hoverShadow =
+                  "0 20px 30px -12px rgba(0,0,0,0.26)";
+
+                const tapShadow =
+                  "0 4px 8px -4px rgba(0,0,0,0.18)";
+
+                const animateFront =
+                  values =>
+                    runAnimation(
+                      front,
+                      "front",
+                      values,
+                      transformTransition(
+                        TRANSITIONS.press
+                      )
+                    );
+
+                const animateShadow =
+                  shadow =>
+                    runAnimation(
+                      back,
+                      "shadow",
+                      {
+                        boxShadow:
+                          shadow
+                      },
+                      state.reducedMotion
+                        ? {
+                            duration: 0.01
+                          }
+                        : TRANSITIONS.press
+                    );
+
+                const rest =
+                  () => {
+                    animateFront(
+                      restFront
+                    );
+
+                    animateShadow(
+                      restShadow
+                    );
+                  };
+
+                const hover =
+                  () => {
+                    animateFront(
+                      hoverFront
+                    );
+
+                    animateShadow(
+                      hoverShadow
+                    );
+                  };
+
+                const tap =
+                  () => {
+                    animateFront(
+                      tapFront
+                    );
+
+                    animateShadow(
+                      tapShadow
+                    );
+                  };
+
+                button.addEventListener(
+                  "pointerenter",
+                  hover
+                );
+
+                button.addEventListener(
+                  "pointerleave",
+                  rest
+                );
+
+                button.addEventListener(
+                  "pointerdown",
+                  tap
+                );
+
+                button.addEventListener(
+                  "pointerup",
+                  hover
+                );
+
+                button.addEventListener(
+                  "pointercancel",
+                  rest
+                );
+
+                button.addEventListener(
+                  "dragstart",
+                  event =>
+                    event.preventDefault()
+                );
+
+                rest();
+              }
             );
+        };
 
-          const animateShadow = shadow =>
-            runAnimation(
-              back,
-              "shadow",
-              { boxShadow: shadow },
-              state.reducedMotion
-                ? { duration: 0.01 }
-                : TRANSITIONS.press
-            );
+      const initialize =
+        () => {
+          initializeLogoTracking();
+          initializeHowAnimations();
+          initializeCommand();
+          initializePressButtons();
+        };
 
-          const rest = () => {
-            animateFront(restFront);
-            animateShadow(restShadow);
-          };
-
-          const hover = () => {
-            animateFront(hoverFront);
-            animateShadow(hoverShadow);
-          };
-
-          const tap = () => {
-            animateFront(tapFront);
-            animateShadow(tapShadow);
-          };
-
-          button.addEventListener("pointerenter", hover);
-          button.addEventListener("pointerleave", rest);
-          button.addEventListener("pointerdown", tap);
-          button.addEventListener("pointerup", hover);
-          button.addEventListener("pointercancel", rest);
-          button.addEventListener("dragstart", event => event.preventDefault());
-
-          rest();
-        });
-      };
-
-      const initialize = () => {
-        initializeLogoTracking();
-        initializeHowAnimations();
-        initializeCommand();
-        initializePressButtons();
-      };
-
-      if (document.readyState === "loading") {
-        document.addEventListener("DOMContentLoaded", initialize, { once: true });
+      if (
+        document.readyState ===
+        "loading"
+      ) {
+        document.addEventListener(
+          "DOMContentLoaded",
+          initialize,
+          {
+            once: true
+          }
+        );
       } else {
         initialize();
       }

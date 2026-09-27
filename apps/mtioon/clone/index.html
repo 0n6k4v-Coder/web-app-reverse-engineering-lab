@@ -1831,19 +1831,15 @@
         };
       };
 
-      const initializeEyeTracking =
+      const initializeLogoTracking =
         () => {
-          const logo =
-            document.querySelector(
-              ".brand svg"
+          const logos =
+            document.querySelectorAll(
+              ".brand svg, .footer-logo"
             );
 
-          if (!logo) {
-            return;
-          }
-
-          createEyeTracker(
-            logo
+          logos.forEach(
+            createEyeTracker
           );
         };
 
@@ -2526,7 +2522,7 @@
 
       const initialize =
         () => {
-          initializeEyeTracking();
+          initializeLogoTracking();
           initializeCommand();
           initializePressButtons();
         };

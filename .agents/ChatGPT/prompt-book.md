@@ -119,3 +119,51 @@ Return the sandbox artifact link.
 | **runtime validation**                      | Run syntax/structural checks after editing               |
 | **derived artifact**                        | The newly generated complete file                        |
 | **sandbox artifact**                        | The `/mnt/data/...` file returned to you for download    |
+
+
+---
+
+```text
+You are continuing a reverse-engineering and cloning task for:
+
+Repository:
+https://github.com/0n6k4v-Coder/web-app-reverse-engineering-lab
+
+Target file:
+`apps/mtioon/clone/index.html`
+
+Original site:
+https://mtioon.com/
+
+The existing clone already contains a reconstructed Hero section. Do not assume the existing implementation is perfect; inspect the current clone before making changes.
+
+My next target is the **left 3D object positioned below the Hero section** on the original mtioon.com page.
+
+Your job is to:
+
+1. Inspect the live original site and the current clone.
+2. Identify exactly what the left 3D object is made from:
+
+   * DOM / HTML structure
+   * CSS
+   * SVG / canvas
+   * images / video / other assets
+   * JavaScript interaction and animation
+3. Reverse-engineer its geometry, perspective, depth, positioning, animation, and interaction behavior.
+4. Compare the original object with the current clone and determine what is missing or inaccurate.
+5. Then clone only that object into the existing clone.
+
+Runtime/file rules:
+
+* Read the GitHub source as read-only.
+* Materialize the existing clone as a container-backed working copy before editing.
+* Use a surgical patch against the working copy.
+* Do not regenerate or rewrite the whole HTML file.
+* Treat all unrelated sections as immutable.
+* Do not refactor existing code.
+* Do not modify, commit, or push the GitHub repository.
+* Preserve all non-target bytes byte-for-byte wherever possible.
+* Save the completed result as a new `/mnt/data/` derived artifact.
+
+Before editing, show me your reverse-engineering findings for the left 3D object and explain which parts you will patch.
+```

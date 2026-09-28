@@ -132,5 +132,48 @@ Clone the 3D object that appears directly below the Hero section on the original
   - Relevant HTML, CSS, JavaScript, SVG, Canvas, or other implementation details.
 - Continue until you have enough context to understand and reproduce what is needed.
 
-4. Show me your reverse-engineering findings clearly, directly, and concisely using the most appropriate visual format.
+4. Show the Reverse-Engineering Findings
+- Present the findings clearly, directly, and concisely.
+- Use the most appropriate visual format for the information.
+```
+
+```
+# Task
+Using the Reverse-Engineering Findings:
+
+1. Inspect the Existing Clone
+- Read the target file from the repository.
+- Use the existing file as the source for the clone.
+- Identify the correct location for implementing the requested target.
+- Understand the surrounding code before making changes.
+- Do not modify unrelated code.
+
+2. Implement the Requested Target
+- Materialize the existing file as a container-backed working copy.
+- Use the Reverse-Engineering Findings as the implementation specification.
+- Apply the changes with a surgical patch script against the working copy.
+- Patch only the code required for the requested target.
+- Do not rewrite, regenerate, refactor, or normalize unrelated content.
+- Preserve all bytes outside the target patch region exactly.
+- Treat the source and all non-target regions as immutable.
+- Do not modify, commit, or push the GitHub repository.
+
+3. Assemble the Cloned File
+- Keep the existing clone intact.
+- Insert or replace only the requested target implementation.
+- Ensure the final file contains the complete existing clone plus the implemented target.
+- Do not remove or alter unrelated existing sections.
+
+4. Validate the Result
+- Validate the implemented target against the Reverse-Engineering Findings.
+- Run relevant syntax and structural validation.
+- Compare untouched regions against the source working copy byte-for-byte.
+- Confirm that unrelated sections were not changed.
+- Confirm that the final file is complete and valid.
+
+5. Output the Result
+- Save the complete assembled clone as a new `/mnt/data/` artifact.
+- Verify that the artifact exists.
+- Return the sandbox artifact link.
+- Briefly state what was implemented and what was validated.
 ```

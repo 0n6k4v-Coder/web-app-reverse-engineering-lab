@@ -20,19 +20,34 @@ Don't update it directly to github. I need to see the code in this conversation.
 ```
 
 ```text
-Now we're working on this repository: https://github.com/0n6k4v-Coder/web-app-reverse-engineering-lab
+# Context
+Working Repository: https://github.com/0n6k4v-Coder/web-app-reverse-engineering-lab
 
-This is our cloned sources code:
+Our cloned source code:
 - https://github.com/0n6k4v-Coder/web-app-reverse-engineering-lab/blob/main/apps/mtioon/clone/index.html
-
-User Request:
-I want to clone pricing section.
 
 Crucial Skills:
 - https://github.com/0n6k4v-Coder/skills/tree/master/google/chrome-devtools-mcp/skills
 
-Your Task:
-Give me the Chrome DevTools CLI to inspect the target website’s source code. You must inspect both appearance, functionality, and everything necessary until you have enough context from the original target website’s source code. When you are ready, provide the generated code inside a fenced code block in the conversation.
+# User Request
+I want to clone pricing section.
+
+# Task
+1. Read and understand the context.
+2. Read and understand the user request.
+
+3. Inspect the Target Website’s Original Source Code
+- Read the specified skills file first.
+- Provide the Chrome DevTools CLI command to launch the target website in the background.
+- Search for the browser ID.
+- Continue providing Chrome DevTools CLI commands to inspect the target website’s original source code.
+- Inspect everything necessary, including:
+  - Visual appearance.
+  - Functionality and behavior.
+  - Structure, components, assets, and relevant code.
+- Continue until you have enough context to understand and reproduce what is needed.
+
+4. Summarize your findings clearly, directly, and concisely using the most appropriate visual format.
 ```
 
 ```text

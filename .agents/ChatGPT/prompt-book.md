@@ -186,3 +186,76 @@ Using the Reverse-Engineering Findings:
 - Return the sandbox artifact link.
 - Briefly state what was implemented and what was validated.
 ```
+
+---
+
+```text
+# Task
+Using the Reverse-Engineering Findings:
+1. Inspect the Existing Clone
+* Read the complete target file directly from the GitHub repository.
+* Treat the current repository version as the authoritative baseline.
+* Inspect the existing target implementation and its surrounding HTML, CSS, JavaScript, component structure, state, events, and behavior.
+* Determine how the current clone implements the requested target.
+* Compare the current implementation against the Reverse-Engineering Findings.
+* Identify what is already correct.
+* Identify what is missing, incorrect, incomplete, or inconsistent.
+* Locate the exact regions that must change.
+* Identify existing behavior that must be preserved.
+* Do not modify the repository.
+
+2. Define the Exact Change
+* Decide exactly what needs to be changed based on the source and Reverse-Engineering Findings.
+* Determine the smallest implementation change that will reproduce the requested target behavior.
+* Decide the exact HTML, CSS, JavaScript, state, interaction, animation, and responsive changes required.
+* Decide which existing code should be reused.
+* Decide which existing code must remain untouched.
+* Resolve implementation ambiguities before involving the Local AI Agent.
+* Do not delegate design or architectural decisions to the Local AI Agent.
+* Do not ask the Local AI Agent to investigate what needs to change.
+
+3. Generate the Local AI Agent Task
+* Convert the implementation decision into one direct execution task.
+* State exactly what the Local AI Agent must change.
+* State exactly where the change belongs when the location is known.
+* State the required behavior, defaults, styling, interactions, and transitions.
+* State the code that must remain untouched.
+* State the validation requirements relevant to this specific change.
+* Keep the task simple, clear, direct, explicit, concise, and ordered.
+* Do not include unnecessary research instructions.
+* Do not ask the Local AI Agent to make implementation decisions.
+* Do not ask it to analyze the Reverse-Engineering Findings independently.
+* Do not include work that belongs to later validation tasks.
+
+**Output:** One self-contained implementation task ready to paste into the Local AI Agent.
+```
+
+```text
+# Task
+
+Execute only the implementation task provided by the Assistant.
+
+## 1. Execute the Change
+* Read the specified local file as needed to apply the task.
+* Apply exactly the requested implementation.
+* Modify only the specified target regions.
+* Preserve all unrelated code.
+* Do not redesign, refactor, regenerate, reformat, or normalize unrelated content.
+* Do not make independent architectural decisions.
+* Do not modify, commit, or push GitHub.
+
+## 2. Validate the Change
+* Validate the requested implementation against the task.
+* Run the specified syntax and structural checks.
+* Test the requested behavior where possible.
+* Compare the final result against the original local source.
+* Verify that non-target regions were not changed.
+* Report failures precisely.
+
+## 3. Report the Result
+* State exactly what was changed.
+* State exactly what was validated.
+* State any unexpected changes.
+* State any unresolved issue.
+* Do not make additional changes unless instructed by the Assistant.
+```

@@ -22,37 +22,6 @@ let's assemble you finding with our existing cloned file. Keep existing clone is
 ```
 
 ```text
-# Context
-Working Repository: https://github.com/0n6k4v-Coder/web-app-reverse-engineering-lab
-
-Our cloned source code:
-- https://github.com/0n6k4v-Coder/web-app-reverse-engineering-lab/blob/main/apps/mtioon/clone/index.html
-
-Crucial Skills:
-- https://github.com/0n6k4v-Coder/skills/tree/master/google/chrome-devtools-mcp/skills
-
-# User Request
-I want to clone pricing section.
-
-# Task
-1. Read and understand the context.
-2. Read and understand the user request.
-
-3. Inspect the Target Website’s Original Source Code
-- Read the specified skills file first.
-- Provide the Chrome DevTools CLI command to launch the target website in the background.
-- Search for the browser ID.
-- Continue providing Chrome DevTools CLI commands to inspect the target website’s original source code.
-- Inspect everything necessary, including:
-  - Visual appearance.
-  - Functionality and behavior.
-  - Structure, components, assets, and relevant code.
-- Continue until you have enough context to understand and reproduce what is needed.
-
-4. Summarize your findings clearly, directly, and concisely using the most appropriate visual format.
-```
-
-```text
 Re-analyze the <Element>.
 
 Carefully inspect the original mtioon implementation and compare it with our current clone. Identify the differences and determine what changes are needed to make our implementation as close to the original as possible, ideally pixel-accurate.
@@ -124,6 +93,7 @@ Return the sandbox artifact link.
 ---
 
 ```text
+# Context
 You are continuing a reverse-engineering and cloning task for:
 
 Repository:
@@ -135,35 +105,32 @@ Target file:
 Original site:
 https://mtioon.com/
 
-The existing clone already contains a reconstructed Hero section. Do not assume the existing implementation is perfect; inspect the current clone before making changes.
+Crucial Skills:
+- https://github.com/0n6k4v-Coder/skills/tree/master/google/chrome-devtools-mcp/skills
 
-My next target is the **left 3D object positioned below the Hero section** on the original mtioon.com page.
+# User Request
+Clone the 3D object that appears directly below the Hero section on the original mtioon.com page.
 
-Your job is to:
+# Task
+1. Read and understand the context.
+2. Read and understand the user request.
 
-1. Inspect the live original site and the current clone.
-2. Identify exactly what the left 3D object is made from:
+3. Inspect the Target Website’s Original Source Code
+- Read the specified skills file first.
+- Provide the Chrome DevTools CLI command to launch the target website in the background.
+- Provide the command to search for the browser ID.
+- Continue providing Chrome DevTools CLI commands to inspect the target website’s original source code.
+- Use the returned outputs as the source of truth for reverse-engineering.
+- Do not guess or invent implementation details that can be verified through inspection.
+- Inspect everything necessary to reproduce the requested target accurately, including:
+  - Visual appearance.
+  - Structure and components.
+  - Styles and layout.
+  - Assets and asset URLs.
+  - Functionality and behavior.
+  - Animation and interaction.
+  - Relevant HTML, CSS, JavaScript, SVG, Canvas, or other implementation details.
+- Continue until you have enough context to understand and reproduce what is needed.
 
-   * DOM / HTML structure
-   * CSS
-   * SVG / canvas
-   * images / video / other assets
-   * JavaScript interaction and animation
-3. Reverse-engineer its geometry, perspective, depth, positioning, animation, and interaction behavior.
-4. Compare the original object with the current clone and determine what is missing or inaccurate.
-5. Then clone only that object into the existing clone.
-
-Runtime/file rules:
-
-* Read the GitHub source as read-only.
-* Materialize the existing clone as a container-backed working copy before editing.
-* Use a surgical patch against the working copy.
-* Do not regenerate or rewrite the whole HTML file.
-* Treat all unrelated sections as immutable.
-* Do not refactor existing code.
-* Do not modify, commit, or push the GitHub repository.
-* Preserve all non-target bytes byte-for-byte wherever possible.
-* Save the completed result as a new `/mnt/data/` derived artifact.
-
-Before editing, show me your reverse-engineering findings for the left 3D object and explain which parts you will patch.
+4. Show me your reverse-engineering findings clearly, directly, and concisely using the most appropriate visual format.
 ```

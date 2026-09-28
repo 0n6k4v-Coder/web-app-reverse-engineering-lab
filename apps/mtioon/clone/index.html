@@ -3052,6 +3052,553 @@
 
 
 
+    <template id="mtioon-hero-style-template">
+<style id="hero-candy-fixed">
+
+  /* =========================================================
+     Hero — production-matched structure + Candy Toy primitive
+     Isolated to the Hero; existing sections below are untouched.
+     ========================================================= */
+      .hero-section {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 144px 20px 0;
+      text-align: center;
+    }
+
+    .hero-inner {
+      position: relative;
+      width: 100%;
+    }
+
+    .hero-title,
+    .hero-copy,
+    .hero-actions {
+      animation-duration: 0.6s;
+      animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+      animation-iteration-count: 1;
+      animation-fill-mode: backwards;
+      animation-name: hero-rise-in;
+      animation-delay: calc(
+        var(--hero-delay, 0.1s) +
+        var(--hero-step, 0.09s) * var(--hero-index, 0)
+      );
+    }
+
+    .hero-title {
+      position: relative;
+      max-width: 900px;
+      margin: 0 auto;
+      color: var(--ink);
+      font-family: "Sunghyun Sans", Inter, ui-sans-serif, system-ui, sans-serif;
+      font-size: clamp(40px, 13.5vw, 96px);
+      font-weight: 900;
+      line-height: 0.95;
+      letter-spacing: -0.04em;
+      text-wrap: nowrap;
+    }
+
+    .hero-title-eyes {
+      display: inline-block;
+      width: 1.24em;
+      height: 0.62em;
+      margin: 0 0.01em;
+      vertical-align: -0.02em;
+      overflow: visible;
+    }
+
+    .hero-copy {
+      max-width: 560px;
+      margin: 28px 0 0;
+      color: #525252;
+      font-size: 16px;
+      font-weight: 400;
+      line-height: 1.625;
+    }
+
+    .hero-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-top: 32px;
+    }
+
+    .hero-press-orange {
+      --press-face: #FF5A1F;
+      --press-side: #C43E0C;
+      --press-text: #FFFFFF;
+    }
+
+    .hero-press-light {
+      --press-face: #FFFFFF;
+      --press-side: #C9C9D1;
+      --press-text: #000000;
+    }
+
+    .hero-toys {
+      position: absolute;
+      inset: 0;
+      display: none;
+      pointer-events: none;
+      perspective: 1400px;
+      perspective-origin: 50% 42%;
+      transform-style: preserve-3d;
+    }
+
+    .hero-toy {
+      position: absolute;
+      pointer-events: auto;
+      cursor: grab;
+      transform-style: preserve-3d;
+      user-select: none;
+      touch-action: none;
+    }
+
+    .hero-toy:active { cursor: grabbing; }
+
+    .hero-toy-card {
+      position: relative;
+      transform-style: preserve-3d;
+      opacity: 0;
+      will-change: transform, opacity;
+      animation: hero-toy-enter 0.7s cubic-bezier(0.22,1,0.36,1) both;
+      animation-delay: var(--hero-toy-delay,0.5s);
+    }
+
+    .hero-toy-bob {
+      transform-style: preserve-3d;
+      animation: hero-candy-bob var(--hero-bob, 5s) ease-in-out infinite;
+    }
+
+    .hero-toy-orient {
+      position: relative;
+      transform-style: preserve-3d;
+      transform-origin: 50% 50%;
+      transform:
+        rotateX(calc(40deg + var(--hero-tilt-x, 0deg)))
+        rotateY(var(--hero-tilt-y, 0deg))
+        rotateZ(var(--hero-rotation, 0deg));
+      will-change: transform;
+    }
+
+    .hero-candy {
+      position: relative;
+      display: inline-block;
+      flex-shrink: 0;
+      transform-style: preserve-3d;
+      white-space: nowrap;
+      backface-visibility: visible;
+    }
+
+    .hero-candy-layer {
+      position: absolute;
+      inset: 0;
+      border-radius: 9999px;
+      pointer-events: none;
+      transform-style: preserve-3d;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.035), rgba(0,0,0,.10)),
+        var(--hero-candy-side);
+      backface-visibility: hidden;
+    }
+
+    .hero-candy-layer:nth-child(1) {
+      transform: translateZ(0px);
+      filter: brightness(.66);
+      box-shadow: 0 15px 22px -10px rgba(0,0,0,.34);
+    }
+    .hero-candy-layer:nth-child(2) { transform: translateZ(2px); filter: brightness(.69); }
+    .hero-candy-layer:nth-child(3) { transform: translateZ(4px); filter: brightness(.72); }
+    .hero-candy-layer:nth-child(4) { transform: translateZ(6px); filter: brightness(.75); }
+    .hero-candy-layer:nth-child(5) { transform: translateZ(8px); filter: brightness(.78); }
+    .hero-candy-layer:nth-child(6) { transform: translateZ(10px); filter: brightness(.81); }
+    .hero-candy-layer:nth-child(7) { transform: translateZ(12px); filter: brightness(.84); }
+    .hero-candy-layer:nth-child(8) { transform: translateZ(14px); filter: brightness(.87); }
+    .hero-candy-layer:nth-child(9) { transform: translateZ(16px); filter: brightness(.90); }
+
+    .hero-candy-face {
+      position: relative;
+      display: flex;
+      align-items: center;
+      height: 36px;
+      padding: 0 16px;
+      border-radius: 9999px;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.22) 0%, rgba(255,255,255,.055) 46%, rgba(0,0,0,.08) 100%),
+        var(--hero-candy-face);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.42),
+        inset 0 -2px 0 rgba(0,0,0,.10),
+        0 1px 0 rgba(255,255,255,.10);
+      border: 1px solid rgba(255,255,255,.10);
+      color: #FFFFFF;
+      font-family: ui-monospace, "SF Mono", Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      font-size: 12.5px;
+      font-weight: 500;
+      line-height: 1;
+      white-space: nowrap;
+      transform: translateZ(18px);
+      transform-style: preserve-3d;
+      backface-visibility: hidden;
+    }
+
+    .hero-candy-face::after {
+      content: "";
+      position: absolute;
+      inset: 1px 2px auto;
+      height: 42%;
+      border-radius: inherit;
+      background: linear-gradient(180deg, rgba(255,255,255,.16), rgba(255,255,255,0));
+      pointer-events: none;
+    }
+
+    .hero-toy--one { left: -6%; top: 14%; --hero-rotation: -7deg; --hero-enter-rotation: -14deg; --hero-bob: 5s; --hero-toy-delay: 0.5s; }
+    .hero-toy--two { right: -2%; top: 6%; --hero-rotation: 6deg; --hero-enter-rotation: 12deg; --hero-bob: 5.6s; --hero-toy-delay: 0.72s; }
+    .hero-toy--three { left: 60%; top: -16%; --hero-rotation: -4deg; --hero-enter-rotation: -8deg; --hero-bob: 6.1s; --hero-toy-delay: 0.94s; }
+    .hero-toy--four { left: 2%; bottom: -38%; --hero-rotation: 5deg; --hero-enter-rotation: 10deg; --hero-bob: 6.6s; --hero-toy-delay: 1.16s; }
+    .hero-toy--five { right: -4%; bottom: -34%; --hero-rotation: 4deg; --hero-enter-rotation: 8deg; --hero-bob: 7.1s; --hero-toy-delay: 1.38s; }
+
+    @keyframes hero-rise-in {
+      0% { opacity: 0.01; transform: translateY(18px); }
+      100% { opacity: 1; transform: none; }
+    }
+
+    @keyframes hero-toy-enter {
+      from {
+        opacity: 0;
+        transform: scale(0.52);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    @keyframes hero-candy-bob {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-5px); }
+    }
+
+    @media (min-width: 640px) {
+      .hero-section {
+        padding-left: 24px;
+        padding-right: 24px;
+        padding-top: 192px;
+      }
+
+      .hero-copy { font-size: 18px; }
+    }
+
+    @media (min-width: 1280px) {
+      .hero-toys { display: block; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .hero-title,
+      .hero-copy,
+      .hero-actions { animation: none; }
+
+      .hero-toy-card,
+      .hero-toy-bob { animation: none; }
+
+      .hero-toy-card {
+        opacity: 1;
+        transform: none;
+      }
+
+      .hero-toy-orient {
+        transform:
+          rotateX(40deg)
+          rotateY(0deg)
+          rotateZ(var(--hero-rotation, 0deg));
+      }
+    }
+</style>
+    </template>
+    <script id="mtioon-hero-style-loader">
+      (() => {
+        const template = document.getElementById("mtioon-hero-style-template");
+        if (!template) return;
+        document.head.appendChild(template.content.cloneNode(true));
+      })();
+    </script>
+
+    <!-- Hero -->
+    <section class="hero-section" aria-labelledby="hero-heading">
+      <div class="hero-inner">
+        <div class="hero-toys" aria-hidden="true">
+          <div class="hero-toy hero-toy--one" data-hero-toy>
+            <div class="hero-toy-card">
+              <div class="hero-toy-bob">
+                <div class="hero-toy-orient">
+                <div class="hero-candy" style="--hero-candy-face:#F0524F;--hero-candy-side:#B93231">
+                  <span class="hero-candy-layer depth-0" style="transform:translateZ(0px)"></span>
+                  <span class="hero-candy-layer" style="transform:translateZ(2px)"></span>
+                  <span class="hero-candy-layer" style="transform:translateZ(4px)"></span>
+                  <span class="hero-candy-layer" style="transform:translateZ(6px)"></span>
+                  <span class="hero-candy-layer" style="transform:translateZ(8px)"></span>
+                  <span class="hero-candy-layer" style="transform:translateZ(10px)"></span>
+                  <span class="hero-candy-layer" style="transform:translateZ(12px)"></span>
+                  <span class="hero-candy-layer" style="transform:translateZ(14px)"></span>
+                  <span class="hero-candy-layer" style="transform:translateZ(16px)"></span>
+                  <span class="hero-candy-face" style="background:linear-gradient(180deg,rgba(255,255,255,.16) 0%,rgba(255,255,255,0) 60%),#F0524F">“make the hook more aggressive”</span>
+                </div>
+              </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="hero-toy hero-toy--two" data-hero-toy>
+            <div class="hero-toy-card">
+              <div class="hero-toy-bob">
+                <div class="hero-toy-orient">
+                <div class="hero-candy" style="--hero-candy-face:#F5C518;--hero-candy-side:#C29505">
+                  <span class="hero-candy-layer depth-0" style="transform:translateZ(0px)"></span>
+                  <span class="hero-candy-layer" style="transform:translateZ(2px)"></span>
+                  <span class="hero-candy-layer" style="transform:translateZ(4px)"></span>
+                  <span class="hero-candy-layer" style="transform:translateZ(6px)"></span>
+                  <span class="hero-candy-layer" style="transform:translateZ(8px)"></span>
+                  <span class="hero-candy-layer" style="transform:translateZ(10px)"></span>
+                  <span class="hero-candy-layer" style="transform:translateZ(12px)"></span>
+                  <span class="hero-candy-layer" style="transform:translateZ(14px)"></span>
+                  <span class="hero-candy-layer" style="transform:translateZ(16px)"></span>
+                  <span class="hero-candy-face" style="background:linear-gradient(180deg,rgba(255,255,255,.16) 0%,rgba(255,255,255,0) 60%),#F5C518">“slam it in”</span>
+                </div>
+              </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="hero-toy hero-toy--three" data-hero-toy>
+            <div class="hero-toy-card">
+              <div class="hero-toy-bob">
+                <div class="hero-toy-orient">
+                <div class="hero-candy" style="--hero-candy-face:#3A8DF7;--hero-candy-side:#1F63CC">
+                  <span class="hero-candy-layer depth-0" style="transform:translateZ(0px)"></span>
+                  <span class="hero-candy-layer" style="transform:translateZ(2px)"></span>
+                  <span class="hero-candy-layer" style="transform:translateZ(4px)"></span>
+                  <span class="hero-candy-layer" style="transform:translateZ(6px)"></span>
+                  <span class="hero-candy-layer" style="transform:translateZ(8px)"></span>
+                  <span class="hero-candy-layer" style="transform:translateZ(10px)"></span>
+                  <span class="hero-candy-layer" style="transform:translateZ(12px)"></span>
+                  <span class="hero-candy-layer" style="transform:translateZ(14px)"></span>
+                  <span class="hero-candy-layer" style="transform:translateZ(16px)"></span>
+                  <span class="hero-candy-face" style="background:linear-gradient(180deg,rgba(255,255,255,.16) 0%,rgba(255,255,255,0) 60%),#3A8DF7">“adapt this to portrait”</span>
+                </div>
+              </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="hero-toy hero-toy--four" data-hero-toy>
+            <div class="hero-toy-card">
+              <div class="hero-toy-bob">
+                <div class="hero-toy-orient">
+                <div class="hero-candy" style="--hero-candy-face:#FF5A1F;--hero-candy-side:#C43E0C">
+                  <span class="hero-candy-layer depth-0" style="transform:translateZ(0px)"></span>
+                  <span class="hero-candy-layer" style="transform:translateZ(2px)"></span>
+                  <span class="hero-candy-layer" style="transform:translateZ(4px)"></span>
+                  <span class="hero-candy-layer" style="transform:translateZ(6px)"></span>
+                  <span class="hero-candy-layer" style="transform:translateZ(8px)"></span>
+                  <span class="hero-candy-layer" style="transform:translateZ(10px)"></span>
+                  <span class="hero-candy-layer" style="transform:translateZ(12px)"></span>
+                  <span class="hero-candy-layer" style="transform:translateZ(14px)"></span>
+                  <span class="hero-candy-layer" style="transform:translateZ(16px)"></span>
+                  <span class="hero-candy-face" style="background:linear-gradient(180deg,rgba(255,255,255,.16) 0%,rgba(255,255,255,0) 60%),#FF5A1F">“orange, please”</span>
+                </div>
+              </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="hero-toy hero-toy--five" data-hero-toy>
+            <div class="hero-toy-card">
+              <div class="hero-toy-bob">
+                <div class="hero-toy-orient">
+                <div class="hero-candy" style="--hero-candy-face:#9A5BF5;--hero-candy-side:#6B37C4">
+                  <span class="hero-candy-layer depth-0" style="transform:translateZ(0px)"></span>
+                  <span class="hero-candy-layer" style="transform:translateZ(2px)"></span>
+                  <span class="hero-candy-layer" style="transform:translateZ(4px)"></span>
+                  <span class="hero-candy-layer" style="transform:translateZ(6px)"></span>
+                  <span class="hero-candy-layer" style="transform:translateZ(8px)"></span>
+                  <span class="hero-candy-layer" style="transform:translateZ(10px)"></span>
+                  <span class="hero-candy-layer" style="transform:translateZ(12px)"></span>
+                  <span class="hero-candy-layer" style="transform:translateZ(14px)"></span>
+                  <span class="hero-candy-layer" style="transform:translateZ(16px)"></span>
+                  <span class="hero-candy-face" style="background:linear-gradient(180deg,rgba(255,255,255,.16) 0%,rgba(255,255,255,0) 60%),#9A5BF5">“Clash Display, everywhere”</span>
+                </div>
+              </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <h1 id="hero-heading" class="hero-title" aria-label="Say it. Watch it move.">
+          Say it.<br />
+          Watch it <span class="whitespace-nowrap">m<svg class="hero-title-eyes" viewBox="0 0 320 160" aria-hidden="true">
+            <g transform="translate(80 80)"><circle r="73" fill="currentColor"></circle><g data-hero-lid><g data-hero-white><circle r="36" fill="#F5F5F5"></circle></g></g></g>
+            <g transform="translate(240 80)"><circle r="73" fill="currentColor"></circle><g data-hero-lid><g data-hero-white><circle r="36" fill="#F5F5F5"></circle></g></g></g>
+          </svg>ve.</span>
+        </h1>
+      </div>
+
+      <p class="hero-copy">
+        An MCP for Claude Code. Connect it inside your project and Claude turns your repo into video: your copy, your fonts, your colours, your assets.
+      </p>
+
+      <div class="hero-actions">
+        <a class="press-button hero-press-orange" data-press href="/p/demo" data-umami-event="hero_demo_click">
+          <span class="press-back" aria-hidden="true"></span>
+          <span class="press-front"><span class="press-highlight" aria-hidden="true"></span><span class="press-label">Open the demo</span></span>
+        </a>
+        <button type="button" class="press-button hero-press-light" data-press>
+          <span class="press-back" aria-hidden="true"></span>
+          <span class="press-front"><span class="press-highlight" aria-hidden="true"></span><span class="press-label">New project</span></span>
+        </button>
+      </div>
+    </section>
+
+    <script id="hero-interaction-script">
+      (() => {
+        const initializeHero = () => {
+          const section = document.querySelector(".hero-section");
+          const eyeSvg = section?.querySelector(".hero-title-eyes");
+          const whiteEyes = eyeSvg ? [...eyeSvg.querySelectorAll("[data-hero-white] circle")] : [];
+          const lids = eyeSvg ? [...eyeSvg.querySelectorAll("[data-hero-lid]")] : [];
+          const toys = section ? [...section.querySelectorAll("[data-hero-toy]")] : [];
+          if (!section || !eyeSvg || whiteEyes.length !== 2 || lids.length !== 2) return;
+
+          const pointer = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
+          const eyeTarget = { x: 0, y: 0 };
+          const eyeCurrent = { x: 0, y: 0 };
+          const toyTarget = toys.map(() => ({ x: 0, y: 0 }));
+          const toyCurrent = toys.map(() => ({ x: 0, y: 0 }));
+          let lastPointerMove = performance.now();
+          let nextIdleMove = performance.now() + 2200;
+          let idleTarget = { x: 0, y: 0 };
+          let blinkStart = -1;
+          let nextBlink = performance.now() + 2200;
+          let frame = 0;
+
+          const handlePointerMove = event => {
+            pointer.x = event.clientX;
+            pointer.y = event.clientY;
+            lastPointerMove = performance.now();
+          };
+
+          const pickIdleTarget = now => {
+            const angle = Math.random() * Math.PI * 2;
+            const radius = 10 + 14 * Math.random();
+            idleTarget = {
+              x: Math.cos(angle) * radius,
+              y: Math.sin(angle) * radius * 0.8
+            };
+            nextIdleMove = now + 900 + 1600 * Math.random();
+          };
+
+          const render = now => {
+            const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+            if (!reducedMotion) {
+              const bounds = eyeSvg.getBoundingClientRect();
+              const centerX = bounds.left + bounds.width / 2;
+              const centerY = bounds.top + bounds.height / 2;
+              const dx = pointer.x - centerX;
+              const dy = pointer.y - centerY;
+              const distance = Math.hypot(dx, dy) || 1;
+              const amount = Math.min(1, distance / 260);
+
+              if (now - lastPointerMove < 2200) {
+                eyeTarget.x = (dx / distance) * 24 * amount;
+                eyeTarget.y = (dy / distance) * 20 * amount;
+              } else if (now >= nextIdleMove) {
+                pickIdleTarget(now);
+                eyeTarget.x = idleTarget.x;
+                eyeTarget.y = idleTarget.y;
+              }
+
+              eyeCurrent.x += (eyeTarget.x - eyeCurrent.x) * 0.14;
+              eyeCurrent.y += (eyeTarget.y - eyeCurrent.y) * 0.14;
+
+              if (now >= nextBlink) {
+                blinkStart = now;
+                nextBlink = now + 2200 + 3000 * Math.random();
+              }
+
+              toys.forEach((toy, index) => {
+                const rect = toy.getBoundingClientRect();
+                const toyCenterX = rect.left + rect.width / 2;
+                const toyCenterY = rect.top + rect.height / 2;
+                const toyDx = pointer.x - toyCenterX;
+                const toyDy = pointer.y - toyCenterY;
+                const toyDistance = Math.hypot(toyDx, toyDy) || 1;
+                const toyAmount = Math.min(1, toyDistance / 360);
+
+                toyTarget[index].x = (toyDy / toyDistance) * -8 * toyAmount;
+                toyTarget[index].y = (toyDx / toyDistance) * 6 * toyAmount;
+                toyCurrent[index].x += (toyTarget[index].x - toyCurrent[index].x) * 0.08;
+                toyCurrent[index].y += (toyTarget[index].y - toyCurrent[index].y) * 0.08;
+
+                const orient = toy.querySelector(".hero-toy-orient");
+                if (orient) {
+                  orient.style.setProperty("--hero-tilt-x", toyCurrent[index].x.toFixed(3) + "deg");
+                  orient.style.setProperty("--hero-tilt-y", toyCurrent[index].y.toFixed(3) + "deg");
+                }
+              });
+            } else {
+              eyeCurrent.x = 0;
+              eyeCurrent.y = 0;
+              toyCurrent.forEach(value => {
+                value.x = 0;
+                value.y = 0;
+              });
+            }
+
+            const blinkProgress = blinkStart > 0 ? (now - blinkStart) / 150 : 2;
+            const blinkScale = !reducedMotion && blinkProgress >= 0 && blinkProgress < 1
+              ? 1 - 0.92 * Math.sin(Math.PI * blinkProgress)
+              : 1;
+
+            whiteEyes.forEach(eye => {
+              eye.setAttribute(
+                "transform",
+                "translate(" + eyeCurrent.x.toFixed(3) + " " + eyeCurrent.y.toFixed(3) + ")"
+              );
+            });
+
+            lids.forEach(lid => {
+              lid.setAttribute("transform", "scale(1 " + blinkScale + ")");
+            });
+
+            frame = requestAnimationFrame(render);
+          };
+
+          window.addEventListener("pointermove", handlePointerMove, {
+            passive: true,
+            capture: true
+          });
+
+          frame = requestAnimationFrame(render);
+
+          window.addEventListener("beforeunload", () => {
+            cancelAnimationFrame(frame);
+            window.removeEventListener("pointermove", handlePointerMove, true);
+          }, { once: true });
+        };
+
+        if (document.readyState === "loading") {
+          document.addEventListener("DOMContentLoaded", initializeHero, { once: true });
+        } else {
+          initializeHero();
+        }
+      })();
+    </script>
+
     <!-- Your repo -->
     <section id="kit" class="kit-section" aria-labelledby="kit-heading">
       <div class="kit-rise" data-kit-rise>

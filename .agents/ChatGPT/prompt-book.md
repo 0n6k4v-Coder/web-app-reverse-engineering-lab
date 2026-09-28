@@ -119,18 +119,27 @@ Clone the 3D object that appears directly below the Hero section on the original
 - Read the specified skills file first.
 - Provide the Chrome DevTools CLI command to launch the target website in the background.
 - Provide the command to search for the browser ID.
-- Continue providing Chrome DevTools CLI commands to inspect the target website’s original source code.
+- Use all available Chrome DevTools CLI tools relevant to the inspection, except image-related tools.
+- Continue providing Chrome DevTools CLI commands to inspect the target website’s source code and runtime state.
 - Use the returned outputs as the source of truth for reverse-engineering.
 - Do not guess or invent implementation details that can be verified through inspection.
 - Inspect everything necessary to reproduce the requested target accurately, including:
   - Visual appearance.
   - Structure and components.
+  - DOM and rendered elements.
   - Styles and layout.
+  - Computed styles.
+  - Box model and dimensions.
+  - Position, coordinates, and geometry.
+  - Transforms and 3D properties.
   - Assets and asset URLs.
-  - Functionality and behavior.
-  - Animation and interaction.
+  - Network-loaded resources.
+  - JavaScript and runtime state.
+  - Event listeners and interaction behavior.
+  - Animation and transition behavior.
   - Relevant HTML, CSS, JavaScript, SVG, Canvas, or other implementation details.
-- Continue until you have enough context to understand and reproduce what is needed.
+- Exclude image-related inspection tools that require sending images back to the user.
+- Continue until you have enough verified information to understand and reproduce what is needed.
 
 4. Show the Reverse-Engineering Findings
 - Present the findings clearly, directly, and concisely.

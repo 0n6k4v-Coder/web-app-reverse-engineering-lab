@@ -1,6 +1,39 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <script>
+    (() => {
+      const NativeResizeObserver = window.ResizeObserver;
+      if (!NativeResizeObserver) return;
+      class DeferredResizeObserver {
+        constructor(callback) {
+          this._callback = callback;
+          this._queued = false;
+          this._lastEntries = null;
+          this._observer = new NativeResizeObserver(entries => {
+            this._lastEntries = entries;
+            if (this._queued) return;
+            this._queued = true;
+            requestAnimationFrame(() => {
+              this._queued = false;
+              const next = this._lastEntries;
+              this._lastEntries = null;
+              if (next) this._callback(next, this);
+            });
+          });
+        }
+        observe(target, options) { this._observer.observe(target, options); }
+        unobserve(target) { this._observer.unobserve(target); }
+        disconnect() {
+          this._observer.disconnect();
+          this._queued = false;
+          this._lastEntries = null;
+        }
+        takeRecords() { return this._observer.takeRecords(); }
+      }
+      window.ResizeObserver = DeferredResizeObserver;
+    })();
+  </script>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
@@ -3596,6 +3629,826 @@
         } else {
           initializeHero();
         }
+      })();
+    </script>
+
+    <style id="mt-posthero-editor-styles">
+      #mt-posthero-editor,
+      #mt-posthero-editor * { box-sizing: border-box; }
+
+      #mt-posthero-editor {
+        position: relative;
+        width: 100%;
+        height: 260vh;
+        margin-top: 24px;
+        overflow: clip;
+        color: #1c1c1e;
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      }
+
+      #mt-posthero-editor .mt-editor-sticky {
+        position: sticky;
+        top: 0;
+        height: 100dvh;
+        padding: 80px 12px 12px;
+        perspective: 1600px;
+      }
+      @media (min-width: 640px) {
+        #mt-posthero-editor .mt-editor-sticky { padding: 80px 16px 16px; }
+      }
+
+      #mt-posthero-editor .mt-editor-shell {
+        width: 100%;
+        height: 100%;
+        min-height: 0;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        border-radius: 28px;
+        background: #f2f2f7;
+        color: #1c1c1e;
+        box-shadow: 0 1px 2px rgba(0,0,0,.06), 0 60px 120px -50px rgba(0,0,0,.45), 0 0 0 .5px rgba(0,0,0,.08);
+        transform-origin: 50% 0%;
+        will-change: transform, opacity;
+      }
+
+      /* ---------- exact top chrome ---------- */
+      #mt-posthero-editor .mt-editor-topbar {
+        flex: 0 0 56px;
+        padding: 12px 12px 0;
+      }
+      #mt-posthero-editor .mt-editor-topbar-inner {
+        height: 44px;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        width: 100%;
+        min-width: 0;
+      }
+      #mt-posthero-editor .mt-projects,
+      #mt-posthero-editor .mt-export,
+      #mt-posthero-editor .mt-export-menu {
+        --t: 3px;
+        --key-face: #ececf1;
+        --key-face-hover: #f0f0f5;
+        --key-edge: #d1d1d6;
+        --key-drop: rgba(0,0,0,.10);
+        --spring: cubic-bezier(.34, 1.4, .64, 1);
+        --ease: cubic-bezier(.2, .8, .2, 1);
+        height: 36px;
+        border: 0;
+        color: #1c1c1e;
+        background: var(--key-face);
+        box-shadow: inset 0 1px 0 rgba(255,255,255,.14), 0 var(--t) 0 var(--key-edge), 0 calc(var(--t) + 6px) 14px -8px var(--key-drop);
+        transition: transform .34s var(--spring), box-shadow .34s var(--ease), background-color .2s var(--ease), filter .2s var(--ease);
+        transform: translateY(0);
+      }
+      #mt-posthero-editor .mt-projects:hover:not(:disabled),
+      #mt-posthero-editor .mt-export:hover:not(:disabled),
+      #mt-posthero-editor .mt-export-menu:hover:not(:disabled) {
+        --t: 4px;
+        transform: translateY(-1px);
+        background: var(--key-face-hover);
+      }
+      #mt-posthero-editor .mt-projects:active:not(:disabled),
+      #mt-posthero-editor .mt-export:active:not(:disabled),
+      #mt-posthero-editor .mt-export-menu:active:not(:disabled) {
+        --t: 1px;
+        transition-duration: .12s;
+        transform: translateY(3px);
+      }
+      #mt-posthero-editor .mt-projects {
+        width: 93.4531px;
+        flex: 0 0 93.4531px;
+        border-radius: 10px;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 0 12px 0 6px;
+        font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro", Inter, ui-sans-serif, system-ui, sans-serif;
+        font-size: 13.5px;
+        line-height: 20.25px;
+        font-weight: 600;
+      }
+      #mt-posthero-editor .mt-projects svg { width:18px; height:18px; flex:0 0 18px; }
+      #mt-posthero-editor .mt-editor-title {
+        min-width: 0;
+        flex: 1;
+        margin-left: 8px;
+        padding-left: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        font-size: 15px;
+        font-weight: 600;
+        letter-spacing: -.01em;
+      }
+      #mt-posthero-editor .mt-theme-button {
+        width: 36px;
+        height: 36px;
+        flex: 0 0 36px;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        border:0;
+        background:transparent;
+        color:#5f5f66;
+        border-radius: 10px;
+      }
+      #mt-posthero-editor .mt-aspect {
+        height:36px;
+        flex:0 0 auto;
+        display:flex;
+        align-items:center;
+        gap:6px;
+        padding:0 10px 0 8px;
+        color:#63636a;
+        font-size:13px;
+        font-weight:600;
+      }
+      #mt-posthero-editor .mt-aspect-pill {
+        display:inline-flex;
+        align-items:center;
+        justify-content:center;
+        height:21px;
+        min-width:39.25px;
+        padding:0 7px;
+        border-radius:999px;
+        background:rgba(120,120,128,.16);
+        font-size:12px;
+        line-height:21px;
+      }
+      #mt-posthero-editor .mt-export-group { display:flex; flex:0 0 132.4688px; gap:1px; }
+      #mt-posthero-editor .mt-export { width:96.4688px; flex:0 0 96.4688px; border-radius:10px 0 0 10px; padding:0 12px 0 14px; gap:8px; font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro",Inter,ui-sans-serif,system-ui,sans-serif; font-size:14px; line-height:21px; font-weight:600; display:inline-flex; align-items:center; }
+      #mt-posthero-editor .mt-export-menu { width:35px; flex:0 0 35px; border-radius:0 10px 10px 0; padding:0 10px 0 8px; display:flex; align-items:center; justify-content:center; }
+
+      /* ---------- main editor row ---------- */
+      #mt-posthero-editor .mt-editor-main {
+        flex: 1 1 auto;
+        min-height: 0;
+        display: flex;
+        gap: 12px;
+        padding: 12px 12px 0;
+      }
+
+      /* ---------- inspector ---------- */
+      #mt-posthero-editor .mt-editor-inspector {
+        width: 400px;
+        min-width: 400px;
+        display:flex;
+        flex-direction:column;
+        gap:10px;
+        min-height:0;
+        overflow:hidden;
+      }
+      #mt-posthero-editor .mt-editor-rail {
+        position:relative;
+        flex:0 0 42px;
+        width:400px;
+        display:flex;
+        gap:4px;
+        align-items:normal;
+        padding:4px;
+        border-radius:12px;
+        background:rgba(255,255,255,.70);
+        box-shadow: inset 0 .5px 0 rgba(255,255,255,.9), 0 0 0 .5px rgba(0,0,0,.05), 0 8px 24px -12px rgba(0,0,0,.16);
+      }
+      #mt-posthero-editor .mt-rail-thumb {
+        position:absolute;
+        left:4px;
+        top:4px;
+        width:95px;
+        height:34px;
+        border-radius:8px;
+        background:#fff;
+        box-shadow:0 0 0 .5px rgba(0,0,0,.05), 0 2px 0 #d1d1d6, 0 4px 8px rgba(0,0,0,.14);
+        width:calc((100% - 8px - (var(--n, 1) - 1) * 4px) / var(--n, 1));
+        transform:translateX(calc(var(--i, 0) * (100% + 4px)));
+        transform-origin:50% 50%;
+        will-change:transform, opacity, scale;
+        transition:transform .46s cubic-bezier(.34,1.4,.64,1), opacity .2s cubic-bezier(.2,.8,.2,1), scale .3s cubic-bezier(.34,1.4,.64,1);
+        opacity:1;
+      }
+      #mt-posthero-editor .mt-rail-thumb:not([data-on="true"]) { opacity:0; scale:.96; }
+      #mt-posthero-editor .mt-editor-tab {
+        position:relative;
+        z-index:1;
+        flex:0 0 95px;
+        width:95px;
+        height:34px;
+        padding:0 5px;
+        border:0;
+        border-radius:8px;
+        background:transparent;
+        display:inline-flex;
+        align-items:center;
+        justify-content:center;
+        gap:5px;
+        color:rgba(28,28,30,.42);
+        font-size:12.5px;
+        font-weight:600;
+        letter-spacing:-.01em;
+        cursor:pointer;
+        transition:color .25s cubic-bezier(.2,.8,.2,1), background-color .2s cubic-bezier(.2,.8,.2,1), transform .25s cubic-bezier(.34,1.4,.64,1);
+      }
+      #mt-posthero-editor .mt-editor-tab:focus-visible { outline:2px solid #007aff; outline-offset:1px; }
+      #mt-posthero-editor .mt-editor-tab.active { color:#1c1c1e; }
+      #mt-posthero-editor .mt-editor-tab svg { width:19px; height:19px; flex:0 0 19px; }
+
+      #mt-posthero-editor .mt-tab-view[hidden] { display:none !important; }
+      #mt-posthero-editor .mt-tab-view { display:block; }
+      #mt-posthero-editor .mt-tab-view[data-switch-state="enter"] {
+        animation:mt-editor-panel-enter .22s cubic-bezier(.2,.8,.2,1) both;
+      }
+      #mt-posthero-editor .mt-tab-view[data-switch-state="leave"] {
+        animation:mt-editor-panel-leave .14s cubic-bezier(.2,.8,.2,1) both;
+        pointer-events:none;
+      }
+      @keyframes mt-editor-panel-enter {
+        from { opacity:0; transform:translateY(7px); }
+        to { opacity:1; transform:translateY(0); }
+      }
+      @keyframes mt-editor-panel-leave {
+        from { opacity:1; transform:translateY(0); }
+        to { opacity:0; transform:translateY(-4px); }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        #mt-posthero-editor .mt-rail-thumb,
+        #mt-posthero-editor .mt-editor-tab { transition-duration:0.01ms !important; }
+        #mt-posthero-editor .mt-tab-view[data-switch-state] { animation:none !important; }
+      }
+      #mt-posthero-editor .mt-panel-intro { display:flex; align-items:flex-start; gap:10px; margin:0 12px 12px; }
+      #mt-posthero-editor .mt-panel-icon { width:40px; height:40px; flex:0 0 40px; display:flex; align-items:center; justify-content:center; border-radius:12px; background:rgba(0,122,255,.12); color:#007aff; font-size:11px; font-weight:700; letter-spacing:-.02em; }
+      #mt-posthero-editor .mt-panel-icon.claude { background:rgba(255,90,31,.10); color:#ff5a1f; font-size:20px; }
+      #mt-posthero-editor .mt-panel-intro strong { display:block; margin-top:1px; font-size:14px; font-weight:650; letter-spacing:-.01em; }
+      #mt-posthero-editor .mt-panel-intro p { margin:3px 0 0; color:#63636a; font-size:12px; line-height:1.35; }
+      #mt-posthero-editor .mt-value-field { flex:1; min-width:0; height:36px; display:flex; align-items:center; justify-content:flex-end; padding:0 10px; border-radius:9px; background:rgba(118,118,128,.10); color:#1c1c1e; font-size:13px; font-variant-numeric:tabular-nums; }
+      #mt-posthero-editor .mt-toggle { height:36px; min-width:72px; border-radius:9px; display:flex; align-items:center; justify-content:center; gap:7px; background:rgba(118,118,128,.10); color:#1c1c1e; font-size:13px; }
+      #mt-posthero-editor .mt-toggle-dot { width:8px; height:8px; border-radius:50%; background:#34c759; box-shadow:0 0 0 3px rgba(52,199,89,.12); }
+      #mt-posthero-editor .mt-claude-status { height:36px; display:flex; align-items:center; gap:8px; color:#1c1c1e; font-size:13px; }
+      #mt-posthero-editor .mt-status-dot { width:8px; height:8px; border-radius:50%; background:#34c759; }
+      #mt-posthero-editor .mt-claude-primary { width:100%; height:40px; border-radius:10px; background:#171717; color:#fff; font-size:13.5px; font-weight:650; }
+      #mt-posthero-editor .mt-claude-prompt { margin-top:2px; padding:10px 12px; border-radius:10px; background:rgba(118,118,128,.10); color:#63636a; font-size:12px; line-height:1.4; }
+      #mt-posthero-editor .mt-context-row { min-height:36px; display:flex; align-items:center; justify-content:space-between; gap:12px; font-size:13px; color:#63636a; }
+      #mt-posthero-editor .mt-context-row strong { color:#1c1c1e; font-weight:600; text-align:right; }
+
+      #mt-posthero-editor .mt-inspector-panel {
+        min-height:0;
+        overflow:hidden auto;
+        padding-bottom:16px;
+        scrollbar-width:none;
+      }
+      #mt-posthero-editor .mt-inspector-panel[data-switching="true"] {
+        display:grid;
+        align-content:start;
+        position:relative;
+      }
+      #mt-posthero-editor .mt-inspector-panel[data-switching="true"] .mt-tab-view {
+        grid-area:1 / 1;
+        min-width:0;
+      }
+      #mt-posthero-editor .mt-inspector-panel::-webkit-scrollbar { display:none; }
+
+      #mt-posthero-editor .mt-layer-row {
+        height:40px;
+        margin:0 0 12px;
+        display:flex;
+        align-items:center;
+        gap:8px;
+      }
+      #mt-posthero-editor .mt-layer-icon {
+        width:40px; height:40px; flex:0 0 40px;
+        display:flex; align-items:center; justify-content:center;
+        border-radius:12px; background:rgba(0,122,255,.12); color:#007aff;
+      }
+      #mt-posthero-editor .mt-layer-name {
+        width:256px; height:36px; flex:0 0 256px;
+        border:0; outline:none; border-radius:9px;
+        padding:0 10px;
+        background:rgba(118,118,128,.10);
+        box-shadow:inset 0 0 0 .5px rgba(0,0,0,.06);
+        color:#1c1c1e;
+        font-size:13px;
+      }
+      #mt-posthero-editor .mt-layer-action {
+        width:40px; height:40px; flex:0 0 40px;
+        border:0; border-radius:12px; background:transparent; color:#63636a;
+        display:flex; align-items:center; justify-content:center;
+      }
+      #mt-posthero-editor .mt-section-card {
+        width:400px;
+        margin:0 0 12px;
+        padding:4px 14px 4px;
+        overflow:hidden;
+        border-radius:18px;
+        background:#fff;
+        box-shadow:0 1px 2px rgba(0,0,0,.03), 0 8px 26px -14px rgba(0,0,0,.12), 0 0 0 .5px rgba(0,0,0,.10);
+      }
+      #mt-posthero-editor .mt-section-card.text { min-height:494px; }
+      #mt-posthero-editor .mt-section-card.colour { min-height:234px; }
+      #mt-posthero-editor .mt-section-card.outline,
+      #mt-posthero-editor .mt-section-card.closed { min-height:52px; }
+      #mt-posthero-editor .mt-section-card.layout { min-height:363px; }
+      #mt-posthero-editor .mt-card-head {
+        height:44px;
+        display:flex;
+        align-items:center;
+        gap:10px;
+        font-size:14px;
+        font-weight:600;
+        letter-spacing:-.01em;
+      }
+      #mt-posthero-editor .mt-card-head > span { flex:1; }
+      #mt-posthero-editor .mt-fold {
+        width:18px; height:44px; flex:0 0 18px; border:0; background:transparent; color:#63636a;
+        display:flex; align-items:center; justify-content:center;
+      }
+      #mt-posthero-editor .mt-card-body { display:flex; flex-direction:column; gap:8px; padding:2px 0 12px; }
+      #mt-posthero-editor .mt-textarea {
+        min-height:76px; width:100%; resize:vertical; border:0; outline:none;
+        padding:10px; border-radius:9px; background:rgba(118,118,128,.10); box-shadow:inset 0 0 0 .5px rgba(0,0,0,.06);
+        font-size:13px; line-height:1.35; color:#1c1c1e;
+      }
+      #mt-posthero-editor .mt-control-row {
+        min-height:36px; display:flex; align-items:center; gap:8px;
+      }
+      #mt-posthero-editor .mt-control-row > .label {
+        width:76px; flex:0 0 76px; font-size:13px; color:#63636a;
+      }
+      #mt-posthero-editor .mt-select {
+        height:36px; flex:1; min-width:0; display:flex; align-items:center; justify-content:space-between; gap:8px;
+        padding:0 10px; border-radius:9px; background:rgba(118,118,128,.10); color:#1c1c1e; font-size:13px;
+      }
+      #mt-posthero-editor .mt-slider-row { display:grid; grid-template-columns:auto 1fr auto; align-items:center; gap:10px; min-height:36px; }
+      #mt-posthero-editor .mt-slider-label { color:#63636a; font-size:13px; white-space:nowrap; }
+      #mt-posthero-editor .mt-slider {
+        position:relative; height:36px; display:flex; align-items:center; cursor:pointer;
+      }
+      #mt-posthero-editor .mt-slider::before { content:""; position:absolute; left:0; right:0; height:4px; border-radius:999px; background:#dedee2; }
+      #mt-posthero-editor .mt-slider::after { content:""; position:absolute; left:0; width:67%; height:4px; border-radius:999px; background:#8f8f96; }
+      #mt-posthero-editor .mt-slider-knob { position:absolute; left:67%; top:9px; width:18px; height:18px; transform:translateX(-50%); border-radius:50%; background:#fff; box-shadow:0 1px 2px rgba(0,0,0,.12), 0 0 0 .5px rgba(0,0,0,.12); }
+      #mt-posthero-editor .mt-value { width:auto; min-width:44px; text-align:right; font-size:13px; color:#2b2b30; font-variant-numeric:tabular-nums; }
+      #mt-posthero-editor .mt-swatch {
+        position:relative; width:28px; height:28px; flex:0 0 28px; border-radius:9px; overflow:hidden;
+        box-shadow:inset 0 0 0 1px rgba(0,0,0,.12);
+      }
+      #mt-posthero-editor .mt-color-input { height:36px; display:flex; align-items:center; gap:10px; padding:0 10px; border-radius:9px; background:rgba(118,118,128,.10); }
+      #mt-posthero-editor .mt-color-input input { flex:1; min-width:0; border:0; outline:0; background:transparent; font:12px ui-monospace,SFMono-Regular,Menlo,monospace; text-transform:uppercase; }
+      #mt-posthero-editor .mt-palette { display:flex; flex-wrap:wrap; gap:8px; padding:0 2px; }
+      #mt-posthero-editor .mt-palette button { width:36px; height:36px; border:0; border-radius:11px; box-shadow:inset 0 0 0 1px rgba(0,0,0,.08); }
+      #mt-posthero-editor .mt-note { padding:0 4px; color:#74747c; font-size:12px; line-height:1.4; }
+      #mt-posthero-editor .mt-grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+      #mt-posthero-editor .mt-mini-field { height:36px; display:flex; align-items:center; justify-content:space-between; gap:8px; padding:0 10px; border-radius:9px; background:rgba(118,118,128,.10); font-size:13px; }
+
+      /* ---------- stage / canvas ---------- */
+      #mt-posthero-editor .mt-stage-column { flex:1; min-width:0; min-height:0; display:flex; flex-direction:column; }
+      #mt-posthero-editor .mt-stage-card {
+        position:relative;
+        flex:1;
+        min-width:0;
+        min-height:0;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        overflow:hidden;
+        border-radius:22px;
+        background:#fff;
+        box-shadow:0 1px 2px rgba(0,0,0,.03), 0 8px 26px -14px rgba(0,0,0,.12), 0 0 0 .5px rgba(0,0,0,.10);
+      }
+      #mt-posthero-editor .mt-stage-dots {
+        pointer-events:none;
+        position:absolute; inset:0;
+        background:radial-gradient(rgba(28,28,30,.22) 1.2px, transparent 1.4px);
+        background-position:12px 12px;
+        background-size:24px 24px;
+        opacity:.70;
+      }
+      #mt-posthero-editor .mt-stage-canvas { position:absolute; inset:0; width:100%; height:100%; display:block; z-index:10; touch-action:none; }
+      #mt-posthero-editor .mt-snap-label,
+      #mt-posthero-editor .mt-position-label { position:absolute; z-index:20; pointer-events:none; opacity:0; }
+      #mt-posthero-editor .mt-snap-label { left:0; top:0; transform:translateX(-50%); padding:2px 8px; border-radius:999px; background:rgba(17,17,20,.85); color:#fff; font:11px/16px Inter,sans-serif; }
+      #mt-posthero-editor .mt-position-label { left:0; top:0; transform:translate(-50%,-50%); padding:2px 8px; border-radius:6px; background:rgba(0,0,0,.8); color:#fff; font:600 11px/16px ui-monospace,SFMono-Regular,Menlo,monospace; }
+      #mt-posthero-editor .mt-stage-controls {
+        position:absolute; left:12px; bottom:12px; z-index:20;
+        width:218px; height:44px; padding:4px; display:flex; align-items:center; gap:2px;
+        border-radius:999px; background:rgba(255,255,255,.70);
+        box-shadow:inset 0 .5px 0 rgba(255,255,255,.9), 0 0 0 .5px rgba(0,0,0,.05), 0 8px 24px -12px rgba(0,0,0,.16);
+        backdrop-filter:blur(18px);
+      }
+      #mt-posthero-editor .mt-stage-controls button {
+        height:36px; border:0; border-radius:999px; background:transparent; color:#63636a;
+        display:flex; align-items:center; justify-content:center; font-size:12.5px;
+      }
+      #mt-posthero-editor .mt-stage-zoom-btn { width:36px; flex:0 0 36px; }
+      #mt-posthero-editor .mt-zoom-readout { width:64px; flex:0 0 64px; font:12.5px ui-monospace,SFMono-Regular,Menlo,monospace; color:#1c1c1e; }
+      #mt-posthero-editor .mt-fit-btn { width:61px; flex:0 0 61px; gap:6px; font-weight:600; }
+      #mt-posthero-editor .mt-stage-separator { width:1px; height:20px; flex:0 0 1px; margin:0 2px; background:rgba(0,0,0,.10); }
+      #mt-posthero-editor .mt-sound-pill {
+        position:absolute; right:16px; bottom:16px; z-index:20;
+        height:40px; padding:0 16px 0 12px; border:0; border-radius:999px;
+        background:rgba(23,23,23,.85); color:#fff;
+        display:flex; align-items:center; gap:8px; font-size:13.5px; font-weight:600;
+        box-shadow:0 8px 24px -8px rgba(0,0,0,.5); backdrop-filter:blur(14px);
+      }
+      #mt-posthero-editor .mt-ask-dock {
+        position:absolute; left:50%; bottom:14px; z-index:30; transform:translateX(-50%);
+        height:48px; min-width:300px; padding:6px 8px 6px 14px;
+        display:flex; align-items:center; gap:8px;
+        border-radius:999px; background:rgba(255,255,255,.86);
+        box-shadow:0 12px 30px -16px rgba(0,0,0,.28), inset 0 .5px 0 rgba(255,255,255,.95), 0 0 0 .5px rgba(0,0,0,.06);
+        backdrop-filter:blur(18px);
+      }
+      #mt-posthero-editor .mt-ask-dock input { flex:1; min-width:0; border:0; outline:0; background:transparent; color:#1c1c1e; font-size:13px; }
+      #mt-posthero-editor .mt-ask-dock button { height:36px; padding:0 14px; border:0; border-radius:999px; background:#171717; color:#fff; font-size:12.5px; font-weight:600; }
+
+      /* ---------- timeline ---------- */
+      #mt-posthero-editor .mt-timeline {
+        flex:0 0 auto;
+        height:min(336px,34vh);
+        margin:12px 12px 12px;
+        overflow:hidden;
+        border-radius:22px;
+        background:#fff;
+        box-shadow:0 1px 2px rgba(0,0,0,.03), 0 8px 26px -14px rgba(0,0,0,.12), 0 0 0 .5px rgba(0,0,0,.10);
+      }
+      #mt-posthero-editor .mt-timeline-top { height:64px; display:grid; grid-template-columns:minmax(0,1fr) 300px minmax(0,1fr); gap:8px; align-items:center; padding:0 12px; border-bottom:1px solid #ececf0; }
+      #mt-posthero-editor .mt-timeline-side { font:11.5px ui-monospace,SFMono-Regular,Menlo,monospace; color:#77777f; }
+      #mt-posthero-editor .mt-timeline-side.right { text-align:right; }
+      #mt-posthero-editor .mt-timeline-main { display:flex; align-items:center; justify-content:center; gap:8px; font:12px ui-monospace,SFMono-Regular,Menlo,monospace; }
+      #mt-posthero-editor .mt-transport { width:8px; height:8px; border-radius:50%; background:#ff5a1f; box-shadow:0 0 0 4px rgba(255,90,31,.12); }
+      #mt-posthero-editor .mt-timeline-scroll { height:272px; overflow:hidden; position:relative; }
+      #mt-posthero-editor .mt-timeline-head { display:grid; grid-template-columns:184px 1fr; height:56px; border-bottom:1px solid #ececf0; }
+      #mt-posthero-editor .mt-timeline-label { display:flex; align-items:center; padding:0 12px; border-right:1px solid #ececf0; font-size:10.5px; font-weight:700; text-transform:uppercase; letter-spacing:.08em; color:#8b8b92; }
+      #mt-posthero-editor .mt-ruler { display:flex; align-items:center; justify-content:space-between; padding:0 10px; color:#8b8b92; font:10px ui-monospace,SFMono-Regular,Menlo,monospace; background:#fafafd; }
+      #mt-posthero-editor .mt-track-row { display:grid; grid-template-columns:184px 1fr; height:43px; border-bottom:1px solid #ececf0; }
+      #mt-posthero-editor .mt-track-name { display:flex; align-items:center; padding:0 12px; border-right:1px solid #ececf0; font-size:12.5px; color:#55555c; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+      #mt-posthero-editor .mt-track-body { position:relative; overflow:hidden; background:#fff; }
+      #mt-posthero-editor .mt-track-body::before { content:""; position:absolute; inset:0; background:repeating-linear-gradient(to right, transparent 0, transparent calc(12.5% - 1px), rgba(0,0,0,.045) calc(12.5% - 1px), rgba(0,0,0,.045) 12.5%); pointer-events:none; }
+      #mt-posthero-editor .mt-block { position:absolute; top:7px; height:28px; border-radius:7px; box-shadow:inset 0 0 0 .5px rgba(0,0,0,.10), 0 4px 10px -8px rgba(0,0,0,.25); }
+      #mt-posthero-editor .mt-block.a { left:2%; width:42%; background:#1f63cc; }
+      #mt-posthero-editor .mt-block.b { left:12%; width:27%; background:#9a5bf5; }
+      #mt-posthero-editor .mt-block.c { left:28%; width:34%; background:#ff5a1f; }
+      #mt-posthero-editor .mt-block.d { left:47%; width:31%; background:#3dc46b; }
+      #mt-posthero-editor .mt-playhead { position:absolute; top:0; bottom:0; left:35%; width:2px; background:#ff5a1f; box-shadow:0 0 0 1px rgba(255,255,255,.7); }
+      #mt-posthero-editor .mt-playhead::before { content:""; position:absolute; top:0; left:50%; transform:translateX(-50%); width:8px; height:8px; border-radius:50%; background:#ff5a1f; }
+
+      @media (max-width: 1200px) {
+        #mt-posthero-editor .mt-editor-inspector { width:340px; min-width:340px; }
+        #mt-posthero-editor .mt-editor-rail,
+        #mt-posthero-editor .mt-section-card { width:340px; }
+        #mt-posthero-editor .mt-projects { width:88px; flex-basis:88px; }
+        #mt-posthero-editor .mt-editor-tab { flex-basis:80px; width:80px; }
+        #mt-posthero-editor .mt-rail-thumb { width:80px; }
+        #mt-posthero-editor .mt-layer-name { flex:1; width:auto; }
+      }
+      @media (max-width: 920px) {
+        #mt-posthero-editor { height:220vh; }
+        #mt-posthero-editor .mt-editor-sticky { padding:70px 8px 8px; }
+        #mt-posthero-editor .mt-editor-main { flex-direction:column; overflow:hidden; }
+        #mt-posthero-editor .mt-editor-inspector { width:100%; min-width:0; flex:0 0 270px; }
+        #mt-posthero-editor .mt-editor-rail,
+        #mt-posthero-editor .mt-section-card { width:100%; }
+        #mt-posthero-editor .mt-inspector-panel { display:none; }
+        #mt-posthero-editor .mt-stage-column { min-height:0; }
+        #mt-posthero-editor .mt-timeline { flex-basis:260px; height:260px; }
+      }
+      @media (max-width: 640px) {
+        #mt-posthero-editor .mt-editor-topbar { padding:10px 8px 0; }
+        #mt-posthero-editor .mt-projects { width:84px; flex-basis:84px; font-size:12px; }
+        #mt-posthero-editor .mt-editor-title { font-size:13px; }
+        #mt-posthero-editor .mt-aspect { display:none; }
+        #mt-posthero-editor .mt-export-group { flex-basis:98px; }
+        #mt-posthero-editor .mt-export { width:68px; }
+        #mt-posthero-editor .mt-export-menu { width:30px; }
+        #mt-posthero-editor .mt-timeline-top { grid-template-columns:1fr auto 1fr; }
+      }
+    </style>
+
+    <section id="mt-posthero-editor" aria-label="mtioon editor showcase">
+      <div class="mt-editor-sticky">
+        <div class="mt-editor-shell" data-editor-shell>
+          <div class="mt-editor-topbar">
+            <div class="mt-editor-topbar-inner">
+              <a href="/dashboard" title="All projects" class="mt-projects">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"></path></svg>
+                <span>Projects</span>
+              </a>
+              <span class="mt-editor-title">mtioon · Trailer</span>
+              <button type="button" class="mt-theme-button" aria-label="Toggle theme">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A8.5 8.5 0 0 1 11.2 3 8.5 8.5 0 1 0 21 12.8z"/></svg>
+              </button>
+              <span class="mt-aspect" aria-label="Aspect ratio 16:9">
+                <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 2v14a2 2 0 0 0 2 2h14M2 6h14a2 2 0 0 1 2 2v14"/></svg>
+                <span class="mt-aspect-pill">16:9</span>
+              </span>
+              <span class="mt-export-group">
+                <span class="mt-export"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 16V4M7 9l5-5 5 5M4 15v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"></path></svg>Export</span>
+                <span class="mt-export-menu"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg></span>
+              </span>
+            </div>
+          </div>
+
+          <div class="mt-editor-main">
+            <aside class="mt-editor-inspector" aria-label="Inspector">
+              <nav class="mt-editor-rail" aria-label="Inspector tabs" style="--i:0; --n:4;">
+                <span class="mt-rail-thumb" data-on="true"></span>
+                <button type="button" title="Style" aria-pressed="true" class="mt-editor-tab active">
+                  <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 7h9M18 7h1M5 17h3M12 17h7M5 12h1M10 12h9"></path><circle cx="16" cy="7" r="2"></circle><circle cx="10" cy="17" r="2"></circle><circle cx="8" cy="12" r="2"></circle></svg><span>Style</span>
+                </button>
+                <button type="button" title="Motion" aria-pressed="false" class="mt-editor-tab">
+                  <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="15.5" cy="12" r="5"></circle><path d="M3.5 8.5h4.5M2 12h5M3.5 15.5h4.5"></path></svg><span>Motion</span>
+                </button>
+                <button type="button" title="Project" aria-pressed="false" class="mt-editor-tab">
+                  <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1Z"></path></svg><span>Project</span>
+                </button>
+                <button type="button" title="Claude" aria-pressed="false" class="mt-editor-tab">
+                  <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2.5c1.1 0 2 .9 2.4 2.4L15 8l3.1-.7c1.5-.4 2.5-.2 2.9 1.3.4 1.1 0 2.1-1.3 2.9L17 13l2.7 1.5c1.3.8 1.7 1.8 1.3 2.9-.4 1.1-1.4 1.7-2.9 1.3L15 18l-.6 3.1c-.4 1.5-1.3 2.4-2.4 2.4s-2-.9-2.4-2.4L9 18l-3.1.7c-1.5.4-2.5-.2-2.9-1.3-.4-1.1 0-2.1 1.3-2.9L7 13l-2.7-1.5C3 10.7 2.6 9.7 3 8.6c.4-1.1 1.4-1.7 2.9-1.3L9 8l.6-3.1C10 3.4 10.9 2.5 12 2.5Z" fill="currentColor" stroke="none"></path></svg><span>Claude</span>
+                </button>
+              </nav>
+
+              <div class="mt-inspector-panel" data-open="true"><div class="mt-tab-view" data-panel-view="style">
+                <div class="mt-layer-row">
+                  <div class="mt-layer-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v14H4z"/><path d="M7 9h10M7 12h7"/></svg></div>
+                  <input class="mt-layer-name" aria-label="Layer name" value="Say it." />
+                  <button class="mt-layer-action" aria-label="Duplicate"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="7" y="7" width="11" height="11" rx="2"/><path d="M5 16V6a2 2 0 0 1 2-2h9"/></svg></button>
+                  <button class="mt-layer-action" aria-label="Delete" style="color:#ff3b30"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M5 7h14M10 11v6M14 11v6M9 7l1-2h4l1 2M7 7l1 13h8l1-13"/></svg></button>
+                </div>
+
+                <section class="mt-section-card text">
+                  <div class="mt-card-head"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M4 5h16M12 5v14M7 19h10"/></svg><span>Text</span><button class="mt-fold" aria-label="Fold Text"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="m7 10 5 5 5-5"/></svg></button></div>
+                  <div class="mt-card-body">
+                    <textarea class="mt-textarea" id="mt-posthero-text" aria-label="Text">Say it.</textarea>
+                    <div class="mt-control-row"><span class="label">Font</span><button class="mt-select"><span>Sunghyun Sans</span><span>900⌄</span></button></div>
+                    <div class="mt-control-row"><span class="label">Weight</span><button class="mt-select"><span>Black</span><span>900</span></button></div>
+                    <div class="mt-slider-row"><span class="mt-slider-label">Size</span><div class="mt-slider"><span class="mt-slider-knob"></span></div><span class="mt-value">200 px</span></div>
+                    <div class="mt-slider-row"><span class="mt-slider-label">Tracking</span><div class="mt-slider"><span class="mt-slider-knob" style="left:42%"></span></div><span class="mt-value">0</span></div>
+                    <div class="mt-slider-row"><span class="mt-slider-label">Line height</span><div class="mt-slider"><span class="mt-slider-knob" style="left:76%"></span></div><span class="mt-value">1.2</span></div>
+                    <div class="mt-control-row"><span class="label">Align</span><button class="mt-select"><span>Centre</span><span>⌄</span></button></div>
+                    <div class="mt-control-row"><span class="label">Case</span><button class="mt-select"><span>Default</span><span>⌄</span></button></div>
+                    <div class="mt-control-row"><span class="label">Fit</span><button class="mt-select"><span>Hug</span><span>⌄</span></button></div>
+                  </div>
+                </section>
+
+                <section class="mt-section-card colour">
+                  <div class="mt-card-head"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M7 15c2 0 2-6 4-6s2 6 4 6 2-6 2-6"/></svg><span>Colour</span><button class="mt-fold" aria-label="Fold Colour"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m7 10 5 5 5-5"/></svg></button></div>
+                  <div class="mt-card-body">
+                    <div class="mt-color-input"><span class="mt-swatch" style="background:#171717"></span><input aria-label="Colour hex" value="#171717" /></div>
+                    <div class="mt-palette">
+                      <button style="background:#fff"></button><button style="background:#f4f1ea"></button><button style="background:#111"></button><button style="background:#2a8cff"></button><button style="background:#5e5ce6"></button><button style="background:#bf5af2"></button><button style="background:#ff375f"></button><button style="background:#ff5a1f"></button><button style="background:#ffd60a"></button><button style="background:#30d158"></button><button style="background:#64d2ff"></button><button style="background:#8e8e93"></button>
+                    </div>
+                    <div class="mt-slider-row"><span class="mt-slider-label">Opacity</span><div class="mt-slider"><span class="mt-slider-knob" style="left:100%"></span></div><span class="mt-value">100 %</span></div>
+                  </div>
+                </section>
+
+                <section class="mt-section-card outline"><div class="mt-card-head"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="7"/></svg><span>Outline</span><button class="mt-fold" aria-label="Open Outline"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m9 6 6 6-6 6"/></svg></button></div></section>
+
+                <section class="mt-section-card layout">
+                  <div class="mt-card-head"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/><path d="M8 4v16"/></svg><span>Layout</span><button class="mt-fold"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m7 10 5 5 5-5"/></svg></button></div>
+                  <div class="mt-card-body">
+                    <div class="mt-control-row"><span class="label">Position</span><div class="mt-select"><span>X 960</span><span>Y 540</span></div></div>
+                    <div class="mt-control-row"><span class="label">Size</span><div class="mt-select"><span>W 1700</span><span>H 400</span></div></div>
+                    <div class="mt-slider-row"><span class="mt-slider-label">Rotation</span><div class="mt-slider"><span class="mt-slider-knob" style="left:50%"></span></div><span class="mt-value" id="mt-rotation-value">0°</span></div>
+                    <div class="mt-slider-row"><span class="mt-slider-label">Scale X</span><div class="mt-slider"><span class="mt-slider-knob" style="left:68%"></span></div><span class="mt-value">1.00</span></div>
+                    <div class="mt-slider-row"><span class="mt-slider-label">Scale Y</span><div class="mt-slider"><span class="mt-slider-knob" style="left:68%"></span></div><span class="mt-value">1.00</span></div>
+                    <div class="mt-control-row"><span class="label">Pivot</span><div class="mt-select"><span>50%</span><span>50%</span></div></div>
+                    <p class="mt-note">Position and scale are editable per frame. Bottom = feet: landings squash on the floor.</p>
+                  </div>
+                </section>
+
+                <section class="mt-section-card closed"><div class="mt-card-head"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M5 15 8 8l8 0 3 7-4 4H9z"/><path d="M8 8 6 5M16 8l2-3"/></svg><span>3D</span><button class="mt-fold"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m9 6 6 6-6 6"/></svg></button></div></section>
+                <section class="mt-section-card closed"><div class="mt-card-head"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M4 6h16v12H4z"/><path d="M8 10h8M8 14h5"/></svg><span>Mask</span><button class="mt-fold"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m9 6 6 6-6 6"/></svg></button></div></section>
+              </div>
+<div class="mt-tab-view" data-panel-view="motion" hidden>
+  <div class="mt-panel-intro"><span class="mt-panel-icon">Motion</span><div><strong>Motion</strong><p>Shape how this layer enters, moves and leaves the frame.</p></div></div>
+  <section class="mt-section-card motion-card"><div class="mt-card-head"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="15.5" cy="12" r="5"></circle><path d="M3.5 8.5h4.5M2 12h5M3.5 15.5h4.5"></path></svg><span>In</span><button class="mt-fold" aria-label="Fold In"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m7 10 5 5 5-5"></path></svg></button></div><div class="mt-card-body"><div class="mt-control-row"><span class="label">Preset</span><button class="mt-select"><span>Rise</span><span>⌄</span></button></div><div class="mt-slider-row"><span class="mt-slider-label">Duration</span><div class="mt-slider"><span class="mt-slider-knob" style="left:55%"></span></div><span class="mt-value">0.60 s</span></div><div class="mt-slider-row"><span class="mt-slider-label">Ease</span><div class="mt-slider"><span class="mt-slider-knob" style="left:68%"></span></div><span class="mt-value">Spring</span></div></div></section>
+  <section class="mt-section-card motion-card"><div class="mt-card-head"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 12h16M12 4l8 8-8 8"></path></svg><span>Out</span><button class="mt-fold" aria-label="Fold Out"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m7 10 5 5 5-5"></path></svg></button></div><div class="mt-card-body"><div class="mt-control-row"><span class="label">Preset</span><button class="mt-select"><span>Fade</span><span>⌄</span></button></div><div class="mt-slider-row"><span class="mt-slider-label">Duration</span><div class="mt-slider"><span class="mt-slider-knob" style="left:42%"></span></div><span class="mt-value">0.45 s</span></div></div></section>
+  <section class="mt-section-card motion-card"><div class="mt-card-head"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 12h14M12 5l7 7-7 7"></path></svg><span>Timeline</span></div><div class="mt-card-body"><div class="mt-control-row"><span class="label">Start</span><div class="mt-value-field">0.00 s</div></div><div class="mt-control-row"><span class="label">End</span><div class="mt-value-field">10.00 s</div></div></div></section>
+</div>
+<div class="mt-tab-view" data-panel-view="project" hidden>
+  <div class="mt-panel-intro"><span class="mt-panel-icon">Project</span><div><strong>Project</strong><p>Project-level timing, canvas and audio controls.</p></div></div>
+  <section class="mt-section-card project-card"><div class="mt-card-head"><span>Canvas</span></div><div class="mt-card-body"><div class="mt-control-row"><span class="label">Aspect</span><button class="mt-select"><span>16:9</span><span>⌄</span></button></div><div class="mt-control-row"><span class="label">Width</span><div class="mt-value-field">1920 px</div></div><div class="mt-control-row"><span class="label">Height</span><div class="mt-value-field">1080 px</div></div></div></section>
+  <section class="mt-section-card project-card"><div class="mt-card-head"><span>Timing</span></div><div class="mt-card-body"><div class="mt-control-row"><span class="label">Duration</span><div class="mt-value-field">10.00 s</div></div><div class="mt-control-row"><span class="label">Loop</span><button class="mt-toggle active"><span class="mt-toggle-dot"></span>On</button></div></div></section>
+  <section class="mt-section-card project-card"><div class="mt-card-head"><span>Audio</span></div><div class="mt-card-body"><div class="mt-control-row"><span class="label">Track</span><button class="mt-select"><span>Music</span><span>⌄</span></button></div><div class="mt-slider-row"><span class="mt-slider-label">Volume</span><div class="mt-slider"><span class="mt-slider-knob" style="left:72%"></span></div><span class="mt-value">100 %</span></div></div></section>
+</div>
+<div class="mt-tab-view" data-panel-view="claude" hidden>
+  <div class="mt-panel-intro"><span class="mt-panel-icon claude">✦</span><div><strong>Edit with Claude</strong><p>Use this project as context and ask for changes without leaving the editor.</p></div></div>
+  <section class="mt-section-card claude-card"><div class="mt-card-body"><div class="mt-claude-status"><span class="mt-status-dot"></span><span>Claude connected</span></div><button class="mt-claude-primary">Ask Claude</button><div class="mt-claude-prompt">Try: “Make the opening hit harder and keep the last frame clean.”</div></div></section>
+  <section class="mt-section-card claude-card"><div class="mt-card-head"><span>Context</span></div><div class="mt-card-body"><div class="mt-context-row"><span>Selected layer</span><strong>Say it.</strong></div><div class="mt-context-row"><span>Project</span><strong>mtioon · Trailer</strong></div></div></section>
+</div>
+</div>
+            </aside>
+
+            <div class="mt-stage-column">
+              <div class="mt-stage-card">
+                <div class="mt-stage-dots" aria-hidden="true"></div>
+                <canvas class="mt-stage-canvas" width="1437" height="1529" aria-label="mtioon motion preview"></canvas>
+                <div class="mt-snap-label"></div>
+                <div class="mt-position-label"></div>
+                <div class="mt-stage-controls">
+                  <button type="button" class="mt-stage-zoom-btn" id="mt-zoom-out" title="Zoom out (⌘−)"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m20 20-4.5-4.5M8 10.5h5"/></svg></button>
+                  <button type="button" class="mt-zoom-readout" id="mt-zoom-readout" title="Actual size (⌘1)">70%</button>
+                  <button type="button" class="mt-stage-zoom-btn" id="mt-zoom-in" title="Zoom in (⌘+)"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m20 20-4.5-4.5M10.5 8v5M8 10.5h5"/></svg></button>
+                  <span class="mt-stage-separator"></span>
+                  <button type="button" class="mt-fit-btn" id="mt-fit" title="Fit (⌘0)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2v14a2 2 0 0 0 2 2h14M2 6h14a2 2 0 0 1 2 2v14"/></svg>Fit</button>
+                </div>
+                <button type="button" class="mt-sound-pill" id="mt-stage-sound"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H3v6h3l5 4zM15 9.2a4 4 0 0 1 0 5.6M18 6.5a8 8 0 0 1 0 11"/></svg><span>Play with sound</span></button>
+                <div class="mt-ask-dock"><span style="font-size:13px;color:#8a8a91;white-space:nowrap">Ask Claude</span><input aria-label="Ask Claude" placeholder="Change this frame..." /><button type="button">Send</button></div>
+              </div>
+
+            </div>
+          </div>
+
+              <div class="mt-timeline">
+                <div class="mt-timeline-top">
+                  <div class="mt-timeline-side">0:15.0</div>
+                  <div class="mt-timeline-main"><span class="mt-transport"></span><span id="mt-time-readout">0:03.6</span><span style="color:#9a9aa2">15s</span></div>
+                  <div class="mt-timeline-side right">15s</div>
+                </div>
+                <div class="mt-timeline-scroll">
+                  <div class="mt-timeline-head"><div class="mt-timeline-label">SECTIONS</div><div class="mt-ruler"><span>0:00</span><span>0:02</span><span>0:04</span><span>0:06</span><span>0:08</span><span>0:10</span><span>0:12</span><span>0:15</span></div></div>
+                  <div class="mt-track-row"><div class="mt-track-name">Score · Candy Keynote</div><div class="mt-track-body"><div class="mt-block a"></div><div class="mt-playhead"></div></div></div>
+                  <div class="mt-track-row"><div class="mt-track-name">Narrator</div><div class="mt-track-body"><div class="mt-block b"></div><div class="mt-playhead"></div></div></div>
+                  <div class="mt-track-row"><div class="mt-track-name">Folder (front, eyes)</div><div class="mt-track-body"><div class="mt-block c"></div><div class="mt-playhead"></div></div></div>
+                  <div class="mt-track-row"><div class="mt-track-name">Prompt candy</div><div class="mt-track-body"><div class="mt-block d"></div><div class="mt-playhead"></div></div></div>
+                  <div class="mt-track-row"><div class="mt-track-name">Your repo is the brief.</div><div class="mt-track-body"><div class="mt-block c"></div><div class="mt-playhead"></div></div></div>
+                </div>
+              </div>
+        </div>
+      </div>
+    </section>
+
+    <script id="mt-posthero-editor-script">
+      (() => {
+        const root = document.getElementById('mt-posthero-editor');
+        const shell = root?.querySelector('[data-editor-shell]');
+        const canvas = root?.querySelector('.mt-stage-canvas');
+        if (!root || !shell || !canvas) return;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return;
+
+        const text = root.querySelector('#mt-posthero-text');
+        const zoomReadout = root.querySelector('#mt-zoom-readout');
+        const timeReadout = root.querySelector('#mt-time-readout');
+        const rotationReadout = root.querySelector('#mt-rotation-value');
+        const zoomIn = root.querySelector('#mt-zoom-in');
+        const zoomOut = root.querySelector('#mt-zoom-out');
+        const fit = root.querySelector('#mt-fit');
+        const art = { w: 1920, h: 1080 };
+        let zoom = 0.70;
+        let raf = 0;
+        let phase = 3.6;
+        let last = performance.now();
+
+        const resize = () => {
+          const r = canvas.getBoundingClientRect();
+          const dpr = Math.min(2, window.devicePixelRatio || 1);
+          const nextWidth = Math.max(1, Math.round(r.width * dpr));
+          const nextHeight = Math.max(1, Math.round(r.height * dpr));
+          const changed = canvas.width !== nextWidth || canvas.height !== nextHeight || canvas._dpr !== dpr;
+          if (changed) {
+            canvas.width = nextWidth;
+            canvas.height = nextHeight;
+            canvas._dpr = dpr;
+          }
+          return changed;
+        };
+
+        const roundRect = (c,x,y,w,h,r) => {
+          const rr=Math.min(r,w/2,h/2); c.beginPath(); c.moveTo(x+rr,y); c.arcTo(x+w,y,x+w,y+h,rr); c.arcTo(x+w,y+h,x,y+h,rr); c.arcTo(x,y+h,x,y,rr); c.arcTo(x,y,x+w,y,rr); c.closePath();
+        };
+
+        const draw = () => {
+          const dpr = canvas._dpr || 1;
+          const w = canvas.clientWidth || 1;
+          const h = canvas.clientHeight || 1;
+          ctx.setTransform(dpr,0,0,dpr,0,0);
+          ctx.clearRect(0,0,w,h);
+
+          /* stage itself is the live white card; canvas shows the document/artboard */
+          ctx.fillStyle='#fff';
+          ctx.fillRect(0,0,w,h);
+
+          const currentZoom = Math.max(.15, Math.min(1.2, zoom));
+          const artW = art.w * currentZoom;
+          const artH = art.h * currentZoom;
+          const ax = (w-artW)/2;
+          const ay = (h-artH)/2;
+
+          ctx.save();
+          ctx.fillStyle='#f5f5f5';
+          ctx.shadowColor='rgba(0,0,0,.12)';
+          ctx.shadowBlur=34;
+          ctx.shadowOffsetY=18;
+          roundRect(ctx,ax,ay,artW,artH,14);
+          ctx.fill();
+          ctx.restore();
+
+          ctx.save();
+          roundRect(ctx,ax,ay,artW,artH,14); ctx.clip();
+          ctx.fillStyle='#f5f5f5'; ctx.fillRect(ax,ay,artW,artH);
+
+          /* source-grounded trailer frame vocabulary */
+          const pulse = 1 + Math.sin(phase*.82)*.012;
+          const sx = ax + artW/2;
+          const sy = ay + artH*.49;
+          ctx.translate(sx,sy);
+          ctx.scale(pulse,pulse);
+          ctx.textAlign='center';
+          ctx.textBaseline='middle';
+          ctx.font='900 205px "Sunghyun Sans", Inter, sans-serif';
+          const value=(text?.value || 'Say it.').trim() || 'Say it.';
+
+          /* editable text depth from the production renderer's 2D presentation */
+          for(let i=14;i>=2;i-=2){
+            ctx.fillStyle=`rgba(255,90,31,${0.06 + (14-i)*.012})`;
+            ctx.fillText(value,i*.9,i*.42);
+          }
+          ctx.fillStyle='#171717';
+          ctx.fillText(value,0,0);
+
+          ctx.font='500 40px Inter, sans-serif';
+          ctx.fillStyle='#ff5a1f';
+          ctx.fillText('then watch it move',0,118);
+
+          /* a second card enters as the timeline moves */
+          const cycle = ((phase % 15)+15)%15;
+          if(cycle>3.3){
+            const p=Math.min(1,(cycle-3.3)/.8);
+            const eased=1-Math.pow(1-p,3);
+            const cw=artW*.38, ch=artH*.18;
+            ctx.save();
+            ctx.globalAlpha=.96*eased;
+            ctx.translate(artW*.71-cw/2,artH*.22-ch/2+(1-eased)*-24);
+            ctx.rotate(-.025);
+            ctx.shadowColor='rgba(0,0,0,.18)'; ctx.shadowBlur=28; ctx.shadowOffsetY=14;
+            ctx.fillStyle='#fff'; roundRect(ctx,-cw/2,-ch/2,cw,ch,18); ctx.fill();
+            ctx.shadowColor='transparent';
+            ctx.fillStyle='#171717'; ctx.font='600 32px "Instrument Serif", serif'; ctx.textAlign='center'; ctx.fillText('Every frame stays editable.',0,0);
+            ctx.restore();
+          }
+          if(cycle>6.6){
+            const p=Math.min(1,(cycle-6.6)/.7);
+            ctx.globalAlpha=p;
+            ctx.fillStyle='#ff5a1f'; roundRect(ctx,-artW*.23,artH*.22,artW*.18,artH*.12,24); ctx.fill();
+            ctx.fillStyle='#fff'; ctx.font='700 26px Inter,sans-serif'; ctx.fillText('make our launch video',0,artH*.28);
+          }
+          ctx.restore();
+
+          /* selection geometry reproduced from the live editor overlay */
+          const bx=sx-artW*.30, by=sy-artH*.19, bw=artW*.60, bh=artH*.38;
+          ctx.save();
+          ctx.strokeStyle='rgba(214,214,214,.8)'; ctx.lineWidth=1;
+          ctx.strokeRect(bx,by,bw,bh);
+          const handles=[[bx,by],[bx+bw/2,by],[bx+bw,by],[bx,by+bh/2],[bx+bw,by+bh/2],[bx,by+bh],[bx+bw/2,by+bh],[bx+bw,by+bh]];
+          for(const [x,y] of handles){ctx.fillStyle='#fff';ctx.strokeStyle='rgba(0,0,0,.12)';ctx.beginPath();ctx.roundRect(x-4,y-4,8,8,2);ctx.fill();ctx.stroke();}
+          ctx.fillStyle='#fff';ctx.strokeStyle='rgba(0,0,0,.72)';ctx.lineWidth=1.4;ctx.beginPath();ctx.arc(sx,by-28,7,0,Math.PI*2);ctx.fill();ctx.stroke();
+          ctx.strokeStyle='rgba(0,0,0,.72)';ctx.beginPath();ctx.moveTo(sx,by-21);ctx.lineTo(sx,by);ctx.stroke();
+          ctx.restore();
+
+          const seconds=((phase%15)+15)%15;
+          if(timeReadout) timeReadout.textContent=`0:${seconds.toFixed(1).padStart(4,'0')}`;
+          if(rotationReadout) rotationReadout.textContent=`${(Math.sin(phase*.3)*2.1).toFixed(1)}°`;
+        };
+
+        const tick = now => {
+          phase += (now-last)/1000;
+          last=now;
+          /* production scroll mapping is driven by the 260vh wrapper; emulate that relationship */
+          const rect=root.getBoundingClientRect();
+          const span=Math.max(1,root.offsetHeight-window.innerHeight);
+          const progress=Math.min(1,Math.max(0,(-rect.top)/span));
+          if(Number.isFinite(progress)) phase = Math.max(0,progress*15 + 1.6);
+          const reveal=Math.min(1,Math.max(0,progress/.18));
+          shell.style.opacity=String(.9+.1*reveal);
+          shell.style.transform=`translateY(${(1-reveal)*-24}px) scale(${.88+.12*reveal}) rotateX(${(1-reveal)*12}deg)`;
+          draw();
+          raf=requestAnimationFrame(tick);
+        };
+
+        const applyZoom = next => {
+          zoom=Math.max(.4,Math.min(1.2,next));
+          if(zoomReadout) zoomReadout.textContent=`${Math.round(zoom*100)}%`;
+          draw();
+        };
+
+        zoomIn?.addEventListener('click',()=>applyZoom(zoom*1.4));
+        zoomOut?.addEventListener('click',()=>applyZoom(zoom/1.4));
+        fit?.addEventListener('click',()=>applyZoom(.70));
+        text?.addEventListener('input',draw);
+
+        let resizeQueued = false;
+        new ResizeObserver(() => {
+          if (resizeQueued) return;
+          resizeQueued = true;
+          requestAnimationFrame(() => {
+            resizeQueued = false;
+            if (resize()) draw();
+          });
+        }).observe(canvas);
+        resize();
+        draw();
+        raf=requestAnimationFrame(tick);
+        window.addEventListener('beforeunload',()=>cancelAnimationFrame(raf),{once:true});
       })();
     </script>
 
@@ -7851,6 +8704,124 @@
       } else {
         initialize();
       }
+    })();
+  </script>
+  <script>
+    (() => {
+      const root = document.getElementById("mt-posthero-editor");
+      if (!root) return;
+      const rail = root.querySelector(".mt-editor-rail");
+      const tabs = [...root.querySelectorAll(".mt-editor-tab")];
+      const thumb = root.querySelector(".mt-rail-thumb");
+      const panel = root.querySelector(".mt-inspector-panel");
+      const views = [...root.querySelectorAll("[data-panel-view]")];
+      if (!rail || !tabs.length || !thumb || !panel || !views.length) return;
+
+      const SWITCH_OUT_MS = 140;
+      const SWITCH_IN_DELAY_MS = 12;
+      let current = Math.max(0, tabs.findIndex(t => t.classList.contains("active")));
+      if (current < 0) current = 0;
+      let open = true;
+      let switchToken = 0;
+      let leaveTimer = 0;
+
+      const paintRail = () => {
+        rail.style.setProperty("--i", String(current));
+        rail.style.setProperty("--n", String(tabs.length));
+        thumb.setAttribute("data-on", open ? "true" : "false");
+        tabs.forEach((tab, n) => {
+          const active = open && n === current;
+          tab.classList.toggle("active", active);
+          tab.setAttribute("aria-pressed", active ? "true" : "false");
+        });
+        panel.setAttribute("data-open", open ? "true" : "false");
+      };
+
+      const hideView = view => {
+        view.hidden = true;
+        view.removeAttribute("data-switch-state");
+      };
+
+      const showView = (view, state = "enter") => {
+        view.hidden = false;
+        if (state) view.setAttribute("data-switch-state", state);
+      };
+
+      const resetAllViews = () => {
+        panel.removeAttribute("data-switching");
+        views.forEach((view, n) => {
+          view.removeAttribute("data-switch-state");
+          view.hidden = !(open && n === current);
+        });
+      };
+
+      const switchPanel = (nextIndex, nextOpen) => {
+        const token = ++switchToken;
+        window.clearTimeout(leaveTimer);
+
+        const previous = views[current];
+        const next = views[nextIndex];
+        const tabChanged = nextIndex !== current;
+
+        current = nextIndex;
+        open = nextOpen;
+        paintRail();
+
+        if (!open) {
+          if (previous && !previous.hidden) {
+            showView(previous, "leave");
+            leaveTimer = window.setTimeout(() => {
+              if (token !== switchToken) return;
+              hideView(previous);
+            }, SWITCH_OUT_MS);
+          } else {
+            resetAllViews();
+          }
+          return;
+        }
+
+        if (!tabChanged) {
+          resetAllViews();
+          showView(next, "enter");
+          window.setTimeout(() => next.removeAttribute("data-switch-state"), 240);
+          panel.scrollTop = 0;
+          return;
+        }
+
+        if (previous && !previous.hidden) {
+          panel.setAttribute("data-switching", "true");
+          showView(previous, "leave");
+          showView(next, "enter");
+          leaveTimer = window.setTimeout(() => {
+            if (token !== switchToken) return;
+            hideView(previous);
+          }, SWITCH_OUT_MS);
+        } else {
+          panel.removeAttribute("data-switching");
+          views.forEach(view => hideView(view));
+          window.setTimeout(() => {
+            if (token !== switchToken) return;
+            showView(next, "enter");
+          }, SWITCH_IN_DELAY_MS);
+        }
+
+        window.setTimeout(() => {
+          if (token !== switchToken) return;
+          next.removeAttribute("data-switch-state");
+          panel.removeAttribute("data-switching");
+        }, 260);
+        panel.scrollTop = 0;
+      };
+
+      tabs.forEach((tab, index) => {
+        tab.addEventListener("click", () => {
+          const active = tab.getAttribute("aria-pressed") === "true";
+          switchPanel(index, !active);
+        });
+      });
+
+      paintRail();
+      resetAllViews();
     })();
   </script>
 </body>

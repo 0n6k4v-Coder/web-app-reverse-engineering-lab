@@ -57,3 +57,65 @@ Re-analyze the <Element>.
 
 Carefully inspect the original mtioon implementation and compare it with our current clone. Identify the differences and determine what changes are needed to make our implementation as close to the original as possible, ideally pixel-accurate.
 ```
+
+
+```text
+Work from the existing file as a local working copy.
+
+Make only the changes I request using a surgical patch/edit approach. Do not rewrite, refactor, regenerate, or otherwise change unrelated parts of the file.
+
+Preserve everything outside the requested edit exactly as-is.
+
+Do not modify or push the GitHub repository.
+
+After editing:
+
+1. Validate that the untouched parts are unchanged.
+2. Save the complete final file as a new artifact.
+3. Give me the downloadable artifact link.
+4. Briefly state exactly what was changed.
+
+Use the existing file as a materialized container-backed working copy.
+
+Apply the requested change with a surgical patch script against the working copy. Do not regenerate the whole file and do not refactor unrelated code.
+
+Preserve all bytes outside the target patch region exactly.
+
+Do not write to, update, commit, or push the GitHub repository.
+
+After patching:
+
+* validate the patched file exists at /mnt/data/
+* compare the untouched region against the source working copy byte-for-byte
+* run syntax/structural validation where applicable
+* save the result as a new sandbox artifact
+
+Return the complete patched artifact with a sandbox download link.
+
+Materialize the existing file into a container-backed working copy.
+
+Patch only the requested region with a script. Treat the source and all non-target regions as immutable.
+
+Do not rewrite, regenerate, refactor, or normalize unrelated content. Preserve non-target bytes exactly.
+
+Do not modify or push GitHub.
+
+Validate the patch, verify the untouched region byte-for-byte, and write the complete result as a new `/mnt/data/` artifact.
+
+Return the sandbox artifact link.
+```
+
+| Term to use                                 | What I interpret it as                                   |
+| ------------------------------------------- | -------------------------------------------------------- |
+| **GitHub fetch/read**                       | Read the repository file without modifying GitHub        |
+| **materialize**                             | Turn the existing artifact/file into a real runtime file |
+| **container-backed working copy**           | A real editable file under `/mnt/data/`                  |
+| **surgical patch**                          | Modify only a specified region                           |
+| **in-place transformation of working copy** | Edit that local runtime file, not the repository         |
+| **immutable source**                        | Do not modify the original GitHub/source artifact        |
+| **byte-for-byte preservation**              | Untouched bytes must remain identical                    |
+| **diff validation**                         | Check exactly what changed                               |
+| **hash validation / SHA-256**               | Verify file or region integrity                          |
+| **runtime validation**                      | Run syntax/structural checks after editing               |
+| **derived artifact**                        | The newly generated complete file                        |
+| **sandbox artifact**                        | The `/mnt/data/...` file returned to you for download    |

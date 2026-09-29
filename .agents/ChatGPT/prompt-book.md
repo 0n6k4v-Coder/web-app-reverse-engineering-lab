@@ -1518,3 +1518,23 @@ Do not include:
 
 Report only the evidence necessary to establish whether the approved changes were successfully implemented.
 ```
+
+```text
+## Variable-Length Structure Rule
+
+Do not force lists, steps, sections, or report fields to have equal or predetermined counts.
+
+The number of items must be determined by the actual scope and complexity of the task.
+
+Rules:
+
+* Add an item only when it has a distinct purpose.
+* Remove an item when its responsibility is already covered elsewhere.
+* Do not add items merely to make a list symmetrical.
+* Do not split one responsibility into multiple items only to increase count.
+* Do not merge distinct responsibilities only to reduce count.
+* Prefer the smallest complete set of items required for the task.
+* Different workflows, tasks, and reports may legitimately have different numbers of items.
+* Optimize for coverage, traceability, and clarity, not structural symmetry.
+* Count should be an output of decomposition, not an input to decomposition.
+```

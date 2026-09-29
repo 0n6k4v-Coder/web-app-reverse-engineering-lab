@@ -935,7 +935,7 @@ Do not present inference as fact.
 Do not declare the target understood until the relevant nested structure and rendering pipeline have been investigated.
 ```
 
-```text
+````text
 # Context
 
 You are continuing a reverse-engineering and cloning task for:
@@ -954,7 +954,9 @@ Original Investigation Findings:
 
 # User Request
 
-Use the verified Original Investigation Findings to determine exactly what must change in the current clone implementation to reproduce the original target accurately.
+Use the verified Original Investigation Findings to inspect the current clone, compare both implementations, identify the exact causes of mismatch, and define the precise changes required to make the clone accurately reproduce the original target.
+
+Do not modify the clone in this workflow.
 
 # Task
 
@@ -963,29 +965,31 @@ Use the verified Original Investigation Findings to determine exactly what must 
 1. Read and understand the Context.
 2. Read and understand the User Request.
 3. Read and understand the complete Original Investigation Findings.
-4. Treat the Findings Report as the reference for the original behavior.
+4. Treat the Findings Report as the verified reference for the original behavior.
 5. Inspect the clone independently to determine how its current implementation differs.
 6. Do not modify the clone.
 7. Do not implement changes in this workflow.
-8. Do not invent implementation details that can be determined from the clone source.
+8. Do not invent implementation details that can be determined from the clone source or verified findings.
 
 ---
 
 ## 2. Inspect the Clone Source
 
-Inspect the current clone implementation from outside-in and root-to-leaf.
+Inspect the current clone implementation relevant to the requested target.
 
-Start from:
+Trace from:
 
-1. target page/editor context
-2. target root
-3. parent hierarchy
-4. relevant sections
-5. nested components
-6. controls/items
-7. rendering layer
-8. state and interaction logic
-9. rendering dependencies
+```text
+Target Context
+→ Target Root
+→ Parent Hierarchy
+→ Relevant Sections
+→ Nested Components
+→ Controls / Items
+→ Rendering Layer
+→ State / Interaction Logic
+→ Rendering Dependencies
+```
 
 Inspect where relevant:
 
@@ -995,7 +999,6 @@ Inspect where relevant:
 * components
 * DOM structure
 * classes and attributes
-* computed/runtime assumptions
 * layout ownership
 * paint ownership
 * clipping/overflow
@@ -1004,18 +1007,18 @@ Inspect where relevant:
 * transforms
 * typography
 * assets
-* Canvas/SVG/WebGL/3D implementation
+* Canvas / SVG / WebGL / 3D implementation
 * state logic
 * event handling
-* animation/transition logic
+* animation / transition logic
 
-Do not inspect unrelated implementation.
+Inspect only implementation relevant to the requested target.
 
 ---
 
 ## 3. Recursively Inspect Nested Components
 
-Trace the requested target recursively.
+Trace the target recursively.
 
 For each meaningful nested component determine:
 
@@ -1029,15 +1032,15 @@ For each meaningful nested component determine:
 
 Do not assume a child is correct because its parent is correct.
 
-When a mismatch exists, identify the **first meaningful divergence** between the original findings and the clone implementation.
+Continue until the meaningful implementation differences are understood.
 
 ---
 
-## 4. Compare Original Findings Against Clone
+## 4. Compare Original vs Clone
 
 Compare the verified Original Findings against the actual clone implementation.
 
-Classify meaningful differences as:
+Classify meaningful differences as appropriate:
 
 * structure
 * hierarchy
@@ -1055,31 +1058,34 @@ Classify meaningful differences as:
 
 Do not compare only visual appearance.
 
-Use the original findings to determine what the clone must reproduce.
+Do not repeat information from the Original Findings unless it is necessary to explain a clone mismatch.
 
 ---
 
-## 5. Identify the First Divergence
+## 5. Identify the Earliest Meaningful Divergence
 
-For each important mismatch:
+For each meaningful mismatch:
 
-1. locate the relevant original behavior from the Findings Report
-2. locate the clone implementation responsible for that behavior
-3. compare the two recursively
-4. identify the first meaningful divergence
+1. locate the relevant original behavior
+2. locate the responsible clone implementation
+3. compare the hierarchy recursively
+4. identify the **earliest meaningful divergence**
 5. trace downstream symptoms back to that divergence
 
-Do not define changes from the deepest visible symptom when an earlier structural cause exists.
+The earliest meaningful divergence is the first structural, layout, state, or rendering difference that materially causes the later mismatch.
+
+Do not define a change only from the deepest visible symptom.
 
 ---
 
-## 6. Inspect Rendering Dependencies
+## 6. Inspect Clone Rendering Dependencies
 
-When a mismatch depends on rendering, inspect the clone's actual implementation.
+When a mismatch involves rendering, inspect the clone's actual implementation.
 
-Verify where applicable:
+Verify where relevant:
 
 * fonts
+* font fallback
 * icons
 * images
 * SVG
@@ -1094,204 +1100,266 @@ Verify where applicable:
 Determine whether the mismatch is caused by:
 
 * missing dependency
-* wrong dependency
-* wrong structure
-* wrong runtime state
-* wrong rendering configuration
-* incorrect fallback
+* incorrect dependency
+* incorrect structure
+* incorrect runtime state
+* incorrect rendering configuration
 * incorrect geometry
 
 Do not propose hard-coded visual compensation for a dependency or structural problem.
 
 ---
 
-## 7. Define the Exact Change
+## 7. Define Exact Changes
 
-For every confirmed mismatch, define exactly:
+For every confirmed mismatch, define only the change that is actually required.
 
-* file
-* component/section
-* selector/function/block
-* current implementation
-* required implementation
-* reason for the change
-* dependency on other changes
-* expected effect
-* verification method
+For each change specify:
 
-The change definition must be specific enough that another agent can implement it without making architectural decisions.
+### Location
+
+Exact file and implementation area.
+
+### Current
+
+What the clone currently does.
+
+### Required
+
+What it must do instead.
+
+### Reason
+
+The verified evidence that requires this change.
+
+### Verification
+
+How the next implementation task must verify the change.
+
+The change specification must be concrete enough for another agent to implement without making architectural or design decisions.
 
 Do not use vague instructions such as:
 
-* "make it look like production"
-* "fix the spacing"
-* "improve the panel"
-* "adjust the layout"
-
-Replace them with concrete implementation changes.
+* make it look like production
+* fix the layout
+* improve the panel
+* adjust the spacing
 
 ---
 
-## 8. Define Change Boundaries
+## 8. Do Not Invent Implementation Decisions
+
+Only define implementation behavior supported by:
+
+* Original Investigation Findings
+* current clone source
+* verified dependency relationships
+
+Do not invent:
+
+* fallback values
+* new architecture
+* speculative state
+* undocumented behavior
+* new data models
+* arbitrary defaults
+* unrelated refactors
+
+When the exact implementation mechanism is already clear from the existing clone, specify it.
+
+When multiple implementation approaches remain genuinely possible, report the unresolved decision instead of silently choosing one.
+
+---
+
+## 9. Change Decomposition
+
+Decompose changes according to actual implementation responsibility.
+
+A separate change is justified when it has an independent:
+
+* root cause
+* implementation location
+* dependency boundary
+* verification boundary
+
+Do not split a change merely to create more list items.
+
+Do not merge distinct changes merely to reduce list length.
+
+Related changes may remain grouped when they share the same responsibility and verification boundary.
+
+---
+
+## 10. Variable-Length Structure Rule
+
+Do not force lists, steps, sections, or report fields to have equal or predetermined counts.
+
+The number of items must be determined by the actual scope and complexity of the task.
+
+Rules:
+
+* Add an item only when it has a distinct purpose.
+* Remove an item when its responsibility is already covered elsewhere.
+* Do not add items merely to make a list symmetrical.
+* Do not split one responsibility into multiple items only to increase count.
+* Do not merge distinct responsibilities only to reduce count.
+* Prefer the smallest complete set of items required for the task.
+* Different workflows, tasks, and reports may legitimately have different numbers of items.
+* Optimize for coverage, traceability, and clarity, not structural symmetry.
+* Count should be an output of decomposition, not an input to decomposition.
+
+---
+
+## 11. Define Change Boundaries
 
 Clearly identify:
 
 ### Must Change
 
-Changes required for the target to match the original.
+Only changes required for the requested target to reproduce the original.
 
-### Must Preserve
+### Preserve
 
-Existing behavior/implementation that should remain unchanged.
+Existing behavior and implementation that should remain unchanged.
 
 ### Out of Scope
 
-Related areas that must not be modified.
+Related UI, features, or editor behavior that must not be modified.
 
-Do not expand the implementation scope beyond what the Findings Report requires.
+Do not expand scope beyond the requested target.
 
 ---
 
-## 9. Check Change Dependencies
+## 12. Check Change Dependencies
 
-Determine whether one change affects another.
+Identify dependencies only when they affect implementation order or correctness.
 
-For example:
+Examples:
 
 * parent layout → child geometry
+* panel structure → section layout
 * font loading → text dimensions
-* container width → nested control dimensions
-* rendering surface → 3D object geometry
+* rendering surface → rendered object geometry
 * state structure → nested controls
-* asset dependency → visual output
+* removed DOM → existing selector or runtime logic
 
-Group dependent changes together.
-
-Do not split one root-cause fix into unrelated cosmetic patches.
+Do not create dependency entries for relationships that do not affect implementation.
 
 ---
 
-## 10. Define Verification Requirements
+## 13. Define Verification Requirements
 
-For every proposed change, define how the next implementation task must verify it.
+For every required change, define the appropriate verification method.
 
-Use the appropriate verification type:
+Use direct evidence where available:
 
 * DOM structure
 * geometry
-* computed style
+* computed styles
 * runtime state
 * interaction
-* asset loading
 * font loading
+* asset loading
+* animation / transition
 * rendering
-* visual comparison
-* Canvas/WebGL/3D state
+* Canvas / WebGL / 3D state
+* visual output
 
-Verification must prove the change solved the identified divergence.
+For nested changes, verify both the changed component and its relevant parent context.
 
-Do not define verification from screenshots alone when direct runtime evidence is available.
+Verification must prove that the identified divergence was actually corrected.
 
 ---
 
-## 11. Stop Condition
+## 14. Stop Condition
 
-Stop when every meaningful mismatch from the Original Findings has been mapped to:
+Stop when every meaningful mismatch relevant to the requested target has been mapped to:
 
-* exact clone location
-* root cause
+* responsible clone implementation
+* earliest meaningful divergence
 * exact required change
 * required verification
 
-Do not continue investigating unrelated clone code after the requested target is fully mapped.
+Do not continue investigating unrelated clone code.
 
 ---
 
-## 12. Report the Required Changes
+# Report
 
-Report only the information needed for the next implementation task.
+Produce a concise **Change Specification**.
 
-Use this structure:
+Do not repeat the entire Original Findings Report.
 
-### Comparison Summary
+## Comparison Summary
 
-The important differences between Original and Clone.
+Only the meaningful Original vs Clone differences.
 
-### First Divergence
+## Earliest Meaningful Divergence
 
-The earliest meaningful implementation divergence.
+Only the divergences that materially explain the mismatches.
 
-### Required Changes
+## Required Changes
 
-For each change:
+For each required change:
 
 **Location**
-Exact file/component/selector/function.
+[Exact implementation location]
 
 **Current**
-What the clone currently does.
+[Current clone behavior]
 
 **Required**
-What it must do instead.
+[Required implementation]
 
 **Reason**
-Why this change is required by the original findings.
+[Evidence-based reason]
 
 **Verification**
-How the implementation must be verified.
+[Required verification]
 
-### Change Dependencies
+## Change Dependencies
 
 Only dependencies that affect implementation order or correctness.
 
-### Scope Boundary
+## Scope Boundary
 
-What must be preserved and what is out of scope.
+### Must Change
 
-### Implementation Requirements
+[Required scope]
 
-The concise set of concrete changes that the next execution task must perform.
+### Preserve
+
+[Existing behavior to keep]
+
+### Out of Scope
+
+[Explicit exclusions]
+
+## Implementation Requirements
+
+A concise implementation-ready specification derived from the required changes.
+
+Do not duplicate the same information already stated above.
+
+---
+
+# Reporting Constraints
 
 Do not include:
 
 * full source dumps
 * full DOM dumps
-* repeated findings
+* raw CLI output
+* repeated measurements
+* repeated Original Findings
 * investigation narration
 * speculative redesigns
 * unrelated improvements
 
-Report the **minimum sufficient implementation specification required to make the clone accurate**.
+The report must contain the **minimum sufficient information required for the next implementation workflow**.
 
----
-
-## 13. Evidence Rules
-
-Every required change must be traceable to:
-
-* Original Investigation Findings
-* clone source evidence
-* or both
-
-Clearly distinguish:
-
-* directly observed clone evidence
-* original runtime evidence
-* source-code evidence
-* inferred implementation dependency
-
-Do not present inference as verified fact.
-
-Do not define a change unless the responsible clone implementation area has been identified.
-
----
-
-## 14. Output Constraint
-
-This workflow must produce a **Change Specification**, not an implementation.
-
-The final report must allow the next workflow to execute the changes without requiring additional architecture or design decisions.
-```
+The result is a **Change Specification**, not an implementation.
+````
 
 ```text
 # Context

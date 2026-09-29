@@ -1650,67 +1650,57 @@ Do not:
 * refactor unrelated code
 * invent details that can be verified through inspection
 
-Investigate only the target and the surrounding context required to reproduce it accurately.
+Investigate only the target and the surrounding context required for accurate reproduction.
 
 ---
 
-## 2. Open and Locate the Original Target
+## 2. Locate the Original Target
 
 Use the available browser and Chrome DevTools CLI/tools directly.
 
-Open the original site and identify:
+Open the original site and establish the exact runtime state required to investigate the target.
 
-* the relevant page
-* the relevant editor/application state
-* the target element/component
-* the target's immediate parent context
+Identify:
 
-Make sure the target state is reproducible before continuing.
+* relevant page/editor state
+* target component
+* immediate parent context
+* relevant initial state
+
+Do not begin with isolated child elements before understanding their surrounding context.
 
 ---
 
-## 3. Establish the Structural Model
+## 3. Establish the Target Structure
 
-Investigate the target from outside-in.
+Investigate the target from outside-in and trace the meaningful hierarchy toward its deepest relevant implementation layer.
 
-Trace:
-
-```text
-Page / Application Context
-→ Target Root
-→ Parent Context
-→ Component
-→ Nested Component(s)
-→ Visual / Rendering Layer
-```
-
-Determine the meaningful:
+Determine where relevant:
 
 * DOM/component hierarchy
 * parent/child relationships
 * component boundaries
 * layout ownership
 * width/height ownership
-* positioning
+* positioning context
 * overflow
 * clipping
 * scrolling
 * stacking context
 * transforms
+* responsive behavior
 
-Do not stop at the first visible container.
-
-Continue deeper whenever a nested layer materially affects the target.
+Continue deeper whenever a nested layer materially affects reproduction.
 
 ---
 
-## 4. Investigate Nested and Compound Elements
+## 4. Recursively Investigate Compound Components
 
-Inspect important nested components recursively.
+Treat compound UI as multiple meaningful layers rather than one visual object.
 
-For compound elements, identify the meaningful internal layers instead of treating the whole component as one object.
+Inspect nested layers independently when they affect reproduction.
 
-For example, a slider may require separate investigation of:
+For example:
 
 ```text
 Slider
@@ -1720,8 +1710,6 @@ Slider
 → Value Control
 ```
 
-A segmented control may require:
-
 ```text
 Segmented Control
 → Outer Field
@@ -1730,45 +1718,152 @@ Segmented Control
 → Selected / Unselected Text
 ```
 
-Apply the same approach to other compound controls, cards, rendered objects, or nested UI.
+```text
+Button
+→ Surface
+→ Icon
+→ Text
+→ Border / Shadow
+→ Interaction State
+```
 
-For each meaningful layer, inspect only the properties required for accurate reproduction.
+Use the same approach for cards, inputs, menus, rendered objects, and other compound components.
+
+Do not stop at a parent component when an important child remains unexplained.
 
 ---
 
-## 5. Investigate Visual State, Interaction, and Effects
+## 5. Investigate Transient and Overlay UI
 
-After the structure is understood, investigate the states and behaviors that materially affect the target.
+When the target contains dropdowns, selects, popovers, menus, tooltips, dialogs, context menus, portals, or other UI that appears only after interaction:
 
-Trigger relevant interactions where necessary.
+1. inspect the closed state
+2. trigger the real interaction
+3. inspect the newly rendered UI
+4. identify its actual DOM/container/portal ownership
+5. inspect its nested items recursively
+6. inspect its open state
+7. interact with its options/items
+8. inspect the resulting selected or active state
+9. close it
+10. inspect the dismissal behavior
 
-Inspect:
+Determine whether the transient UI is:
 
-* selected/active state
-* hover/focus/pressed state
-* expanded/collapsed state
+* a native control
+* a custom control
+* a portal
+* an overlay
+* a positioned sibling
+* another rendering mechanism
+
+Do not assume the popup is a child of the trigger.
+
+For transient UI, inspect both the trigger and the rendered overlay as separate implementation targets.
+
+---
+
+## 6. Investigate Visual Layers
+
+Inspect the actual visual layers that materially affect reproduction.
+
+Where relevant:
+
+* background
+* color
+* opacity
+* border
+* border radius
+* box shadow
+* typography
+* icon
+* fill
+* track/rail
+* thumb/knob
+* selected indicator
+* hover surface
+* focus surface
+* overlay surface
+* transform
+* filter
+* clipping
+
+Do not assume nested layers share styling.
+
+A parent match does not imply its child layers match.
+
+---
+
+## 7. Investigate State and Interaction
+
+Exercise the states that materially affect the target.
+
+Where relevant:
+
+* initial
+* selected
+* unselected
+* hover
+* focus
+* active
+* pressed
+* disabled
+* expanded
+* collapsed
+* open
+* closed
 * dragging
+* option selection
+* outside click
+* Escape
+* keyboard navigation
 * scrolling
 * responsive behavior
-* transitions
-* animation
-* easing
-* transform changes
-* opacity changes
-* shadow changes
-* color changes
-* size/position changes
-* JavaScript-driven effects
 
-Do not treat an element as fully understood from its static appearance when interaction or animation changes the result.
+When interaction changes nested content, inspect the resulting DOM, styling, geometry, and state.
 
 ---
 
-## 6. Investigate Rendering, Dependencies, and Source
+## 8. Investigate Animation and Effects
 
-If the target uses Canvas, SVG, WebGL, Three.js, shaders, generated graphics, or other rendering systems, trace the actual rendering pipeline to the depth necessary for reproduction.
+Inspect behavior that affects the rendered result.
 
-For 3D or projected content, distinguish relevant:
+Where relevant:
+
+* transition
+* duration
+* delay
+* easing
+* transform
+* scale
+* translate
+* opacity
+* color transition
+* shadow transition
+* size change
+* position change
+* spring behavior
+* keyframes
+* JavaScript animation
+* requestAnimationFrame
+* library-driven animation
+* interaction-driven animation
+* scroll-driven animation
+
+Do not consider a component matched only because its final static state looks correct.
+
+For transient UI, investigate both:
+
+* opening/closing behavior
+* interaction behavior inside the open state
+
+---
+
+## 9. Investigate Rendering and 3D Content
+
+When the target uses Canvas, SVG, WebGL, Three.js, shaders, generated graphics, or another rendering system, investigate the actual pipeline to the depth required for reproduction.
+
+For 3D/projected content, distinguish relevant:
 
 * DOM geometry
 * rendering-surface geometry
@@ -1776,7 +1871,13 @@ For 3D or projected content, distinguish relevant:
 * camera/projected coordinates
 * final visible bounds
 
-Verify runtime dependencies that materially affect rendering:
+Do not infer rendering behavior from screenshots alone.
+
+---
+
+## 10. Investigate Dependencies
+
+Verify runtime dependencies that materially affect the target:
 
 * fonts
 * icons
@@ -1789,22 +1890,51 @@ Verify runtime dependencies that materially affect rendering:
 * network resources
 * generated runtime data
 
-Then identify the source or bundled runtime implementation responsible for the observed behavior.
+Verify actual runtime loading where relevant.
 
-Trace only the code necessary to explain the target.
+Do not rely only on declarations or source references.
 
 ---
 
-## 7. Resolve and Consolidate the Evidence
+## 11. Trace the Source Implementation
 
-When runtime behavior, source code, or dependencies disagree:
+Find the source or bundled runtime implementation responsible for the observed target behavior.
+
+Trace only the code necessary to explain the target:
+
+```text
+Page
+→ Target
+→ Responsible Component
+→ Nested Component
+→ Transient / Rendering Layer
+→ State / Interaction Logic
+```
+
+Use source evidence to explain runtime behavior where necessary.
+
+Do not dump unrelated source code.
+
+---
+
+## 12. Resolve Contradictions
+
+When runtime behavior and source code disagree:
 
 1. identify the contradiction
 2. collect additional evidence
 3. determine the active implementation
 4. record the conclusion briefly
 
-Then stop the investigation when the target contains no remaining **meaningful unknowns that could affect accurate reproduction**.
+Do not silently choose an interpretation.
+
+---
+
+## 13. Complete the Investigation
+
+Stop when the verified evidence is sufficient to reproduce the target accurately.
+
+The target is sufficiently understood when all meaningful reproduction dependencies have been established, including any that only appear after interaction.
 
 Do not continue collecting unrelated information.
 
@@ -1812,33 +1942,30 @@ Do not continue collecting unrelated information.
 
 Produce a concise handoff for the next workflow.
 
-The report structure must follow the evidence actually discovered. Do not create empty or unnecessary sections.
+Use only the report sections needed by the evidence discovered.
 
-Include only information that materially affects reproduction, such as:
-
-* target and runtime state
-* structure and hierarchy
-* geometry
-* nested visual layers
-* visual styling
-* states and behavior
-* animation/effects
-* rendering pipeline
-* dependencies
-* source implementation
-* key evidence
-* reproduction requirements
-
-For each important finding, make clear:
+For each important finding, provide:
 
 **Finding**
 What was discovered.
 
 **Evidence**
-The minimum evidence needed to support it.
+The minimum evidence required to support it.
 
 **Reproduction Impact**
-What the implementation workflow needs to reproduce.
+What the next implementation workflow must reproduce.
+
+Include only relevant information about:
+
+* structure
+* geometry
+* nested visual layers
+* transient/overlay UI
+* states and behavior
+* animation/effects
+* rendering
+* dependencies
+* source implementation
 
 Do not include:
 
@@ -1850,7 +1977,7 @@ Do not include:
 * unrelated findings
 * investigation narration
 
-The report must contain the **minimum sufficient information required to make the clone accurate**.
+The report must contain the **minimum sufficient evidence required for accurate reproduction**.
 
 # Evidence Rules
 
@@ -1862,5 +1989,5 @@ Clearly distinguish:
 
 Do not present inference as verified fact.
 
-Do not declare the target understood until the meaningful structure, nested visual layers, relevant behavior/effects, and rendering dependencies have been investigated where applicable.
+Do not declare the target sufficiently understood while a meaningful nested layer, transient state, interaction effect, animation, rendering dependency, or source relationship remains unexplained.
 ````

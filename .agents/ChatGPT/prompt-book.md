@@ -1673,7 +1673,30 @@ Do not begin with isolated child elements before understanding their surrounding
 
 ## 3. Establish the Target Structure
 
-Investigate the target from outside-in and trace the meaningful hierarchy toward its deepest relevant implementation layer.
+Investigate the target from outside-in.
+
+Trace the actual hierarchy through:
+
+```text
+Page / Application Context
+→ Target Root
+→ Parent Context
+→ Component
+→ Child Component
+→ Nested Component
+→ Visual / Rendering Layer
+```
+
+Continue recursively through every descendant that can materially affect:
+
+* rendering
+* geometry
+* styling
+* state
+* interaction
+* animation
+* positioning
+* layering
 
 Determine where relevant:
 
@@ -1690,15 +1713,26 @@ Determine where relevant:
 * transforms
 * responsive behavior
 
-Continue deeper whenever a nested layer materially affects reproduction.
+Do not stop because the parent component appears understood.
 
 ---
 
-## 4. Recursively Investigate Compound Components
+## 4. Recursively Investigate Nested Components
 
-Treat compound UI as multiple meaningful layers rather than one visual object.
+Every relevant descendant is part of the investigation.
 
-Inspect nested layers independently when they affect reproduction.
+For each inspected component:
+
+1. inspect the component itself
+2. identify its direct descendants
+3. inspect each relevant descendant
+4. continue recursively
+5. inspect newly generated descendants when state or interaction creates them
+6. stop only when no remaining descendant can materially affect accurate reproduction
+
+A component is **not fully investigated** while a relevant child, nested visual layer, or generated descendant remains unexplained.
+
+For compound UI, decompose meaningful layers independently.
 
 For example:
 
@@ -1714,8 +1748,8 @@ Slider
 Segmented Control
 → Outer Field
 → Selected Thumb
-→ Buttons
-→ Selected / Unselected Text
+→ Options
+→ Selected / Unselected States
 ```
 
 ```text
@@ -1727,43 +1761,73 @@ Button
 → Interaction State
 ```
 
-Use the same approach for cards, inputs, menus, rendered objects, and other compound components.
+Use the same recursive approach for:
 
-Do not stop at a parent component when an important child remains unexplained.
+* cards
+* inputs
+* menus
+* dropdown options
+* popovers
+* list items
+* tooltips
+* rendered objects
+* other compound UI
+
+Do not assume sibling or child layers share:
+
+* color
+* background
+* opacity
+* border
+* shadow
+* radius
+* typography
+* transform
+* transition
+* state behavior
 
 ---
 
 ## 5. Investigate Transient and Overlay UI
 
-When the target contains dropdowns, selects, popovers, menus, tooltips, dialogs, context menus, portals, or other UI that appears only after interaction:
+When interaction creates new UI such as:
+
+* dropdowns
+* selects
+* popovers
+* menus
+* tooltips
+* dialogs
+* context menus
+* portals
+* expandable content
+* drag overlays
+
+the newly rendered UI becomes part of the recursive investigation.
+
+For each relevant transient UI:
 
 1. inspect the closed state
 2. trigger the real interaction
-3. inspect the newly rendered UI
+3. inspect the newly rendered root
 4. identify its actual DOM/container/portal ownership
-5. inspect its nested items recursively
-6. inspect its open state
-7. interact with its options/items
-8. inspect the resulting selected or active state
-9. close it
-10. inspect the dismissal behavior
+5. inspect its direct descendants
+6. recursively inspect its nested descendants and visual layers
+7. inspect option/item states
+8. exercise relevant interactions inside it
+9. inspect resulting state changes
+10. close it
+11. inspect dismissal behavior
 
-Determine whether the transient UI is:
+Do not assume the transient UI is a child of the trigger.
 
-* a native control
-* a custom control
-* a portal
-* an overlay
-* a positioned sibling
-* another rendering mechanism
+Do not consider the trigger understood while the dynamically rendered UI remains unexplained.
 
-Do not assume the popup is a child of the trigger.
-
-For transient UI, inspect both the trigger and the rendered overlay as separate implementation targets.
+A dropdown is not fully investigated when only its trigger and option labels are known. Its popup surface, option layers, selected states, icons, positioning, effects, and behavior must also be investigated when they materially affect reproduction.
 
 ---
 
-## 6. Investigate Visual Layers
+## 6. Investigate Visual Layers and Runtime Styling
 
 Inspect the actual visual layers that materially affect reproduction.
 
@@ -1787,10 +1851,13 @@ Where relevant:
 * transform
 * filter
 * clipping
+* z-index/layering
 
-Do not assume nested layers share styling.
+Inspect the runtime properties of each meaningful layer independently.
 
-A parent match does not imply its child layers match.
+Do not infer a child layer's styling from its parent.
+
+A parent match does not imply its descendants match.
 
 ---
 
@@ -1820,13 +1887,15 @@ Where relevant:
 * scrolling
 * responsive behavior
 
-When interaction changes nested content, inspect the resulting DOM, styling, geometry, and state.
+When interaction creates, removes, or changes nested content, recursively inspect the resulting descendants again.
+
+Do not verify only the final value/state. Inspect the UI structure and visual changes produced by the interaction.
 
 ---
 
 ## 8. Investigate Animation and Effects
 
-Inspect behavior that affects the rendered result.
+Inspect behavior that materially affects the rendered result.
 
 Where relevant:
 
@@ -1850,12 +1919,14 @@ Where relevant:
 * interaction-driven animation
 * scroll-driven animation
 
-Do not consider a component matched only because its final static state looks correct.
+Do not consider a component understood only because its final static state looks correct.
 
-For transient UI, investigate both:
+For interactive or transient UI, inspect both:
 
-* opening/closing behavior
-* interaction behavior inside the open state
+* state transition
+* resulting rendered state
+
+When a nested layer animates independently, investigate that layer independently.
 
 ---
 
@@ -1863,13 +1934,18 @@ For transient UI, investigate both:
 
 When the target uses Canvas, SVG, WebGL, Three.js, shaders, generated graphics, or another rendering system, investigate the actual pipeline to the depth required for reproduction.
 
-For 3D/projected content, distinguish relevant:
+Continue recursively through the relevant rendering hierarchy.
+
+For 3D/projected content, distinguish where relevant:
 
 * DOM geometry
 * rendering-surface geometry
 * object/world coordinates
 * camera/projected coordinates
 * final visible bounds
+* nested rendered objects
+* materials/shaders/textures
+* animation state
 
 Do not infer rendering behavior from screenshots alone.
 
@@ -1894,20 +1970,23 @@ Verify actual runtime loading where relevant.
 
 Do not rely only on declarations or source references.
 
+When a dependency affects a nested descendant, verify that descendant's actual runtime rendering as well.
+
 ---
 
 ## 11. Trace the Source Implementation
 
 Find the source or bundled runtime implementation responsible for the observed target behavior.
 
-Trace only the code necessary to explain the target:
+Trace the implementation recursively where necessary:
 
 ```text
 Page
 → Target
 → Responsible Component
 → Nested Component
-→ Transient / Rendering Layer
+→ Generated / Transient Component
+→ Visual / Rendering Layer
 → State / Interaction Logic
 ```
 
@@ -1932,11 +2011,24 @@ Do not silently choose an interpretation.
 
 ## 13. Complete the Investigation
 
-Stop when the verified evidence is sufficient to reproduce the target accurately.
+The investigation is complete only when:
 
-The target is sufficiently understood when all meaningful reproduction dependencies have been established, including any that only appear after interaction.
+* the target's relevant hierarchy has been traced recursively
+* relevant descendants have been inspected to the deepest meaningful layer
+* dynamically generated/transient descendants have also been inspected
+* relevant visual layers are understood independently
+* relevant interaction states have been exercised
+* relevant animations/effects have been investigated
+* relevant rendering pipelines and dependencies are understood
+* the responsible source implementation has been identified where available
 
-Do not continue collecting unrelated information.
+Do not stop at the first parent, first visible element, or first working interaction.
+
+Do not stop merely because the target can be described at a high level.
+
+Stop when **no remaining relevant descendant or runtime state can materially change the implementation required for accurate reproduction**.
+
+Do not continue investigating unrelated information.
 
 # Report
 
@@ -1955,7 +2047,7 @@ The minimum evidence required to support it.
 **Reproduction Impact**
 What the next implementation workflow must reproduce.
 
-Include only relevant information about:
+Include only information that materially affects:
 
 * structure
 * geometry
@@ -1967,6 +2059,8 @@ Include only relevant information about:
 * dependencies
 * source implementation
 
+When a nested or transient component materially affects reproduction, report its relevant internal layers rather than summarizing it as a single component.
+
 Do not include:
 
 * full DOM dumps
@@ -1976,6 +2070,8 @@ Do not include:
 * repeated measurements
 * unrelated findings
 * investigation narration
+
+Do not repeat the same evidence across multiple sections.
 
 The report must contain the **minimum sufficient evidence required for accurate reproduction**.
 
@@ -1989,5 +2085,5 @@ Clearly distinguish:
 
 Do not present inference as verified fact.
 
-Do not declare the target sufficiently understood while a meaningful nested layer, transient state, interaction effect, animation, rendering dependency, or source relationship remains unexplained.
+Do not declare the target sufficiently understood while any relevant descendant, dynamically generated UI, visual layer, interaction state, animation/effect, rendering dependency, or source relationship remains unexplained.
 ````

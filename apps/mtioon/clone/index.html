@@ -4384,6 +4384,363 @@
         cursor: default;
       }
 
+      /* ---------- project panel scoped styles (production matching) ---------- */
+      #mt-posthero-editor [data-panel-view="project"] {
+        width: 400px;
+        padding: 0 0 16px 0;
+        box-sizing: border-box;
+      }
+      #mt-posthero-editor [data-panel-view="project"] .card {
+        width: 400px;
+        margin: 0 0 12px 0;
+        padding: 4px 14px;
+        border-radius: 18px;
+        background: rgb(255, 255, 255);
+        border: 0;
+        box-shadow:
+          rgba(0, 0, 0, 0.03) 0 1px 2px 0,
+          rgba(0, 0, 0, 0.12) 0 8px 26px -14px,
+          rgba(0, 0, 0, 0.1) 0 0 0 0.5px;
+        overflow: visible;
+        box-sizing: border-box;
+      }
+      #mt-posthero-editor [data-panel-view="project"] .card-head-row {
+        height: 44px;
+        display: flex;
+        width: 100%;
+        align-items: center;
+        gap: 10px;
+        box-sizing: border-box;
+      }
+      #mt-posthero-editor [data-panel-view="project"] .title-btn {
+        display: flex;
+        height: 100%;
+        min-width: 0;
+        flex: 1;
+        align-items: center;
+        gap: 10px;
+        text-align: left;
+        background: transparent;
+        border: none;
+        padding: 0;
+        cursor: pointer;
+      }
+      #mt-posthero-editor [data-panel-view="project"] .fold-btn {
+        display: flex;
+        height: 100%;
+        align-items: center;
+        justify-content: center;
+        background: transparent;
+        border: none;
+        padding: 0;
+        cursor: pointer;
+      }
+      #mt-posthero-editor [data-panel-view="project"] .fold-chevron {
+        transition: transform 200ms cubic-bezier(0.16, 1, 0.3, 1);
+      }
+      #mt-posthero-editor [data-panel-view="project"] .card[data-state="closed"] .fold-chevron {
+        transform: rotate(180deg);
+      }
+      #mt-posthero-editor [data-panel-view="project"] .fold {
+        transition: grid-template-rows 0.32s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.24s cubic-bezier(0.2, 0.8, 0.2, 1);
+        grid-template-rows: 1fr;
+        grid-template-columns: minmax(0px, 1fr);
+        display: grid;
+      }
+      #mt-posthero-editor [data-panel-view="project"] .fold[data-open="false"] {
+        opacity: 0;
+        grid-template-rows: 0fr;
+      }
+      #mt-posthero-editor [data-panel-view="project"] .fold > div {
+        min-height: 0px;
+        overflow: clip;
+      }
+      #mt-posthero-editor [data-panel-view="project"] .well {
+        background: #ececf1;
+        border-radius: 14px;
+        padding: 10px;
+        box-sizing: border-box;
+      }
+      #mt-posthero-editor [data-panel-view="project"] .lines {
+        background: #ececf1;
+        border-radius: 14px;
+        overflow: hidden;
+        list-style: none;
+        margin: 0;
+        padding: 0;
+      }
+      #mt-posthero-editor [data-panel-view="project"] .lines > li {
+        padding: 12px 14px 10px;
+        border-bottom: 0px solid transparent;
+      }
+      #mt-posthero-editor [data-panel-view="project"] .lines > li:last-child {
+        border-bottom: none;
+      }
+      #mt-posthero-editor [data-panel-view="project"] .ios-range {
+        appearance: none;
+        -webkit-appearance: none;
+        cursor: pointer;
+        background: transparent;
+        height: 22px;
+        outline: none;
+      }
+      #mt-posthero-editor [data-panel-view="project"] .ios-range::-webkit-slider-runnable-track {
+        background: linear-gradient(to right, rgb(0, 122, 255) var(--p, 100%), rgb(227, 227, 232) var(--p, 100%));
+        border-radius: 99px;
+        height: 4px;
+      }
+      #mt-posthero-editor [data-panel-view="project"] .ios-range::-webkit-slider-thumb {
+        appearance: none;
+        -webkit-appearance: none;
+        width: 20px;
+        height: 20px;
+        transition: transform 0.2s cubic-bezier(0.34, 1.4, 0.64, 1);
+        background: rgb(255, 255, 255);
+        border-radius: 50%;
+        margin-top: -8px;
+        box-shadow: rgba(0, 0, 0, 0.06) 0px 0px 0px 0.5px, rgba(0, 0, 0, 0.18) 0px 3px 8px;
+      }
+      #mt-posthero-editor [data-panel-view="project"] .ios-range:active::-webkit-slider-thumb {
+        transform: scale(1.12);
+      }
+      #mt-posthero-editor [data-panel-view="project"] .ios-range:focus-visible {
+        outline: 2px solid rgb(0, 122, 255);
+        outline-offset: 2px;
+        border-radius: 99px;
+      }
+      #mt-posthero-editor [data-panel-view="project"] .flex.min-h-9 {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        min-height: 36px;
+      }
+      #mt-posthero-editor [data-panel-view="project"] .flex.min-h-9 > span:first-child {
+        display: block;
+        width: 76px;
+        flex-shrink: 0;
+        font-size: 13px;
+        color: rgba(28, 28, 30, 0.62);
+      }
+      #mt-posthero-editor [data-panel-view="project"] .flex.min-h-9 > .flex.min-w-0 {
+        display: flex;
+        flex: 1 1 0%;
+        min-width: 0;
+        align-items: center;
+        gap: 8px;
+      }
+      #mt-posthero-editor [data-panel-view="project"] .field {
+        height: 36px;
+        width: 100%;
+        min-width: 0;
+        border-radius: 9px;
+        padding: 0 12px 0 10px;
+        font-size: 13px;
+        color: rgb(28, 28, 30);
+        outline: none;
+        background: rgba(118, 118, 128, 0.1);
+        border: none;
+        box-shadow: inset 0 0 0 0.5px rgba(0, 0, 0, 0.06);
+        box-sizing: border-box;
+        transition: background-color 0.2s ease, box-shadow 0.2s ease;
+      }
+      #mt-posthero-editor [data-panel-view="project"] button.field {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        text-align: left;
+        cursor: pointer;
+      }
+      #mt-posthero-editor [data-panel-view="project"] button.field > span.truncate {
+        display: block;
+        flex: 1 1 0%;
+        min-width: 0;
+        text-align: left;
+      }
+      #mt-posthero-editor [data-panel-view="project"] button.field > svg {
+        display: block;
+        flex-shrink: 0;
+      }
+      #mt-posthero-editor [data-panel-view="project"] .field:focus {
+        box-shadow: inset 0 0 0 0.5px rgba(0, 0, 0, 0.06), inset 0 0 0 2px rgba(0, 122, 255, 0.4);
+      }
+      #mt-posthero-editor [data-panel-view="project"] .key3d {
+        --t: 3px;
+        box-shadow: inset 0 1px 0 #ffffff24, 0 var(--t) 0 var(--edge), 0 calc(var(--t) + 6px) 14px -8px var(--drop);
+        transition: transform .34s cubic-bezier(.34, 1.4, .64, 1), box-shadow .34s cubic-bezier(.2, .8, .2, 1), background-color .2s cubic-bezier(.2, .8, .2, 1), filter .2s cubic-bezier(.2, .8, .2, 1);
+        transform: translateY(0px);
+        cursor: pointer;
+        outline: none;
+        border: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+      }
+      #mt-posthero-editor [data-panel-view="project"] .key3d:hover:not(:disabled) {
+        --t: 4px;
+        transform: translateY(-1px);
+      }
+      #mt-posthero-editor [data-panel-view="project"] .key3d:active:not(:disabled) {
+        --t: 1px;
+        transition-duration: 0.12s;
+        transform: translateY(3px);
+      }
+      #mt-posthero-editor [data-panel-view="project"] .key-accent {
+        --edge: rgb(0, 95, 201);
+        --drop: rgba(0, 122, 255, 0.32);
+        background: rgb(0, 122, 255);
+        color: #ffffff;
+      }
+      #mt-posthero-editor [data-panel-view="project"] .key-accent:hover:not(:disabled) {
+        filter: brightness(1.06);
+      }
+      #mt-posthero-editor [data-panel-view="project"] .key-fill {
+        --edge: rgb(209, 209, 214);
+        --drop: rgba(0, 0, 0, 0.1);
+        background: #ececf1;
+        color: rgb(28, 28, 30);
+      }
+      #mt-posthero-editor [data-panel-view="project"] .key-fill:hover:not(:disabled) {
+        background: #e5e5ea;
+      }
+      #mt-posthero-editor [data-panel-view="project"] .seg-thumb {
+        position: absolute;
+        top: 3px;
+        bottom: 3px;
+        border-radius: 7px;
+        background: #ffffff;
+        box-shadow: 0 0 0 .5px rgba(0,0,0,0.1), 0 2px 0 rgb(209, 209, 214), 0 3px 8px #00000024;
+        transition: transform 0.36s cubic-bezier(0.34, 1.4, 0.64, 1), width 0.36s cubic-bezier(0.34, 1.4, 0.64, 1);
+        pointer-events: none;
+      }
+      #mt-posthero-editor [data-panel-view="project"] .slider-track-wrap {
+        position: relative;
+        height: 36px;
+        min-width: 0;
+        flex: 1;
+        cursor: pointer;
+        touch-action: none;
+        user-select: none;
+      }
+      #mt-posthero-editor [data-panel-view="project"] .slider-rail {
+        position: absolute;
+        inset: 0 10px;
+        top: 50%;
+        height: 4px;
+        transform: translateY(-50%);
+        border-radius: 9999px;
+        background: rgb(227, 227, 232);
+      }
+      #mt-posthero-editor [data-panel-view="project"] .slider-fill {
+        position: absolute;
+        inset-block: 0;
+        left: 0;
+        border-radius: 9999px;
+        background: rgb(0, 122, 255);
+        transition: width 0.12s cubic-bezier(0.2, 0.8, 0.2, 1);
+      }
+      #mt-posthero-editor [data-panel-view="project"] .slider-knob {
+        position: absolute;
+        top: 50%;
+        width: 20px;
+        height: 20px;
+        transform: translate(-50%, -50%);
+        border-radius: 9999px;
+        background: rgb(255, 255, 255);
+        box-shadow: rgba(0, 0, 0, 0.06) 0px 0px 0px 0.5px, rgba(0, 0, 0, 0.2) 0px 3px 8px 0px;
+        cursor: pointer;
+        transition: scale 0.22s cubic-bezier(0.34, 1.4, 0.64, 1), left 0.12s cubic-bezier(0.2, 0.8, 0.2, 1);
+      }
+      #mt-posthero-editor [data-panel-view="project"] .slider-knob:hover {
+        transform: translate(-50%, -50%) scale(1.12);
+      }
+      #mt-posthero-editor [data-panel-view="project"] .slider-knob[data-active] {
+        transform: translate(-50%, -50%) scale(1.12);
+      }
+
+      /* Dropdown / Popover Listbox styles matching original mtioon.com exactly */
+      @keyframes pop-in {
+        0% { opacity: 0; transform: translateY(6px) scale(0.97); }
+        100% { opacity: 1; transform: translateY(0px) scale(1); }
+      }
+      @keyframes pop-up {
+        0% { opacity: 0; transform: translateY(-6px) scale(0.97); }
+        100% { opacity: 1; transform: translateY(0px) scale(1); }
+      }
+      .pop-in {
+        animation: pop-in 0.28s cubic-bezier(0.34, 1.4, 0.64, 1) both;
+      }
+      .pop-up {
+        animation: pop-up 0.28s cubic-bezier(0.34, 1.4, 0.64, 1) both;
+      }
+      div[role="listbox"] {
+        position: fixed;
+        z-index: 1000;
+        overflow-y: auto;
+        border-radius: 16px;
+        background: #ffffff;
+        padding: 6px;
+        color: rgb(28, 28, 30);
+        box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06), 0 24px 60px -20px rgba(0, 0, 0, 0.32);
+        outline: none;
+        box-sizing: border-box;
+        width: max-content;
+      }
+      div[role="listbox"].pop-in,
+      div[role="listbox"].pop-up {
+        position: fixed;
+        z-index: 1000;
+        overflow-y: auto;
+        border-radius: 16px;
+        background: #ffffff;
+        padding: 6px;
+        color: rgb(28, 28, 30);
+        box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06), 0 24px 60px -20px rgba(0, 0, 0, 0.32);
+        outline: none;
+        box-sizing: border-box;
+      }
+      div[role="listbox"] [role="option"] {
+        display: flex;
+        min-height: 36px;
+        cursor: pointer;
+        user-select: none;
+        align-items: center;
+        gap: 10px;
+        border-radius: 11px;
+        padding: 6px 10px;
+        font-size: 13px;
+        color: rgb(28, 28, 30);
+        box-sizing: border-box;
+      }
+      div[role="listbox"] [role="option"] > span.flex {
+        display: flex;
+        flex: 1 1 0%;
+        min-width: 0;
+        flex-direction: column;
+      }
+      div[role="listbox"] [role="option"] span.truncate {
+        display: block;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      div[role="listbox"] [role="option"] span.font-medium {
+        font-weight: 500;
+      }
+      div[role="listbox"] [role="option"] > svg {
+        display: block;
+        flex-shrink: 0;
+      }
+      div[role="listbox"] [role="option"].bg-surface-2 {
+        background: #ececf1;
+      }
+      div[role="listbox"] [role="option"].bg-accent-soft {
+        background: rgba(0, 122, 255, 0.12);
+      }
+      div[role="listbox"] [role="option"] .text-accent {
+        color: rgb(0, 122, 255);
+      }
+
       /* ---------- stage / canvas ---------- */
       #mt-posthero-editor .mt-stage-column { flex:1; min-width:0; min-height:0; display:flex; flex-direction:column; }
       #mt-posthero-editor .mt-stage-card {
@@ -5159,10 +5516,245 @@
   </section>
 </div>
 <div class="mt-tab-view" data-panel-view="project" hidden>
-  <div class="mt-panel-intro"><span class="mt-panel-icon">Project</span><div><strong>Project</strong><p>Project-level timing, canvas and audio controls.</p></div></div>
-  <section class="mt-section-card project-card"><div class="mt-card-head"><span>Canvas</span></div><div class="mt-card-body"><div class="mt-control-row"><span class="label">Aspect</span><button class="mt-select"><span>16:9</span><span>⌄</span></button></div><div class="mt-control-row"><span class="label">Width</span><div class="mt-value-field">1920 px</div></div><div class="mt-control-row"><span class="label">Height</span><div class="mt-value-field">1080 px</div></div></div></section>
-  <section class="mt-section-card project-card"><div class="mt-card-head"><span>Timing</span></div><div class="mt-card-body"><div class="mt-control-row"><span class="label">Duration</span><div class="mt-value-field">10.00 s</div></div><div class="mt-control-row"><span class="label">Loop</span><button class="mt-toggle active"><span class="mt-toggle-dot"></span>On</button></div></div></section>
-  <section class="mt-section-card project-card"><div class="mt-card-head"><span>Audio</span></div><div class="mt-card-body"><div class="mt-control-row"><span class="label">Track</span><button class="mt-select"><span>Music</span><span>⌄</span></button></div><div class="mt-slider-row"><span class="mt-slider-label">Volume</span><div class="mt-slider"><span class="mt-slider-knob" style="left:72%"></span></div><span class="mt-value">100 %</span></div></div></section>
+  <!-- Project Meta Header -->
+  <div class="mx-3 mb-3 flex items-center gap-2.5 px-1" style="display:flex;align-items:center;gap:10px;margin:0 12px 12px;padding:0 4px;">
+    <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-[12px] bg-accent-soft text-accent" style="display:flex;width:40px;height:40px;flex-shrink:0;align-items:center;justify-content:center;border-radius:12px;background:rgba(0,122,255,0.12);color:rgb(0,122,255);">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="shrink-0" aria-hidden="true"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z" fill="currentColor" stroke="none"></path></svg>
+    </span>
+    <div class="min-w-0 flex-1" style="min-width:0;flex:1;">
+      <input aria-label="Project name" class="field h-9 w-full min-w-0 rounded-[9px] px-2.5 text-[13px] text-ink outline-none smooth focus:ring-2 focus:ring-inset focus:ring-accent/40 placeholder:text-ink-4 !h-9 !bg-transparent !px-1 text-[15px] font-semibold hover:!bg-surface-2 focus:!bg-surface-2" value="mtioon · Trailer" style="height:36px;width:100%;min-width:0;background:transparent;padding:0 4px;font-size:15px;font-weight:600;border:none;border-radius:9px;color:rgb(28,28,30);outline:none;" />
+      <p class="px-1 text-[12px] tabular-nums text-ink-3" style="padding:0 4px;margin:0;font-size:12px;font-variant-numeric:tabular-nums;color:rgba(28,28,30,0.42);">15s · 128 BPM · 1920×1080</p>
+    </div>
+  </div>
+
+  <!-- 1. Narrator Section -->
+  <section class="card mx-3 mb-3 rounded-[18px] px-3.5 pb-1 pt-1" data-section="narrator" data-state="open">
+    <div class="card-head-row flex h-11 w-full items-center gap-2.5">
+      <button type="button" class="title-btn flex h-full min-w-0 flex-1 items-center gap-2.5 text-left">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="shrink-0 text-ink-3" style="color:rgba(28,28,30,0.42);" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"></rect><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"></path></svg>
+        <span class="flex-1 text-[14px] font-semibold tracking-[-0.01em] text-ink" style="font-size:14px;font-weight:600;letter-spacing:-0.01em;color:rgb(28,28,30);">Narrator</span>
+      </button>
+      <button type="button" aria-label="Fold Narrator" class="fold-btn flex h-full items-center">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="fold-chevron shrink-0 text-ink-3" style="color:rgba(28,28,30,0.42);" aria-hidden="true"><path d="m6 15 6-6 6 6"></path></svg>
+      </button>
+    </div>
+    <div class="fold" data-open="true">
+      <div>
+        <div class="flex flex-col gap-2 pb-3 pt-0.5" style="display:flex;flex-direction:column;gap:8px;padding-bottom:12px;padding-top:2px;">
+          <p class="px-1 text-[12px] leading-snug text-ink-3" style="padding:0 4px;margin:0;font-size:12px;line-height:1.375;color:rgba(28,28,30,0.42);">A voice-over on top of the music: Claude writes the script for this video, a voice reads it, and the music ducks under it. Comes with every paid plan.</p>
+          <a href="/settings#plan" class="key3d key-accent flex h-10 items-center justify-center gap-2 rounded-[10px] px-4 text-[13.5px] font-semibold" style="height:40px;border-radius:10px;padding:0 16px;font-size:13.5px;font-weight:600;text-decoration:none;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="shrink-0" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7Z" fill="currentColor" stroke="none"></path></svg>Pick a plan
+          </a>
+          <ul class="lines overflow-hidden rounded-[14px] bg-surface-2">
+            <li class="pop-in px-3.5 pb-2.5 pt-3">
+              <div class="flex items-start gap-3" style="display:flex;align-items:flex-start;gap:12px;">
+                <span class="w-9 shrink-0 pt-px text-[12px] font-medium tabular-nums text-ink-3" style="width:36px;flex-shrink:0;padding-top:1px;font-size:12px;font-weight:500;font-variant-numeric:tabular-nums;color:rgba(28,28,30,0.42);">0:01</span>
+                <div class="min-w-0 flex-1" style="min-width:0;flex:1;">
+                  <p class="line-clamp-2 text-[13.5px] leading-snug text-ink" style="margin:0;font-size:13.5px;line-height:1.375;color:rgb(28,28,30);">Tell Claude what you want.</p>
+                  <p class="mt-0.5 text-[12px] text-ink-3" style="margin:2px 0 0;font-size:12px;color:rgba(28,28,30,0.42);">Lily, 1.4 s</p>
+                </div>
+                <button type="button" title="Remove line" aria-label="Remove line" class="smooth -mr-1 -mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-full text-ink-4 hover:bg-surface-3 hover:text-ink" style="width:28px;height:28px;flex-shrink:0;border:none;background:transparent;border-radius:9999px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:rgba(28,28,30,0.28);">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="shrink-0" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"></path></svg>
+                </button>
+              </div>
+              <div class="mt-2 flex items-center gap-2.5 pl-12" style="margin-top:8px;padding-left:48px;display:flex;align-items:center;gap:10px;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="shrink-0 text-ink-3" style="color:rgba(28,28,30,0.42);" aria-hidden="true"><path d="M4 9.5h3.2L11.5 6v12l-4.3-3.5H4z"></path><path d="M15 9.2a4 4 0 0 1 0 5.6M17.6 6.6a7.6 7.6 0 0 1 0 10.8"></path></svg>
+                <input aria-label="Volume" min="0" max="200" step="1" class="ios-range min-w-0 flex-1" type="range" value="200" style="--p: 100%; flex: 1; min-width: 0;" />
+                <span class="w-10 shrink-0 text-right text-[12px] tabular-nums text-ink-3" style="width:40px;flex-shrink:0;text-align:right;font-size:12px;font-variant-numeric:tabular-nums;color:rgba(28,28,30,0.42);">200%</span>
+              </div>
+            </li>
+            <li class="pop-in px-3.5 pb-2.5 pt-3">
+              <div class="flex items-start gap-3" style="display:flex;align-items:flex-start;gap:12px;">
+                <span class="w-9 shrink-0 pt-px text-[12px] font-medium tabular-nums text-ink-3" style="width:36px;flex-shrink:0;padding-top:1px;font-size:12px;font-weight:500;font-variant-numeric:tabular-nums;color:rgba(28,28,30,0.42);">0:04</span>
+                <div class="min-w-0 flex-1" style="min-width:0;flex:1;">
+                  <p class="line-clamp-2 text-[13.5px] leading-snug text-ink" style="margin:0;font-size:13.5px;line-height:1.375;color:rgb(28,28,30);">It reads your whole repo.</p>
+                  <p class="mt-0.5 text-[12px] text-ink-3" style="margin:2px 0 0;font-size:12px;color:rgba(28,28,30,0.42);">Charlotte, 1.6 s</p>
+                </div>
+                <button type="button" title="Remove line" aria-label="Remove line" class="smooth -mr-1 -mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-full text-ink-4 hover:bg-surface-3 hover:text-ink" style="width:28px;height:28px;flex-shrink:0;border:none;background:transparent;border-radius:9999px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:rgba(28,28,30,0.22);">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="shrink-0" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"></path></svg>
+                </button>
+              </div>
+              <div class="mt-2 flex items-center gap-2.5 pl-12" style="margin-top:8px;padding-left:48px;display:flex;align-items:center;gap:10px;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="shrink-0 text-ink-3" style="color:rgba(28,28,30,0.42);" aria-hidden="true"><path d="M4 9.5h3.2L11.5 6v12l-4.3-3.5H4z"></path><path d="M15 9.2a4 4 0 0 1 0 5.6M17.6 6.6a7.6 7.6 0 0 1 0 10.8"></path></svg>
+                <input aria-label="Volume" min="0" max="200" step="1" class="ios-range min-w-0 flex-1" type="range" value="200" style="--p: 100%; flex: 1; min-width: 0;" />
+                <span class="w-10 shrink-0 text-right text-[12px] tabular-nums text-ink-3" style="width:40px;flex-shrink:0;text-align:right;font-size:12px;font-variant-numeric:tabular-nums;color:rgba(28,28,30,0.42);">200%</span>
+              </div>
+            </li>
+            <li class="pop-in px-3.5 pb-2.5 pt-3">
+              <div class="flex items-start gap-3" style="display:flex;align-items:flex-start;gap:12px;">
+                <span class="w-9 shrink-0 pt-px text-[12px] font-medium tabular-nums text-ink-3" style="width:36px;flex-shrink:0;padding-top:1px;font-size:12px;font-weight:500;font-variant-numeric:tabular-nums;color:rgba(28,28,30,0.42);">0:06</span>
+                <div class="min-w-0 flex-1" style="min-width:0;flex:1;">
+                  <p class="line-clamp-2 text-[13.5px] leading-snug text-ink" style="margin:0;font-size:13.5px;line-height:1.375;color:rgb(28,28,30);">Then builds the video, live in the editor.</p>
+                  <p class="mt-0.5 text-[12px] text-ink-3" style="margin:2px 0 0;font-size:12px;color:rgba(28,28,30,0.42);">Charlotte, 2.4 s</p>
+                </div>
+                <button type="button" title="Remove line" aria-label="Remove line" class="smooth -mr-1 -mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-full text-ink-4 hover:bg-surface-3 hover:text-ink" style="width:28px;height:28px;flex-shrink:0;border:none;background:transparent;border-radius:9999px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:rgba(28,28,30,0.22);">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="shrink-0" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"></path></svg>
+                </button>
+              </div>
+              <div class="mt-2 flex items-center gap-2.5 pl-12" style="margin-top:8px;padding-left:48px;display:flex;align-items:center;gap:10px;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="shrink-0 text-ink-3" style="color:rgba(28,28,30,0.42);" aria-hidden="true"><path d="M4 9.5h3.2L11.5 6v12l-4.3-3.5H4z"></path><path d="M15 9.2a4 4 0 0 1 0 5.6M17.6 6.6a7.6 7.6 0 0 1 0 10.8"></path></svg>
+                <input aria-label="Volume" min="0" max="200" step="1" class="ios-range min-w-0 flex-1" type="range" value="200" style="--p: 100%; flex: 1; min-width: 0;" />
+                <span class="w-10 shrink-0 text-right text-[12px] tabular-nums text-ink-3" style="width:40px;flex-shrink:0;text-align:right;font-size:12px;font-variant-numeric:tabular-nums;color:rgba(28,28,30,0.42);">200%</span>
+              </div>
+            </li>
+            <li class="pop-in px-3.5 pb-2.5 pt-3">
+              <div class="flex items-start gap-3" style="display:flex;align-items:flex-start;gap:12px;">
+                <span class="w-9 shrink-0 pt-px text-[12px] font-medium tabular-nums text-ink-3" style="width:36px;flex-shrink:0;padding-top:1px;font-size:12px;font-weight:500;font-variant-numeric:tabular-nums;color:rgba(28,28,30,0.42);">0:10</span>
+                <div class="min-w-0 flex-1" style="min-width:0;flex:1;">
+                  <p class="line-clamp-2 text-[13.5px] leading-snug text-ink" style="margin:0;font-size:13.5px;line-height:1.375;color:rgb(28,28,30);">Every frame stays yours.</p>
+                  <p class="mt-0.5 text-[12px] text-ink-3" style="margin:2px 0 0;font-size:12px;color:rgba(28,28,30,0.42);">Charlotte, 1.6 s</p>
+                </div>
+                <button type="button" title="Remove line" aria-label="Remove line" class="smooth -mr-1 -mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-full text-ink-4 hover:bg-surface-3 hover:text-ink" style="width:28px;height:28px;flex-shrink:0;border:none;background:transparent;border-radius:9999px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:rgba(28,28,30,0.22);">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="shrink-0" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"></path></svg>
+                </button>
+              </div>
+              <div class="mt-2 flex items-center gap-2.5 pl-12" style="margin-top:8px;padding-left:48px;display:flex;align-items:center;gap:10px;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="shrink-0 text-ink-3" style="color:rgba(28,28,30,0.42);" aria-hidden="true"><path d="M4 9.5h3.2L11.5 6v12l-4.3-3.5H4z"></path><path d="M15 9.2a4 4 0 0 1 0 5.6M17.6 6.6a7.6 7.6 0 0 1 0 10.8"></path></svg>
+                <input aria-label="Volume" min="0" max="200" step="1" class="ios-range min-w-0 flex-1" type="range" value="200" style="--p: 100%; flex: 1; min-width: 0;" />
+                <span class="w-10 shrink-0 text-right text-[12px] tabular-nums text-ink-3" style="width:40px;flex-shrink:0;text-align:right;font-size:12px;font-variant-numeric:tabular-nums;color:rgba(28,28,30,0.42);">200%</span>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. Audio Section -->
+  <section class="card mx-3 mb-3 rounded-[18px] px-3.5 pb-1 pt-1" data-section="audio" data-state="open">
+    <div class="card-head-row flex h-11 w-full items-center gap-2.5">
+      <button type="button" class="title-btn flex h-full min-w-0 flex-1 items-center gap-2.5 text-left">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="shrink-0 text-ink-3" style="color:rgba(28,28,30,0.42);" aria-hidden="true"><path d="M9 18V6l11-2v12"></path><circle cx="6" cy="18" r="3"></circle><circle cx="17" cy="16" r="3"></circle></svg>
+        <span class="flex-1 text-[14px] font-semibold tracking-[-0.01em] text-ink" style="font-size:14px;font-weight:600;letter-spacing:-0.01em;color:rgb(28,28,30);">Audio</span>
+      </button>
+      <button type="button" aria-label="Fold Audio" class="fold-btn flex h-full items-center">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="fold-chevron shrink-0 text-ink-3" style="color:rgba(28,28,30,0.42);" aria-hidden="true"><path d="m6 15 6-6 6 6"></path></svg>
+      </button>
+    </div>
+    <div class="fold" data-open="true">
+      <div>
+        <div class="flex flex-col gap-2 pb-3 pt-0.5" style="display:flex;flex-direction:column;gap:8px;padding-bottom:12px;padding-top:2px;">
+          <!-- Active Track Well -->
+          <div class="well pop-in flex flex-col gap-2 rounded-[14px] p-2.5" style="display:flex;flex-direction:column;gap:8px;">
+            <div class="flex items-center gap-2.5" style="display:flex;align-items:center;gap:10px;">
+              <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-[10px] bg-[#30D158]/20 text-[#1DAA47]" style="display:flex;width:36px;height:36px;flex-shrink:0;align-items:center;justify-content:center;border-radius:10px;background:rgba(48,209,88,0.2);color:#1DAA47;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="shrink-0" aria-hidden="true"><path d="M9 18V6l11-2v12"></path><circle cx="6" cy="18" r="3"></circle><circle cx="17" cy="16" r="3"></circle></svg>
+              </span>
+              <div class="min-w-0 flex-1" style="min-width:0;flex:1;">
+                <p class="truncate text-[13px] font-medium text-ink" style="margin:0;font-size:13px;font-weight:500;color:rgb(28,28,30);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">Score · Candy Keynote</p>
+                <p class="truncate text-[11.5px] text-ink-3" style="margin:0;font-size:11.5px;color:rgba(28,28,30,0.42);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">15.0s · 128 BPM · 19 tracks</p>
+              </div>
+              <button type="button" title="Remove audio" class="smooth press flex items-center justify-center gap-1.5 rounded-[12px] px-2 text-ink-2 hover:bg-surface-2 hover:text-ink" style="height:32px;min-width:32px;border:none;background:transparent;border-radius:12px;cursor:pointer;color:rgba(28,28,30,0.62);display:flex;align-items:center;justify-content:center;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="shrink-0" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"></path></svg>
+              </button>
+            </div>
+            <!-- Volume Slider Row -->
+            <div class="flex h-9 w-full min-w-0 items-center gap-2.5" style="display:flex;height:36px;width:100%;align-items:center;gap:10px;">
+              <span class="flex shrink-0 items-center gap-1.5 text-[13px] text-ink-2" style="font-size:13px;color:rgba(28,28,30,0.62);">Volume</span>
+              <div class="slider-track-wrap" data-slider="audio-volume">
+                <div class="slider-rail">
+                  <div class="slider-fill" style="width: 50%;"></div>
+                  <div class="slider-knob" style="left: 50%;"></div>
+                </div>
+              </div>
+              <label class="flex shrink-0 items-baseline gap-0.5" style="display:flex;align-items:baseline;gap:2px;">
+                <input class="w-11 cursor-text rounded-[6px] bg-transparent text-right text-[13px] tabular-nums text-ink-2 outline-none focus:bg-surface-2 focus:text-ink" aria-label="Audio Volume" value="100" style="width:44px;background:transparent;border:none;text-align:right;font-size:13px;font-variant-numeric:tabular-nums;color:rgba(28,28,30,0.62);outline:none;" />
+                <span class="text-[11.5px] text-ink-3" style="font-size:11.5px;color:rgba(28,28,30,0.42);">%</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Genre Row -->
+          <div class="flex min-h-9 items-center gap-2">
+            <span class="w-[76px] shrink-0 text-[13px] text-ink-2">Genre</span>
+            <div class="flex min-w-0 flex-1 items-center gap-2">
+              <button type="button" aria-label="Genre" title="Genre: Any genre" aria-haspopup="listbox" aria-expanded="false" class="field h-9 w-full min-w-0 rounded-[9px] px-2.5 text-[13px] text-ink outline-none smooth focus:ring-2 focus:ring-inset focus:ring-accent/40 flex items-center gap-2 pr-3 text-left disabled:cursor-default">
+                <span class="min-w-0 flex-1 truncate text-left">Any genre</span>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="shrink-0 smooth shrink-0 text-ink-3" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- Action Buttons -->
+          <button type="button" class="key3d key-fill w-full flex h-10 items-center justify-center gap-2 rounded-[10px] px-4 text-[13.5px] font-semibold" style="width:100%;height:40px;border-radius:10px;font-size:13.5px;font-weight:600;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="shrink-0" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7Z" fill="currentColor" stroke="none"></path></svg>New song, same hits
+          </button>
+          <p class="px-1 text-[12px] leading-snug text-ink-3" style="padding:0 4px;margin:0;font-size:12px;line-height:1.375;color:rgba(28,28,30,0.42);">Keeps the tempo, drops and hits; new genre, key, chords and melody.</p>
+          <button type="button" class="key3d key-fill w-full flex h-10 items-center justify-center gap-2 rounded-[10px] px-4 text-[13.5px] font-semibold" style="width:100%;height:40px;border-radius:10px;font-size:13.5px;font-weight:600;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="shrink-0" aria-hidden="true"><path d="M9 18V6l11-2v12"></path><circle cx="6" cy="18" r="3"></circle><circle cx="17" cy="16" r="3"></circle></svg>Sync music to the picture
+          </button>
+
+          <!-- Upload Trigger -->
+          <label class="smooth press flex h-10 cursor-pointer items-center justify-center gap-2 rounded-[12px] border border-dashed text-[13px] font-medium text-ink-2 hover:bg-surface-2 hover:text-ink" style="height:40px;display:flex;align-items:center;justify-content:center;gap:8px;border-radius:12px;border:1px dashed rgba(0,0,0,0.15);cursor:pointer;font-size:13px;font-weight:500;color:rgba(28,28,30,0.62);">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="shrink-0" aria-hidden="true"><path d="M12 16V5M7 10l5-5 5 5M4 17v1a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-1"></path></svg>Replace with a song
+            <input accept="audio/*" class="hidden" type="file" style="display:none;" />
+          </label>
+
+          <!-- Checkbox -->
+          <label class="flex cursor-pointer items-center gap-2 px-1 text-[12.5px] text-ink-2" style="display:flex;align-items:center;gap:8px;padding:0 4px;font-size:12.5px;color:rgba(28,28,30,0.62);cursor:pointer;">
+            <input class="size-3.5" type="checkbox" checked style="width:14px;height:14px;accent-color:#007aff;" />Fit the video to each new song
+          </label>
+
+          <!-- URL Input -->
+          <input aria-label="Audio …or paste an audio URL" class="field" placeholder="…or paste an audio URL" value="/landing/trailer/score.mp3" />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. Sound Effects Section -->
+  <section class="card mx-3 mb-3 rounded-[18px] px-3.5 pb-1 pt-1" data-section="sound" data-state="open">
+    <div class="card-head-row flex h-11 w-full items-center gap-2.5">
+      <button type="button" class="title-btn flex h-full min-w-0 flex-1 items-center gap-2.5 text-left">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="shrink-0 text-ink-3" style="color:rgba(28,28,30,0.42);" aria-hidden="true"><path d="M4 9.5h3.2L11.5 6v12l-4.3-3.5H4z"></path><path d="M15 9.2a4 4 0 0 1 0 5.6M17.6 6.6a7.6 7.6 0 0 1 0 10.8"></path></svg>
+        <span class="flex-1 text-[14px] font-semibold tracking-[-0.01em] text-ink" style="font-size:14px;font-weight:600;letter-spacing:-0.01em;color:rgb(28,28,30);">Sound effects</span>
+      </button>
+      <button type="button" aria-label="Fold Sound effects" class="fold-btn flex h-full items-center">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="fold-chevron shrink-0 text-ink-3" style="color:rgba(28,28,30,0.42);" aria-hidden="true"><path d="m6 15 6-6 6 6"></path></svg>
+      </button>
+    </div>
+    <div class="fold" data-open="true">
+      <div>
+        <div class="flex flex-col gap-2 pb-3 pt-0.5" style="display:flex;flex-direction:column;gap:8px;padding-bottom:12px;padding-top:2px;">
+          <p class="px-1 text-[12px] leading-snug text-ink-3" style="padding:0 4px;margin:0;font-size:12px;line-height:1.375;color:rgba(28,28,30,0.42);">This score still carries the picture's sounds inside it. Sync the music above to move them onto their own track.</p>
+
+          <!-- Segmented Pill Switch -->
+          <div class="relative flex h-9 w-full rounded-[10px] p-[3px] field" data-project-sfx-segment style="position:relative;display:flex;height:36px;width:100%;border-radius:10px;padding:3px;box-sizing:border-box;">
+            <div class="pill-thumb absolute top-[3px] bottom-[3px] rounded-[7px] seg-thumb" style="transform: translateX(0px); width: 122px;"></div>
+            <button type="button" data-v="full" title="Full" class="relative z-10 flex flex-1 items-center justify-center gap-1.5 rounded-[7px] px-3 text-[13px] smooth font-semibold text-ink" style="position:relative;z-index:10;display:flex;flex:1;height:30px;align-items:center;justify-content:center;border:none;background:transparent;cursor:pointer;font-size:13px;font-weight:600;color:rgb(28,28,30);">Full</button>
+            <button type="button" data-v="subtle" title="Subtle" class="relative z-10 flex flex-1 items-center justify-center gap-1.5 rounded-[7px] px-3 text-[13px] smooth text-ink-2 hover:text-ink" style="position:relative;z-index:10;display:flex;flex:1;height:30px;align-items:center;justify-content:center;border:none;background:transparent;cursor:pointer;font-size:13px;font-weight:400;color:rgba(28,28,30,0.62);">Subtle</button>
+            <button type="button" data-v="off" title="Off" class="relative z-10 flex flex-1 items-center justify-center gap-1.5 rounded-[7px] px-3 text-[13px] smooth text-ink-2 hover:text-ink" style="position:relative;z-index:10;display:flex;flex:1;height:30px;align-items:center;justify-content:center;border:none;background:transparent;cursor:pointer;font-size:13px;font-weight:400;color:rgba(28,28,30,0.62);">Off</button>
+          </div>
+
+          <!-- Style Row -->
+          <div class="flex min-h-9 items-center gap-2">
+            <span class="w-[76px] shrink-0 text-[13px] text-ink-2">Style</span>
+            <div class="flex min-w-0 flex-1 items-center gap-2">
+              <button type="button" aria-label="Style" title="Style: Auto · Classic" aria-haspopup="listbox" aria-expanded="false" class="field h-9 w-full min-w-0 rounded-[9px] px-2.5 text-[13px] text-ink outline-none smooth focus:ring-2 focus:ring-inset focus:ring-accent/40 flex items-center gap-2 pr-3 text-left disabled:cursor-default">
+                <span class="min-w-0 flex-1 truncate text-left">Auto · Classic</span>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="shrink-0 smooth shrink-0 text-ink-3" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- Volume Slider Row -->
+          <div class="flex h-9 w-full min-w-0 items-center gap-2.5" style="display:flex;height:36px;width:100%;align-items:center;gap:10px;">
+            <span class="flex shrink-0 items-center gap-1.5 text-[13px] text-ink-2" style="font-size:13px;color:rgba(28,28,30,0.62);">Volume</span>
+            <div class="slider-track-wrap" data-slider="sfx-volume">
+              <div class="slider-rail">
+                <div class="slider-fill" style="width: 50%;"></div>
+                <div class="slider-knob" style="left: 50%;"></div>
+              </div>
+            </div>
+            <label class="flex shrink-0 items-baseline gap-0.5" style="display:flex;align-items:baseline;gap:2px;">
+              <input class="w-11 cursor-text rounded-[6px] bg-transparent text-right text-[13px] tabular-nums text-ink-2 outline-none focus:bg-surface-2 focus:text-ink" aria-label="Sound effects Volume" value="100" style="width:44px;background:transparent;border:none;text-align:right;font-size:13px;font-variant-numeric:tabular-nums;color:rgba(28,28,30,0.62);outline:none;" />
+              <span class="text-[11.5px] text-ink-3" style="font-size:11.5px;color:rgba(28,28,30,0.42);">%</span>
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
 </div>
 <div class="mt-tab-view" data-panel-view="claude" hidden>
   <div class="mt-panel-intro"><span class="mt-panel-icon claude">✦</span><div><strong>Edit with Claude</strong><p>Use this project as context and ask for changes without leaving the editor.</p></div></div>
@@ -9767,8 +10359,7 @@
         // 1. Project Duration
         const getProjectDuration = () => {
           const durEl = document.querySelector('.mt-timeline-side.right') ||
-                        document.querySelector('.mt-timeline-side') ||
-                        document.querySelector('.project-card .mt-value-field');
+                        document.querySelector('.mt-timeline-side');
           if (durEl) {
             const match = durEl.textContent.match(/([0-9.]+)\s*s?/);
             if (match) {
@@ -10119,6 +10710,421 @@
         document.addEventListener('DOMContentLoaded', initMotion);
       } else {
         initMotion();
+      }
+    })();
+  </script>
+  <script id="mt-project-panel-script">
+    (() => {
+      const initProject = () => {
+        const projectView = document.querySelector('[data-panel-view="project"]');
+        if (!projectView) return;
+
+        // 1. Accordion fold toggles
+        const cards = projectView.querySelectorAll('.card');
+        cards.forEach(card => {
+          const titleBtn = card.querySelector('.title-btn');
+          const foldBtn = card.querySelector('.fold-btn');
+          const foldEl = card.querySelector('.fold');
+          const chevron = card.querySelector('.fold-chevron');
+
+          const toggleFold = () => {
+            const isOpen = foldEl.getAttribute('data-open') === 'true';
+            const nextState = !isOpen;
+            foldEl.setAttribute('data-open', nextState ? 'true' : 'false');
+            card.setAttribute('data-state', nextState ? 'open' : 'closed');
+            if (chevron) {
+              chevron.style.transform = nextState ? '' : 'rotate(180deg)';
+            }
+          };
+
+          if (titleBtn) titleBtn.addEventListener('click', toggleFold);
+          if (foldBtn) foldBtn.addEventListener('click', toggleFold);
+        });
+
+        // 2. Segmented Pill Switch (Sound effects)
+        const sfxSegment = projectView.querySelector('[data-project-sfx-segment]');
+        if (sfxSegment) {
+          const thumb = sfxSegment.querySelector('.seg-thumb');
+          const buttons = Array.from(sfxSegment.querySelectorAll('button'));
+          sfxSegment.addEventListener('click', (e) => {
+            const btn = e.target.closest('button');
+            if (!btn) return;
+            const idx = buttons.indexOf(btn);
+            if (idx === -1) return;
+
+            buttons.forEach((b, i) => {
+              if (i === idx) {
+                b.className = 'relative z-10 flex flex-1 items-center justify-center gap-1.5 rounded-[7px] px-3 text-[13px] smooth font-semibold text-ink';
+                b.style.fontWeight = '600';
+                b.style.color = 'rgb(28,28,30)';
+              } else {
+                b.className = 'relative z-10 flex flex-1 items-center justify-center gap-1.5 rounded-[7px] px-3 text-[13px] smooth text-ink-2 hover:text-ink';
+                b.style.fontWeight = '400';
+                b.style.color = 'rgba(28,28,30,0.62)';
+              }
+            });
+
+            if (thumb) {
+              const x = btn.offsetLeft;
+              const w = btn.offsetWidth;
+              thumb.style.transform = `translateX(${x}px)`;
+              thumb.style.width = `${w}px`;
+            }
+          });
+        }
+
+        // 3. Slider tracks (Audio & SFX volume)
+        const sliderWraps = projectView.querySelectorAll('.slider-track-wrap');
+        sliderWraps.forEach(wrap => {
+          const fill = wrap.querySelector('.slider-fill');
+          const knob = wrap.querySelector('.slider-knob');
+          const row = wrap.parentElement;
+          const numInput = row ? row.querySelector('input') : null;
+
+          const updateValue = (pct) => {
+            const clamped = Math.max(0, Math.min(100, pct));
+            if (fill) fill.style.width = `${clamped}%`;
+            if (knob) knob.style.left = `${clamped}%`;
+            if (numInput) numInput.value = Math.round(clamped * 2); // 0 to 200%
+          };
+
+          let isDragging = false;
+          const onMove = (e) => {
+            if (!isDragging) return;
+            const rect = wrap.getBoundingClientRect();
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const pct = ((clientX - rect.left) / rect.width) * 100;
+            updateValue(pct);
+          };
+
+          const onEnd = () => {
+            isDragging = false;
+            if (knob) knob.removeAttribute('data-active');
+            window.removeEventListener('mousemove', onMove);
+            window.removeEventListener('mouseup', onEnd);
+            window.removeEventListener('touchmove', onMove);
+            window.removeEventListener('touchend', onEnd);
+          };
+
+          wrap.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            if (knob) knob.setAttribute('data-active', '');
+            onMove(e);
+            window.addEventListener('mousemove', onMove);
+            window.addEventListener('mouseup', onEnd);
+          });
+          wrap.addEventListener('touchstart', (e) => {
+            isDragging = true;
+            if (knob) knob.setAttribute('data-active', '');
+            onMove(e);
+            window.addEventListener('touchmove', onMove);
+            window.addEventListener('touchend', onEnd);
+          }, { passive: true });
+
+          if (numInput) {
+            numInput.addEventListener('input', (e) => {
+              const val = parseFloat(e.target.value) || 0;
+              const pct = val / 2;
+              const clamped = Math.max(0, Math.min(100, pct));
+              if (fill) fill.style.width = `${clamped}%`;
+              if (knob) knob.style.left = `${clamped}%`;
+            });
+          }
+        });
+
+        // 4. ios-range sliders (Narrator lines)
+        const iosRanges = projectView.querySelectorAll('.ios-range');
+        iosRanges.forEach(range => {
+          const row = range.parentElement;
+          const readout = row ? row.querySelector('.tabular-nums') : null;
+          const updateRange = () => {
+            const min = parseFloat(range.min) || 0;
+            const max = parseFloat(range.max) || 100;
+            const val = parseFloat(range.value) || 0;
+            const pct = ((val - min) / (max - min)) * 100;
+            range.style.setProperty('--p', `${pct}%`);
+            if (readout) readout.textContent = `${Math.round(val)}%`;
+          };
+          range.addEventListener('input', updateRange);
+          updateRange();
+        });
+
+        // 5. Interactive Select / Dropdowns (Genre & Style)
+        const genreOptions = [
+          { value: "auto", label: "Any genre" },
+          { value: "house", label: "House" },
+          { value: "disco", label: "Disco funk" },
+          { value: "synthwave", label: "Synthwave" },
+          { value: "trap", label: "Trap" },
+          { value: "techno", label: "Techno" },
+          { value: "lofi", label: "Lo-fi" },
+          { value: "cinematic", label: "Cinematic" },
+          { value: "dnb", label: "Drum & bass" }
+        ];
+
+        const styleOptions = [
+          { value: "auto", label: "Auto · Classic" },
+          { value: "classic", label: "Classic · the house sounds" },
+          { value: "song", label: "From the song · its own kick, snare, hats and chords" },
+          { value: "club", label: "Club · house, EDM, dance" },
+          { value: "urban", label: "Urban · hip-hop, trap, reggaeton, R&B" },
+          { value: "chill", label: "Chill · lo-fi, acoustic, ambient" },
+          { value: "cinematic", label: "Cinematic · orchestral, epic, trailers" },
+          { value: "pop", label: "Pop · pop, indie, rock" }
+        ];
+
+        let activePopover = null;
+        let activeTrigger = null;
+        let listboxCounter = 0;
+
+        const closeActivePopover = (focusTrigger = true) => {
+          if (activePopover) {
+            activePopover.remove();
+            activePopover = null;
+          }
+          if (activeTrigger) {
+            activeTrigger.setAttribute('aria-expanded', 'false');
+            activeTrigger.removeAttribute('aria-controls');
+            const chev = activeTrigger.querySelector('svg');
+            if (chev) chev.classList.remove('rotate-180');
+            if (focusTrigger) {
+              try { activeTrigger.focus(); } catch (_) {}
+            }
+            activeTrigger = null;
+          }
+        };
+
+        const setupDropdown = (btn, optionsList, currentValue, onSelect) => {
+          let selectedVal = currentValue;
+          let activeIndex = Math.max(0, optionsList.findIndex(o => String(o.value) === String(selectedVal)));
+          let typeAhead = { text: '', at: 0 };
+          const minWidth = 240;
+
+          const openDropdown = () => {
+            if (activeTrigger === btn) {
+              closeActivePopover(false);
+              return;
+            }
+            closeActivePopover(false);
+
+            activeTrigger = btn;
+            btn.setAttribute('aria-expanded', 'true');
+            const chev = btn.querySelector('svg');
+            if (chev) chev.classList.add('rotate-180');
+
+            listboxCounter++;
+            const listboxId = `_r_${listboxCounter}_`;
+            btn.setAttribute('aria-controls', listboxId);
+
+            const popover = document.createElement('div');
+            popover.id = listboxId;
+            popover.setAttribute('role', 'listbox');
+            popover.setAttribute('tabindex', '-1');
+            const btnLabel = btn.getAttribute('aria-label') || '';
+            popover.setAttribute('aria-label', btnLabel);
+            popover.className = 'fixed z-[1000] overflow-y-auto rounded-[16px] bg-surface p-1.5 text-ink shadow-[var(--pop-shadow)] outline-none ring-1 ring-line-2';
+            popover.style.left = '-9999px';
+            popover.style.top = '0px';
+
+            let hoveredIndex = activeIndex;
+
+            const updateActiveDescendant = () => {
+              popover.setAttribute('aria-activedescendant', `${listboxId}-${hoveredIndex}`);
+              const items = popover.querySelectorAll('[role="option"]');
+              items.forEach((item, idx) => {
+                const isSelected = idx === activeIndex;
+                if (idx === hoveredIndex) {
+                  item.classList.add(isSelected ? 'bg-accent-soft' : 'bg-surface-2');
+                } else {
+                  item.classList.remove('bg-surface-2');
+                  if (isSelected) {
+                    item.classList.add('bg-accent-soft');
+                  } else {
+                    item.classList.remove('bg-accent-soft');
+                  }
+                }
+              });
+            };
+
+            const selectIndex = (idx) => {
+              const opt = optionsList[idx];
+              closeActivePopover(true);
+              if (opt && String(opt.value) !== String(selectedVal)) {
+                selectedVal = opt.value;
+                activeIndex = idx;
+                const labelSpan = btn.querySelector('.truncate');
+                if (labelSpan) labelSpan.textContent = opt.label;
+                btn.setAttribute('title', `${btnLabel}: ${opt.label}`);
+                if (onSelect) onSelect(opt.value);
+              }
+            };
+
+            optionsList.forEach((opt, idx) => {
+              const isSelected = idx === activeIndex;
+              const item = document.createElement('div');
+              item.id = `${listboxId}-${idx}`;
+              item.setAttribute('data-i', String(idx));
+              item.setAttribute('role', 'option');
+              item.setAttribute('data-sound', 'tap');
+              item.setAttribute('aria-selected', isSelected ? 'true' : 'false');
+
+              item.className = `flex min-h-9 cursor-pointer select-none items-center gap-2.5 rounded-[11px] px-2.5 py-1.5 text-[13px] ${idx === hoveredIndex ? (isSelected ? 'bg-accent-soft' : 'bg-surface-2') : (isSelected ? 'bg-accent-soft' : '')}`;
+
+              item.innerHTML = `
+                <span class="flex min-w-0 flex-1 flex-col">
+                  <span class="truncate font-medium">${opt.label}</span>
+                </span>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="shrink-0 shrink-0 text-accent ${isSelected ? '' : 'invisible'}" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"></path></svg>
+              `;
+
+              item.addEventListener('pointermove', () => {
+                if (hoveredIndex !== idx) {
+                  hoveredIndex = idx;
+                  updateActiveDescendant();
+                }
+              });
+
+              item.addEventListener('click', (ev) => {
+                ev.stopPropagation();
+                selectIndex(idx);
+              });
+
+              popover.appendChild(item);
+            });
+
+            // Prevent scroll/click propagation inside listbox
+            const stopProp = (e) => e.stopPropagation();
+            popover.addEventListener('pointerdown', stopProp);
+            popover.addEventListener('mousedown', stopProp);
+            popover.addEventListener('click', stopProp);
+            popover.addEventListener('dblclick', stopProp);
+
+            // Listbox keyboard navigation matching original exactly
+            popover.addEventListener('keydown', (e) => {
+              const lastIdx = optionsList.length - 1;
+              if (e.key === 'ArrowDown') {
+                hoveredIndex = Math.min(lastIdx, hoveredIndex + 1);
+                updateActiveDescendant();
+                popover.querySelector(`[data-i="${hoveredIndex}"]`)?.scrollIntoView({ block: 'nearest' });
+              } else if (e.key === 'ArrowUp') {
+                hoveredIndex = Math.max(0, hoveredIndex - 1);
+                updateActiveDescendant();
+                popover.querySelector(`[data-i="${hoveredIndex}"]`)?.scrollIntoView({ block: 'nearest' });
+              } else if (e.key === 'Home') {
+                hoveredIndex = 0;
+                updateActiveDescendant();
+                popover.querySelector(`[data-i="${hoveredIndex}"]`)?.scrollIntoView({ block: 'nearest' });
+              } else if (e.key === 'End') {
+                hoveredIndex = lastIdx;
+                updateActiveDescendant();
+                popover.querySelector(`[data-i="${hoveredIndex}"]`)?.scrollIntoView({ block: 'nearest' });
+              } else if (e.key === 'Enter' || e.key === ' ') {
+                selectIndex(hoveredIndex);
+              } else if (e.key === 'Escape') {
+                closeActivePopover(true);
+              } else {
+                if (e.key === 'Tab') {
+                  closeActivePopover(false);
+                  return;
+                }
+                if (!(e.key.length === 1 && /\S/.test(e.key))) return;
+                const now = Date.now();
+                typeAhead = {
+                  text: (now - typeAhead.at < 700 ? typeAhead.text : '') + e.key.toLowerCase(),
+                  at: now
+                };
+                const matchIdx = optionsList.map((_, t) => (hoveredIndex + (typeAhead.text.length > 1 ? 0 : 1) + t) % optionsList.length).find(i => String(optionsList[i].label).toLowerCase().startsWith(typeAhead.text));
+                if (matchIdx !== undefined) {
+                  hoveredIndex = matchIdx;
+                  updateActiveDescendant();
+                  popover.querySelector(`[data-i="${hoveredIndex}"]`)?.scrollIntoView({ block: 'nearest' });
+                }
+              }
+              e.preventDefault();
+              e.stopPropagation();
+            });
+
+            document.body.appendChild(popover);
+            activePopover = popover;
+
+            // Geometry and positioning matching original mtioon layoutEffect:
+            // e = trigger.getBoundingClientRect()
+            // t = popover.offsetHeight
+            // n = Math.max(e.width, minWidth, popover.offsetWidth)
+            // r = innerHeight - e.bottom - 6 - 8
+            // i = t > r && e.top - 6 - 8 > r  (isUp)
+            // s = i ? e.top - 6 - 8 : r
+            // left = Math.min(Math.max(8, e.left), innerWidth - n - 8)
+            const eRect = btn.getBoundingClientRect();
+            const tHeight = popover.offsetHeight;
+            const nWidth = Math.max(eRect.width, minWidth, popover.offsetWidth);
+            const rSpace = window.innerHeight - eRect.bottom - 6 - 8;
+            const isUp = tHeight > rSpace && (eRect.top - 6 - 8) > rSpace;
+            const maxH = Math.max(120, isUp ? eRect.top - 6 - 8 : rSpace);
+            const clampedLeft = Math.min(Math.max(8, eRect.left), window.innerWidth - nWidth - 8);
+
+            popover.className = ` ${isUp ? 'pop-up' : 'pop-in'} fixed z-[1000] overflow-y-auto rounded-[16px] bg-surface p-1.5 text-ink shadow-[var(--pop-shadow)] outline-none ring-1 ring-line-2`;
+            popover.style.left = `${clampedLeft}px`;
+            popover.style.minWidth = `${nWidth}px`;
+            popover.style.maxHeight = `${maxH}px`;
+            if (isUp) {
+              popover.style.bottom = `${window.innerHeight - eRect.top + 6}px`;
+              popover.style.top = 'auto';
+            } else {
+              popover.style.top = `${eRect.bottom + 6}px`;
+              popover.style.bottom = 'auto';
+            }
+
+            updateActiveDescendant();
+            popover.querySelector(`[data-i="${activeIndex}"]`)?.scrollIntoView({ block: 'nearest' });
+            popover.focus({ preventScroll: true });
+          };
+
+          btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (activeTrigger === btn) {
+              closeActivePopover(false);
+            } else {
+              openDropdown();
+            }
+          });
+
+          btn.addEventListener('keydown', (e) => {
+            if (['ArrowDown', 'ArrowUp', 'Enter', ' '].includes(e.key)) {
+              e.preventDefault();
+              openDropdown();
+            }
+          });
+        };
+
+        // Global dismiss listeners
+        const handlePointerDown = (e) => {
+          if (!activePopover) return;
+          if (activePopover.contains(e.target) || (activeTrigger && activeTrigger.contains(e.target))) return;
+          closeActivePopover(false);
+        };
+        const handleScroll = (e) => {
+          if (!activePopover) return;
+          if (activePopover.contains(e.target)) return;
+          closeActivePopover(false);
+        };
+        const handleResize = () => closeActivePopover(false);
+
+        document.addEventListener('pointerdown', handlePointerDown, true);
+        window.addEventListener('scroll', handleScroll, true);
+        window.addEventListener('resize', handleResize);
+
+        const genreBtn = projectView.querySelector('button[aria-label="Genre"]');
+        if (genreBtn) setupDropdown(genreBtn, genreOptions, 'auto');
+
+        const styleBtn = projectView.querySelector('button[aria-label="Style"]');
+        if (styleBtn) setupDropdown(styleBtn, styleOptions, 'auto');
+      };
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initProject);
+      } else {
+        initProject();
       }
     })();
   </script>

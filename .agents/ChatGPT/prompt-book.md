@@ -1663,134 +1663,126 @@ Open the original site and establish the exact runtime state required to investi
 Identify:
 
 * relevant page/editor state
-* target component
+* target root
 * immediate parent context
 * relevant initial state
 
-Do not begin with isolated child elements before understanding their surrounding context.
+Do not begin with isolated children before understanding their parent context.
 
 ---
 
-## 3. Establish the Target Structure
+## 3. Recursively Inspect Every Relevant Level
 
-Investigate the target from outside-in.
+Inspect from outside-in and continue recursively through **every relevant descendant**.
 
-Trace the actual hierarchy through:
+For each inspected level:
 
-```text
-Page / Application Context
-→ Target Root
-→ Parent Context
-→ Component
-→ Child Component
-→ Nested Component
-→ Visual / Rendering Layer
-```
+1. inspect the current element/component
+2. identify all direct descendants
+3. determine which descendants materially affect the target
+4. inspect every relevant descendant
+5. repeat recursively
+6. continue until no relevant descendant remains unexplored
 
-Continue recursively through every descendant that can materially affect:
+Do not stop at:
 
-* rendering
+* the page
+* the panel
+* the section
+* the parent component
+* the first nested component
+* the first working interaction
+* the first visually complete state
+
+The investigation is incomplete while any relevant nested component, generated descendant, visual layer, or rendering layer remains unexplained.
+
+### Uniform Investigation Depth
+
+Every inspected level must be investigated with the **same depth standard**.
+
+For every relevant component or descendant, inspect all applicable dimensions:
+
+* appearance
+* structure
 * geometry
 * styling
+* visual layers
+* function
 * state
 * interaction
 * animation
+* transition
+* effects
 * positioning
 * layering
+* rendering
+* dependencies
+* relevant source implementation
 
-Determine where relevant:
+Do not inspect a parent deeply and then inspect its children only superficially.
 
-* DOM/component hierarchy
-* parent/child relationships
-* component boundaries
-* layout ownership
-* width/height ownership
-* positioning context
-* overflow
-* clipping
-* scrolling
-* stacking context
-* transforms
-* responsive behavior
+Do not inherit a parent's findings as proof of a child's correctness.
 
-Do not stop because the parent component appears understood.
+Do not reduce investigation depth simply because the element appears visually simple.
+
+If a child contains further nested descendants, apply the same inspection standard again.
 
 ---
 
-## 4. Recursively Investigate Nested Components
+## 4. Inspect Compound and Nested Components
 
-Every relevant descendant is part of the investigation.
-
-For each inspected component:
-
-1. inspect the component itself
-2. identify its direct descendants
-3. inspect each relevant descendant
-4. continue recursively
-5. inspect newly generated descendants when state or interaction creates them
-6. stop only when no remaining descendant can materially affect accurate reproduction
-
-A component is **not fully investigated** while a relevant child, nested visual layer, or generated descendant remains unexplained.
-
-For compound UI, decompose meaningful layers independently.
+Treat every compound component as a recursive tree of independently meaningful parts.
 
 For example:
 
-```text
+```text id="t4bq3c"
 Slider
+→ Container
 → Track / Rail
 → Fill
 → Thumb / Knob
 → Value Control
 ```
 
-```text
-Segmented Control
-→ Outer Field
-→ Selected Thumb
-→ Options
-→ Selected / Unselected States
+Each relevant node must be inspected independently using the same depth standard.
+
+Likewise:
+
+```text id="86sp4q"
+Dropdown
+→ Trigger
+→ Popup
+→ Option
+→ Option Content
+→ Icon / Checkmark
+→ State Layer
 ```
 
-```text
+And:
+
+```text id="lvb2rp"
 Button
 → Surface
 → Icon
-→ Text
-→ Border / Shadow
-→ Interaction State
+→ Label
+→ Border
+→ Shadow
+→ State / Interaction Layer
 ```
 
-Use the same recursive approach for:
+These are examples only.
 
-* cards
-* inputs
-* menus
-* dropdown options
-* popovers
-* list items
-* tooltips
-* rendered objects
-* other compound UI
+Apply the same recursive method to any structure discovered during inspection.
 
-Do not assume sibling or child layers share:
-
-* color
-* background
-* opacity
-* border
-* shadow
-* radius
-* typography
-* transform
-* transition
-* state behavior
+Do not assume a known component pattern has known internals.
 
 ---
 
-## 5. Investigate Transient and Overlay UI
+## 5. Inspect Dynamically Generated and Transient Descendants
 
-When interaction creates new UI such as:
+When interaction creates new UI, the new UI becomes part of the same recursive tree.
+
+For:
 
 * dropdowns
 * selects
@@ -1799,105 +1791,101 @@ When interaction creates new UI such as:
 * tooltips
 * dialogs
 * context menus
-* portals
 * expandable content
 * drag overlays
+* portals
+* dynamically generated content
 
-the newly rendered UI becomes part of the recursive investigation.
+inspect:
 
-For each relevant transient UI:
+```text id="2p3wqv"
+Trigger
+→ Generated Root
+→ Direct Children
+→ Nested Children
+→ Deepest Relevant Descendants
+```
 
-1. inspect the closed state
-2. trigger the real interaction
-3. inspect the newly rendered root
-4. identify its actual DOM/container/portal ownership
-5. inspect its direct descendants
-6. recursively inspect its nested descendants and visual layers
-7. inspect option/item states
-8. exercise relevant interactions inside it
-9. inspect resulting state changes
-10. close it
-11. inspect dismissal behavior
+At **every level**, apply the same investigation depth:
 
-Do not assume the transient UI is a child of the trigger.
+* appearance
+* structure
+* geometry
+* function
+* state
+* animation
+* effects
+* rendering
+* dependencies
 
-Do not consider the trigger understood while the dynamically rendered UI remains unexplained.
+A dropdown is not considered investigated after confirming that it opens.
 
-A dropdown is not fully investigated when only its trigger and option labels are known. Its popup surface, option layers, selected states, icons, positioning, effects, and behavior must also be investigated when they materially affect reproduction.
+Its popup, options, option internals, selected states, icons, hover layers, positioning, animation, and deeper descendants must also be investigated when relevant.
 
 ---
 
-## 6. Investigate Visual Layers and Runtime Styling
+## 6. Inspect Appearance, Function, and Runtime Behavior at Every Level
 
-Inspect the actual visual layers that materially affect reproduction.
+For every relevant level, investigate the applicable dimensions instead of distributing them unevenly across the hierarchy.
 
-Where relevant:
+### Appearance
+
+Inspect where relevant:
 
 * background
 * color
 * opacity
 * border
-* border radius
-* box shadow
+* radius
+* shadow
 * typography
-* icon
-* fill
-* track/rail
-* thumb/knob
-* selected indicator
-* hover surface
-* focus surface
-* overlay surface
-* transform
-* filter
+* icons
+* spacing
+* visual state layers
+
+### Geometry and Layout
+
+Inspect:
+
+* width
+* height
+* position
+* coordinates
+* padding
+* margin
+* gap
+* alignment
+* overflow
 * clipping
-* z-index/layering
+* scrolling
+* stacking
+* transforms
+* positioning context
 
-Inspect the runtime properties of each meaningful layer independently.
+### Function and State
 
-Do not infer a child layer's styling from its parent.
+Inspect:
 
-A parent match does not imply its descendants match.
-
----
-
-## 7. Investigate State and Interaction
-
-Exercise the states that materially affect the target.
-
-Where relevant:
-
-* initial
-* selected
-* unselected
+* initial state
+* selected state
+* unselected state
 * hover
 * focus
 * active
 * pressed
 * disabled
-* expanded
-* collapsed
-* open
-* closed
+* expanded/collapsed
+* open/closed
 * dragging
+* input behavior
 * option selection
-* outside click
-* Escape
-* keyboard navigation
-* scrolling
-* responsive behavior
+* dismissal
+* keyboard behavior
+* relevant responsive behavior
 
-When interaction creates, removes, or changes nested content, recursively inspect the resulting descendants again.
+### Animation and Effects
 
-Do not verify only the final value/state. Inspect the UI structure and visual changes produced by the interaction.
-
----
-
-## 8. Investigate Animation and Effects
-
-Inspect behavior that materially affects the rendered result.
-
-Where relevant:
+Inspect:
 
 * transition
 * duration
@@ -1907,159 +1895,115 @@ Where relevant:
 * scale
 * translate
 * opacity
-* color transition
-* shadow transition
-* size change
-* position change
+* color changes
+* shadow changes
+* size changes
+* position changes
 * spring behavior
 * keyframes
 * JavaScript animation
-* requestAnimationFrame
-* library-driven animation
-* interaction-driven animation
-* scroll-driven animation
+* interaction-driven effects
+* scroll-driven effects
 
-Do not consider a component understood only because its final static state looks correct.
+Do not inspect animation only for the parent while ignoring animated descendants.
 
-For interactive or transient UI, inspect both:
+### Rendering and Dependencies
 
-* state transition
-* resulting rendered state
+Inspect where applicable:
 
-When a nested layer animates independently, investigate that layer independently.
-
----
-
-## 9. Investigate Rendering and 3D Content
-
-When the target uses Canvas, SVG, WebGL, Three.js, shaders, generated graphics, or another rendering system, investigate the actual pipeline to the depth required for reproduction.
-
-Continue recursively through the relevant rendering hierarchy.
-
-For 3D/projected content, distinguish where relevant:
-
-* DOM geometry
-* rendering-surface geometry
-* object/world coordinates
-* camera/projected coordinates
-* final visible bounds
-* nested rendered objects
-* materials/shaders/textures
-* animation state
-
-Do not infer rendering behavior from screenshots alone.
-
----
-
-## 10. Investigate Dependencies
-
-Verify runtime dependencies that materially affect the target:
-
-* fonts
-* icons
-* images
-* SVGs
+* Canvas
+* SVG
+* WebGL
+* Three.js
+* shaders
 * textures
 * models
+* fonts
+* images
+* icons
 * audio/video
-* JavaScript modules
-* network resources
-* generated runtime data
-
-Verify actual runtime loading where relevant.
-
-Do not rely only on declarations or source references.
-
-When a dependency affects a nested descendant, verify that descendant's actual runtime rendering as well.
+* runtime-generated resources
 
 ---
 
-## 11. Trace the Source Implementation
+## 7. Trace the Actual Source at the Same Depth
 
-Find the source or bundled runtime implementation responsible for the observed target behavior.
+Find the source or bundled runtime implementation responsible for the observed behavior.
 
-Trace the implementation recursively where necessary:
+Trace the implementation recursively to the same meaningful depth reached in runtime inspection:
 
-```text
+```text id="9j3ywl"
 Page
 → Target
-→ Responsible Component
+→ Parent
+→ Component
 → Nested Component
 → Generated / Transient Component
 → Visual / Rendering Layer
 → State / Interaction Logic
 ```
 
-Use source evidence to explain runtime behavior where necessary.
+When a nested runtime element has a distinct implementation, trace that implementation rather than stopping at the parent component.
 
-Do not dump unrelated source code.
+Do not use high-level source references as proof that nested behavior is understood.
 
 ---
 
-## 12. Resolve Contradictions
+## 8. Resolve Contradictions
 
 When runtime behavior and source code disagree:
 
 1. identify the contradiction
-2. collect additional evidence
-3. determine the active implementation
-4. record the conclusion briefly
+2. collect additional evidence at the affected level
+3. inspect the relevant parent and child context
+4. determine the active implementation
+5. record the conclusion briefly
 
 Do not silently choose an interpretation.
 
 ---
 
-## 13. Complete the Investigation
+## 9. Complete the Investigation
 
 The investigation is complete only when:
 
-* the target's relevant hierarchy has been traced recursively
-* relevant descendants have been inspected to the deepest meaningful layer
-* dynamically generated/transient descendants have also been inspected
-* relevant visual layers are understood independently
-* relevant interaction states have been exercised
-* relevant animations/effects have been investigated
-* relevant rendering pipelines and dependencies are understood
-* the responsible source implementation has been identified where available
+* the target hierarchy has been recursively traversed
+* every relevant descendant has been inspected
+* dynamically generated descendants have been inspected
+* every inspected level has received the same depth of analysis
+* relevant appearance has been verified
+* relevant function and state have been verified
+* relevant animation and effects have been verified
+* relevant rendering and dependencies have been verified
+* relevant implementation/source relationships have been verified
 
-Do not stop at the first parent, first visible element, or first working interaction.
+Do not stop because:
 
-Do not stop merely because the target can be described at a high level.
+* the parent looks correct
+* the component appears simple
+* the main behavior works
+* the popup opens
+* the UI is visually recognizable
+* a high-level source component has been found
 
-Stop when **no remaining relevant descendant or runtime state can materially change the implementation required for accurate reproduction**.
-
-Do not continue investigating unrelated information.
+Stop only when **no relevant nested descendant remains that could materially affect accurate reproduction**.
 
 # Report
 
 Produce a concise handoff for the next workflow.
 
-Use only the report sections needed by the evidence discovered.
-
-For each important finding, provide:
+For every meaningful finding, provide:
 
 **Finding**
-What was discovered.
+What was discovered at the relevant hierarchy level.
 
 **Evidence**
-The minimum evidence required to support it.
+The minimum verified runtime/source evidence.
 
 **Reproduction Impact**
-What the next implementation workflow must reproduce.
+What the clone must reproduce.
 
-Include only information that materially affects:
-
-* structure
-* geometry
-* nested visual layers
-* transient/overlay UI
-* states and behavior
-* animation/effects
-* rendering
-* dependencies
-* source implementation
-
-When a nested or transient component materially affects reproduction, report its relevant internal layers rather than summarizing it as a single component.
+When a component contains meaningful nested descendants, report the important nested findings rather than collapsing the entire component into one summary.
 
 Do not include:
 
@@ -2071,9 +2015,7 @@ Do not include:
 * unrelated findings
 * investigation narration
 
-Do not repeat the same evidence across multiple sections.
-
-The report must contain the **minimum sufficient evidence required for accurate reproduction**.
+The report must contain the **minimum sufficient evidence required for accurate reproduction**, while preserving all nested findings that materially affect the implementation.
 
 # Evidence Rules
 
@@ -2085,5 +2027,7 @@ Clearly distinguish:
 
 Do not present inference as verified fact.
 
-Do not declare the target sufficiently understood while any relevant descendant, dynamically generated UI, visual layer, interaction state, animation/effect, rendering dependency, or source relationship remains unexplained.
+Do not declare the target understood while any relevant descendant or runtime-generated layer remains unexplained.
+
+A parent-level match or understanding is never sufficient evidence for a nested child.
 ````

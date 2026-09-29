@@ -1606,3 +1606,261 @@ Rules:
 * Optimize for coverage, traceability, and clarity, not structural symmetry.
 * Count should be an output of decomposition, not an input to decomposition.
 ```
+
+
+---
+
+# Workflow 01
+
+```text
+# Context
+
+You are continuing a reverse-engineering and cloning task for:
+
+Repository:
+[Repository]
+
+Target file:
+[Target File]
+
+Original site:
+[Original Site]
+
+Crucial Skills:
+[Required Skills / Tool Documentation]
+
+# User Request
+
+[Dynamic request describing the target to investigate.]
+
+# Task
+
+## 1. Establish the Investigation
+
+Read and understand the Context and User Request.
+
+Read the required skills/documentation before starting.
+
+Treat this workflow as an **original-site reverse-engineering task only**.
+
+Do not:
+
+* modify the clone
+* implement changes
+* refactor unrelated code
+* invent details that can be verified through inspection
+
+Investigate only the target and the surrounding context required to reproduce it accurately.
+
+---
+
+## 2. Open and Locate the Original Target
+
+Use the available browser and Chrome DevTools CLI/tools directly.
+
+Open the original site and identify:
+
+* the relevant page
+* the relevant editor/application state
+* the target element/component
+* the target's immediate parent context
+
+Make sure the target state is reproducible before continuing.
+
+---
+
+## 3. Establish the Structural Model
+
+Investigate the target from outside-in.
+
+Trace:
+
+```text
+Page / Application Context
+→ Target Root
+→ Parent Context
+→ Component
+→ Nested Component(s)
+→ Visual / Rendering Layer
+```
+
+Determine the meaningful:
+
+* DOM/component hierarchy
+* parent/child relationships
+* component boundaries
+* layout ownership
+* width/height ownership
+* positioning
+* overflow
+* clipping
+* scrolling
+* stacking context
+* transforms
+
+Do not stop at the first visible container.
+
+Continue deeper whenever a nested layer materially affects the target.
+
+---
+
+## 4. Investigate Nested and Compound Elements
+
+Inspect important nested components recursively.
+
+For compound elements, identify the meaningful internal layers instead of treating the whole component as one object.
+
+For example, a slider may require separate investigation of:
+
+```text
+Slider
+→ Track / Rail
+→ Fill
+→ Thumb / Knob
+→ Value Control
+```
+
+A segmented control may require:
+
+```text
+Segmented Control
+→ Outer Field
+→ Selected Thumb
+→ Buttons
+→ Selected / Unselected Text
+```
+
+Apply the same approach to other compound controls, cards, rendered objects, or nested UI.
+
+For each meaningful layer, inspect only the properties required for accurate reproduction.
+
+---
+
+## 5. Investigate Visual State, Interaction, and Effects
+
+After the structure is understood, investigate the states and behaviors that materially affect the target.
+
+Trigger relevant interactions where necessary.
+
+Inspect:
+
+* selected/active state
+* hover/focus/pressed state
+* expanded/collapsed state
+* dragging
+* scrolling
+* responsive behavior
+* transitions
+* animation
+* easing
+* transform changes
+* opacity changes
+* shadow changes
+* color changes
+* size/position changes
+* JavaScript-driven effects
+
+Do not treat an element as fully understood from its static appearance when interaction or animation changes the result.
+
+---
+
+## 6. Investigate Rendering, Dependencies, and Source
+
+If the target uses Canvas, SVG, WebGL, Three.js, shaders, generated graphics, or other rendering systems, trace the actual rendering pipeline to the depth necessary for reproduction.
+
+For 3D or projected content, distinguish relevant:
+
+* DOM geometry
+* rendering-surface geometry
+* object/world coordinates
+* camera/projected coordinates
+* final visible bounds
+
+Verify runtime dependencies that materially affect rendering:
+
+* fonts
+* icons
+* images
+* SVGs
+* textures
+* models
+* audio/video
+* JavaScript modules
+* network resources
+* generated runtime data
+
+Then identify the source or bundled runtime implementation responsible for the observed behavior.
+
+Trace only the code necessary to explain the target.
+
+---
+
+## 7. Resolve and Consolidate the Evidence
+
+When runtime behavior, source code, or dependencies disagree:
+
+1. identify the contradiction
+2. collect additional evidence
+3. determine the active implementation
+4. record the conclusion briefly
+
+Then stop the investigation when the target contains no remaining **meaningful unknowns that could affect accurate reproduction**.
+
+Do not continue collecting unrelated information.
+
+# Report
+
+Produce a concise handoff for the next workflow.
+
+The report structure must follow the evidence actually discovered. Do not create empty or unnecessary sections.
+
+Include only information that materially affects reproduction, such as:
+
+* target and runtime state
+* structure and hierarchy
+* geometry
+* nested visual layers
+* visual styling
+* states and behavior
+* animation/effects
+* rendering pipeline
+* dependencies
+* source implementation
+* key evidence
+* reproduction requirements
+
+For each important finding, make clear:
+
+**Finding**
+What was discovered.
+
+**Evidence**
+The minimum evidence needed to support it.
+
+**Reproduction Impact**
+What the implementation workflow needs to reproduce.
+
+Do not include:
+
+* full DOM dumps
+* full CSS
+* full source files
+* raw CLI output
+* repeated measurements
+* unrelated findings
+* investigation narration
+
+The report must contain the **minimum sufficient information required to make the clone accurate**.
+
+# Evidence Rules
+
+Clearly distinguish:
+
+* directly observed runtime evidence
+* source-code evidence
+* inference
+
+Do not present inference as verified fact.
+
+Do not declare the target understood until the meaningful structure, nested visual layers, relevant behavior/effects, and rendering dependencies have been investigated where applicable.
+```

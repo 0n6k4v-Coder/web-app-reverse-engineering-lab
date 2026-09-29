@@ -42,6 +42,7 @@
   <link rel="icon" href="https://mtioon.com/icon.png?icon.2rgw0wp3zuc1o.png" type="image/png" sizes="128x128" />
   <link rel="apple-touch-icon" href="https://mtioon.com/apple-icon.png?apple-icon.416yedyy4tum7.png" type="image/png" sizes="180x180" />
   <style>
+    @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap");
     @font-face { font-family: "Anton"; src: url("https://mtioon.com/fonts/anton/1Ptgg87LROyAm3Kz-C8.woff2") format("woff2"); font-style: normal; font-weight: 400; font-display: swap; }
     @font-face { font-family: "Bebas Neue"; src: url("https://mtioon.com/fonts/bebas-neue/JTUSjIg69CK48gW7PXoo9Wlhyw.woff2") format("woff2"); font-style: normal; font-weight: 400; font-display: swap; }
     @font-face { font-family: "Bricolage Grotesque"; src: url("https://mtioon.com/fonts/bricolage-grotesque/3y9H6as8bTXq_nANBjzKo3IeZx8z6up5BeSl5jBNz_19PpbpMXuECpwUxJBOm_OJWiawA1Xp.woff2") format("woff2"); font-style: normal; font-weight: 200; font-display: swap; }
@@ -67,13 +68,6 @@
     @font-face { font-family: "Clash Display"; src: url("https://mtioon.com/fonts/clash-display/53RZKGODFYDW3QHTIL7IPOWTBCSUEZK7.woff2") format("woff2"); font-style: normal; font-weight: 700; font-display: swap; }
     @font-face { font-family: "DM Serif Display"; src: url("https://mtioon.com/fonts/dm-serif-display/-nFnOHM81r4j6k0gjAW3mujVU2B2G_Bx0g.woff2") format("woff2"); font-style: normal; font-weight: 400; font-display: swap; }
     @font-face { font-family: "Instrument Serif"; src: url("https://mtioon.com/fonts/instrument-serif/jizBRFtNs2ka5fXjeivQ4LroWlx-6zUTjg.woff2") format("woff2"); font-style: normal; font-weight: 400; font-display: swap; }
-    @font-face { font-family: "Inter"; src: url("https://mtioon.com/fonts/inter/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa1ZL7.woff2") format("woff2"); font-style: normal; font-weight: 300; font-display: swap; }
-    @font-face { font-family: "Inter"; src: url("https://mtioon.com/fonts/inter/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa1ZL7.woff2") format("woff2"); font-style: normal; font-weight: 400; font-display: swap; }
-    @font-face { font-family: "Inter"; src: url("https://mtioon.com/fonts/inter/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa1ZL7.woff2") format("woff2"); font-style: normal; font-weight: 500; font-display: swap; }
-    @font-face { font-family: "Inter"; src: url("https://mtioon.com/fonts/inter/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa1ZL7.woff2") format("woff2"); font-style: normal; font-weight: 600; font-display: swap; }
-    @font-face { font-family: "Inter"; src: url("https://mtioon.com/fonts/inter/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa1ZL7.woff2") format("woff2"); font-style: normal; font-weight: 700; font-display: swap; }
-    @font-face { font-family: "Inter"; src: url("https://mtioon.com/fonts/inter/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa1ZL7.woff2") format("woff2"); font-style: normal; font-weight: 800; font-display: swap; }
-    @font-face { font-family: "Inter"; src: url("https://mtioon.com/fonts/inter/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa1ZL7.woff2") format("woff2"); font-style: normal; font-weight: 900; font-display: swap; }
     @font-face { font-family: "Playfair Display"; src: url("https://mtioon.com/fonts/playfair-display/nuFiD-vYSZviVYUb_rj3ij__anPXDTzYgA.woff2") format("woff2"); font-style: normal; font-weight: 400; font-display: swap; }
     @font-face { font-family: "Playfair Display"; src: url("https://mtioon.com/fonts/playfair-display/nuFiD-vYSZviVYUb_rj3ij__anPXDTzYgA.woff2") format("woff2"); font-style: normal; font-weight: 500; font-display: swap; }
     @font-face { font-family: "Playfair Display"; src: url("https://mtioon.com/fonts/playfair-display/nuFiD-vYSZviVYUb_rj3ij__anPXDTzYgA.woff2") format("woff2"); font-style: normal; font-weight: 600; font-display: swap; }
@@ -4000,6 +3994,396 @@
       #mt-posthero-editor .mt-grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
       #mt-posthero-editor .mt-mini-field { height:36px; display:flex; align-items:center; justify-content:space-between; gap:8px; padding:0 10px; border-radius:9px; background:rgba(118,118,128,.10); font-size:13px; }
 
+      /* ---------- motion panel scoped styles (production matching) ---------- */
+      #mt-posthero-editor [data-panel-view="motion"] {
+        width: 400px;
+        padding: 0 0 16px 0;
+        box-sizing: border-box;
+      }
+      #mt-posthero-editor [data-panel-view="motion"] .motion-title-area {
+        height: 40px;
+        width: 400px;
+        margin: 0 0 12px 0;
+        padding: 0 4px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        box-sizing: border-box;
+      }
+      #mt-posthero-editor [data-panel-view="motion"] .motion-title-icon {
+        display: flex;
+        height: 40px;
+        width: 40px;
+        flex-shrink: 0;
+        align-items: center;
+        justify-content: center;
+        border-radius: 12px;
+        background: rgba(0, 122, 255, 0.12);
+        color: rgb(0, 122, 255);
+      }
+      #mt-posthero-editor [data-panel-view="motion"] .motion-title-text {
+        min-width: 0;
+      }
+      #mt-posthero-editor [data-panel-view="motion"] .motion-title-heading {
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        font-size: 14px;
+        font-weight: 600;
+        line-height: 21px;
+        color: rgb(26, 26, 26);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        margin: 0;
+      }
+      #mt-posthero-editor [data-panel-view="motion"] .motion-title-sub {
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        font-size: 12px;
+        font-weight: 400;
+        line-height: 18px;
+        color: rgba(28, 28, 30, 0.42);
+        margin: 0;
+      }
+      #mt-posthero-editor [data-panel-view="motion"] .card {
+        width: 400px;
+        margin: 0 0 12px 0;
+        padding: 4px 14px 4px 14px;
+        border-radius: 18px;
+        background: rgb(255, 255, 255);
+        border: 0;
+        box-shadow:
+          rgba(0, 0, 0, 0.03) 0 1px 2px 0,
+          rgba(0, 0, 0, 0.12) 0 8px 26px -14px,
+          rgba(0, 0, 0, 0.1) 0 0 0 0.5px;
+        overflow: visible;
+        box-sizing: border-box;
+      }
+      #mt-posthero-editor [data-panel-view="motion"] .card-head-row {
+        height: 44px;
+        display: flex;
+        width: 100%;
+        align-items: center;
+        gap: 10px;
+        box-sizing: border-box;
+      }
+      #mt-posthero-editor [data-panel-view="motion"] .title-btn {
+        display: flex;
+        height: 100%;
+        min-width: 0;
+        flex: 1;
+        align-items: center;
+        gap: 10px;
+        text-align: left;
+        background: transparent;
+        border: none;
+        padding: 0;
+        cursor: pointer;
+      }
+      #mt-posthero-editor [data-panel-view="motion"] .fold-btn {
+        display: flex;
+        height: 100%;
+        align-items: center;
+        justify-content: center;
+        background: transparent;
+        border: none;
+        padding: 0;
+        cursor: pointer;
+      }
+      #mt-posthero-editor [data-panel-view="motion"] .fold-chevron {
+        transition: transform 200ms cubic-bezier(0.16, 1, 0.3, 1);
+      }
+      #mt-posthero-editor [data-panel-view="motion"] .fold[data-open="false"] + * .fold-chevron,
+      #mt-posthero-editor [data-panel-view="motion"] .card[data-state="closed"] .fold-chevron {
+        transform: rotate(180deg);
+      }
+
+      /* Fold Wrapper */
+      #mt-posthero-editor [data-panel-view="motion"] .fold {
+        overflow: hidden;
+        transition: height 200ms cubic-bezier(0.16, 1, 0.3, 1), opacity 200ms cubic-bezier(0.16, 1, 0.3, 1);
+      }
+      #mt-posthero-editor [data-panel-view="motion"] .fold[data-open="false"] {
+        height: 0 !important;
+        opacity: 0 !important;
+        pointer-events: none;
+      }
+      #mt-posthero-editor [data-panel-view="motion"] .fold[data-open="true"] {
+        opacity: 1;
+      }
+
+      /* Control Rows Flex Layout */
+      #mt-posthero-editor [data-panel-view="motion"] .flex {
+        display: flex;
+      }
+      #mt-posthero-editor [data-panel-view="motion"] .flex.flex-col {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        box-sizing: border-box;
+      }
+      #mt-posthero-editor [data-panel-view="motion"] .flex.flex-col.gap-2 {
+        gap: 8px;
+      }
+      #mt-posthero-editor [data-panel-view="motion"] .flex.flex-col.pb-3 {
+        padding-top: 2px;
+        padding-bottom: 12px;
+      }
+      #mt-posthero-editor [data-panel-view="motion"] .flex.flex-col.pb-2\.5 {
+        padding-top: 2px;
+        padding-bottom: 10px;
+      }
+      #mt-posthero-editor [data-panel-view="motion"] .flex.h-9 {
+        display: flex;
+        height: 36px;
+        width: 100%;
+        min-width: 0;
+        align-items: center;
+        gap: 10px;
+        box-sizing: border-box;
+      }
+      #mt-posthero-editor [data-panel-view="motion"] .flex.min-h-9 {
+        display: flex;
+        min-height: 36px;
+        width: 100%;
+        min-width: 0;
+        align-items: center;
+        gap: 8px;
+        box-sizing: border-box;
+      }
+      #mt-posthero-editor [data-panel-view="motion"] .w-\[76px\] {
+        width: 76px;
+        flex-shrink: 0;
+        box-sizing: border-box;
+      }
+      #mt-posthero-editor [data-panel-view="motion"] .flex-1 {
+        flex: 1 1 0%;
+        min-width: 0;
+      }
+
+      /* Enter Sticky Controls Wrapper */
+      #mt-posthero-editor [data-panel-view="motion"] .sticky {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        margin-left: -14px;
+        margin-right: -14px;
+        padding-left: 14px;
+        padding-right: 14px;
+        overflow: clip;
+        background: #ffffff;
+        box-shadow: 0 10px 12px -10px rgba(0, 0, 0, 0.25);
+        box-sizing: border-box;
+        width: 400px;
+      }
+
+      /* Sliders & Numeric Inputs */
+      #mt-posthero-editor [data-panel-view="motion"] .slider-track-wrap {
+        position: relative;
+        height: 36px;
+        min-width: 0;
+        flex: 1;
+        cursor: pointer;
+        touch-action: none;
+        user-select: none;
+      }
+      #mt-posthero-editor [data-panel-view="motion"] .slider-rail {
+        position: absolute;
+        inset: 0 10px;
+        top: 50%;
+        height: 4px;
+        transform: translateY(-50%);
+        border-radius: 9999px;
+        background: rgba(0, 0, 0, 0.08);
+      }
+      #mt-posthero-editor [data-panel-view="motion"] .slider-fill {
+        position: absolute;
+        inset-block: 0;
+        left: 0;
+        border-radius: 9999px;
+        background: rgb(59, 130, 246);
+      }
+      #mt-posthero-editor [data-panel-view="motion"] .slider-knob {
+        position: absolute;
+        top: 50%;
+        width: 20px;
+        height: 20px;
+        transform: translate(-50%, -50%);
+        border-radius: 9999px;
+        background: rgb(59, 130, 246);
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+        cursor: pointer;
+        transition: transform 100ms ease;
+      }
+      #mt-posthero-editor [data-panel-view="motion"] .slider-knob:hover {
+        transform: translate(-50%, -50%) scale(1.1);
+      }
+      #mt-posthero-editor [data-panel-view="motion"] .numeric-label {
+        display: flex;
+        flex-shrink: 0;
+        align-items: baseline;
+        gap: 2px;
+      }
+      #mt-posthero-editor [data-panel-view="motion"] .numeric-input {
+        width: 44px;
+        cursor: text;
+        border-radius: 6px;
+        background: transparent;
+        border: none;
+        text-align: right;
+        font-size: 13px;
+        font-variant-numeric: tabular-nums;
+        color: rgb(115, 115, 115);
+        outline: none;
+        padding: 0;
+      }
+      #mt-posthero-editor [data-panel-view="motion"] .numeric-input:focus {
+        background: rgb(240, 240, 240);
+        color: rgb(26, 26, 26);
+      }
+
+      /* Segmented Control (By) */
+      #mt-posthero-editor [data-panel-view="motion"] .field {
+        position: relative;
+        display: flex;
+        height: 36px;
+        width: 100%;
+        background: rgba(118, 118, 128, 0.1);
+        border-radius: 10px;
+        padding: 3px;
+        gap: 0;
+        box-sizing: border-box;
+      }
+      #mt-posthero-editor [data-panel-view="motion"] [data-by-control] {
+        gap: 0 !important;
+      }
+      #mt-posthero-editor [data-panel-view="motion"] .pill-thumb.seg-thumb {
+        position: absolute;
+        top: 3px;
+        bottom: 3px;
+        left: 3px;
+        width: 94px;
+        height: 30px;
+        border-radius: 7px;
+        background: rgb(255, 255, 255);
+        box-shadow: rgba(0, 0, 0, 0.1) 0px 0px 0px 0.5px, rgb(209, 209, 214) 0px 2px 0px 0px, rgba(0, 0, 0, 0.14) 0px 3px 8px 0px;
+        transition: transform 0.36s cubic-bezier(0.34, 1.4, 0.64, 1), width 0.36s cubic-bezier(0.34, 1.4, 0.64, 1);
+        pointer-events: none;
+      }
+      #mt-posthero-editor [data-panel-view="motion"] [data-by-control] button {
+        position: relative;
+        z-index: 10;
+        display: flex;
+        flex: 1 1 0%;
+        height: 30px;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        border-radius: 7px;
+        padding: 0 12px;
+        font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro", Inter, ui-sans-serif, system-ui, sans-serif;
+        font-size: 13px;
+        line-height: 19.5px;
+        border: none;
+        background: transparent;
+        cursor: pointer;
+        outline: none;
+        transition: color 150ms ease;
+        box-sizing: border-box;
+      }
+      #mt-posthero-editor [data-panel-view="motion"] [data-by-control] button.font-semibold {
+        font-weight: 600;
+        color: rgb(28, 28, 30);
+      }
+      #mt-posthero-editor [data-panel-view="motion"] [data-by-control] button:not(.font-semibold) {
+        font-weight: 400;
+        color: rgba(28, 28, 30, 0.62);
+      }
+      #mt-posthero-editor [data-panel-view="motion"] [data-by-control] button:not(.font-semibold):hover {
+        color: rgb(28, 28, 30);
+      }
+
+      /* Preset Cards */
+      #mt-posthero-editor [data-panel-view="motion"] .presets-grid {
+        display: grid;
+        gap: 10px;
+        grid-template-columns: repeat(2, minmax(0px, 1fr));
+      }
+      #mt-posthero-editor [data-panel-view="motion"] .preset-card-btn {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 6px;
+        text-align: center;
+        background: transparent;
+        border: none;
+        padding: 0;
+        cursor: pointer;
+      }
+      #mt-posthero-editor [data-panel-view="motion"] .preset-preview-wrap {
+        display: flex;
+        aspect-ratio: 1.35;
+        width: 100%;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        border-radius: 16px;
+        box-sizing: border-box;
+        background: rgb(236, 236, 241);
+        color: rgb(115, 115, 115);
+        transition: background-color 150ms ease, transform 150ms cubic-bezier(0.2, 0, 0, 1), box-shadow 150ms ease;
+      }
+      #mt-posthero-editor [data-panel-view="motion"] .preset-card-btn:hover .preset-preview-wrap {
+        background: rgb(232, 232, 232);
+        transform: translateY(-1px);
+      }
+      #mt-posthero-editor [data-panel-view="motion"] .preset-card-btn.is-selected .preset-preview-wrap {
+        background: rgba(59, 130, 246, 0.12);
+        color: rgb(59, 130, 246);
+        box-shadow: inset 0 0 0 2px rgb(59, 130, 246);
+      }
+      #mt-posthero-editor [data-panel-view="motion"] .preset-card-title {
+        font-size: 12px;
+        font-weight: 600;
+        line-height: 18px;
+        color: rgb(26, 26, 26);
+      }
+      #mt-posthero-editor [data-panel-view="motion"] .preset-card-btn:not(.is-selected) .preset-card-title {
+        color: rgb(115, 115, 115);
+      }
+
+      /* Sound Specific Controls */
+      #mt-posthero-editor [data-panel-view="motion"] .sound-group-input {
+        width: 288px;
+        height: 36px;
+        min-width: 0;
+        border-radius: 9px;
+        padding: 0 10px;
+        font-size: 13px;
+        color: rgb(26, 26, 26);
+        background: rgb(255, 255, 255);
+        border: 1px solid rgba(0, 0, 0, 0.08);
+        box-sizing: border-box;
+        outline: none;
+      }
+      #mt-posthero-editor [data-panel-view="motion"] .sound-group-input:focus {
+        border-color: rgb(59, 130, 246);
+        box-shadow: 0 0 0 1px rgb(59, 130, 246);
+      }
+      #mt-posthero-editor [data-panel-view="motion"] .sound-select-btn {
+        width: 288px;
+        height: 36px;
+        min-width: 0;
+        border-radius: 9px;
+        padding: 0 10px;
+        font-size: 13px;
+        color: rgb(26, 26, 26);
+        background: rgba(0, 0, 0, 0.05);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border: none;
+        cursor: default;
+      }
+
       /* ---------- stage / canvas ---------- */
       #mt-posthero-editor .mt-stage-column { flex:1; min-width:0; min-height:0; display:flex; flex-direction:column; }
       #mt-posthero-editor .mt-stage-card {
@@ -4219,10 +4603,560 @@
                 <section class="mt-section-card closed"><div class="mt-card-head"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M4 6h16v12H4z"/><path d="M8 10h8M8 14h5"/></svg><span>Mask</span><button class="mt-fold"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m9 6 6 6-6 6"/></svg></button></div></section>
               </div>
 <div class="mt-tab-view" data-panel-view="motion" hidden>
-  <div class="mt-panel-intro"><span class="mt-panel-icon">Motion</span><div><strong>Motion</strong><p>Shape how this layer enters, moves and leaves the frame.</p></div></div>
-  <section class="mt-section-card motion-card"><div class="mt-card-head"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="15.5" cy="12" r="5"></circle><path d="M3.5 8.5h4.5M2 12h5M3.5 15.5h4.5"></path></svg><span>In</span><button class="mt-fold" aria-label="Fold In"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m7 10 5 5 5-5"></path></svg></button></div><div class="mt-card-body"><div class="mt-control-row"><span class="label">Preset</span><button class="mt-select"><span>Rise</span><span>⌄</span></button></div><div class="mt-slider-row"><span class="mt-slider-label">Duration</span><div class="mt-slider"><span class="mt-slider-knob" style="left:55%"></span></div><span class="mt-value">0.60 s</span></div><div class="mt-slider-row"><span class="mt-slider-label">Ease</span><div class="mt-slider"><span class="mt-slider-knob" style="left:68%"></span></div><span class="mt-value">Spring</span></div></div></section>
-  <section class="mt-section-card motion-card"><div class="mt-card-head"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 12h16M12 4l8 8-8 8"></path></svg><span>Out</span><button class="mt-fold" aria-label="Fold Out"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m7 10 5 5 5-5"></path></svg></button></div><div class="mt-card-body"><div class="mt-control-row"><span class="label">Preset</span><button class="mt-select"><span>Fade</span><span>⌄</span></button></div><div class="mt-slider-row"><span class="mt-slider-label">Duration</span><div class="mt-slider"><span class="mt-slider-knob" style="left:42%"></span></div><span class="mt-value">0.45 s</span></div></div></section>
-  <section class="mt-section-card motion-card"><div class="mt-card-head"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 12h14M12 5l7 7-7 7"></path></svg><span>Timeline</span></div><div class="mt-card-body"><div class="mt-control-row"><span class="label">Start</span><div class="mt-value-field">0.00 s</div></div><div class="mt-control-row"><span class="label">End</span><div class="mt-value-field">10.00 s</div></div></div></section>
+  <!-- Motion Panel Title Area -->
+  <div class="motion-title-area mx-3 mb-3 flex items-center gap-2 px-1">
+    <span class="motion-title-icon flex h-10 w-10 shrink-0 items-center justify-center rounded-[12px] bg-accent-soft text-accent">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="shrink-0" aria-hidden="true"><circle cx="15.5" cy="12" r="5"></circle><path d="M3.5 8.5h4.5M2 12h5M3.5 15.5h4.5"></path></svg>
+    </span>
+    <div class="motion-title-text min-w-0">
+      <p class="motion-title-heading truncate text-[14px] font-semibold">Say it. Watch it move.</p>
+      <p class="motion-title-sub text-[12px] text-ink-3">Style: Editorial</p>
+    </div>
+  </div>
+
+  <!-- 1. Enter Section (Initial: Open) -->
+  <section class="card mx-3 mb-3 rounded-[18px] px-3.5 pb-1 pt-1" data-section="enter" data-state="open">
+    <div class="card-head-row flex h-11 w-full items-center gap-2.5">
+      <button type="button" class="title-btn flex h-full min-w-0 flex-1 items-center gap-2.5 text-left">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="shrink-0 text-ink-3" aria-hidden="true"><path d="M4 12h11M11 8l4 4-4 4M20 4v16"></path></svg>
+        <span class="flex-1 text-[14px] font-semibold tracking-[-0.01em] text-ink">Enter</span>
+      </button>
+      <button type="button" aria-label="Fold Enter" class="fold-btn flex h-full items-center">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="fold-chevron shrink-0 text-ink-3" aria-hidden="true"><path d="m6 15 6-6 6 6"></path></svg>
+      </button>
+    </div>
+    <div class="fold" data-open="true">
+      <div>
+        <div class="flex flex-col gap-2 pb-3 pt-0.5">
+          <!-- Sticky Controls Wrapper -->
+          <div class="sticky top-0 z-10 -mx-3.5 overflow-clip bg-surface px-3.5">
+            <div class="flex flex-col gap-2 pb-2.5 pt-0.5">
+              <!-- Duration Slider -->
+              <div class="flex h-9 w-full min-w-0 items-center gap-2.5">
+                <span class="flex shrink-0 items-center gap-1.5 text-[13px] text-ink-2" style="width: 76px;">Duration</span>
+                <div class="slider-track-wrap relative h-full min-w-0 flex-1 cursor-pointer touch-none select-none" data-slider="enter-duration" data-min="0.05" data-max="2.0" data-step="0.01" data-val="0.28">
+                  <div class="slider-rail">
+                    <div class="slider-fill" style="width: 11.79%;"></div>
+                    <div class="slider-knob" style="left: 11.79%;"></div>
+                  </div>
+                </div>
+                <label class="numeric-label flex shrink-0 items-baseline gap-0.5">
+                  <input class="numeric-input" id="enter-duration" aria-label="Enter Duration" value="0.28" data-min="0.05" data-max="2.0" data-step="0.01" data-shift-step="0.1" data-precision="2" />
+                  <span class="text-[11.5px] text-ink-3">s</span>
+                </label>
+              </div>
+              <!-- Intensity Slider -->
+              <div class="flex h-9 w-full min-w-0 items-center gap-2.5">
+                <span class="flex shrink-0 items-center gap-1.5 text-[13px] text-ink-2" style="width: 76px;">Intensity</span>
+                <div class="slider-track-wrap relative h-full min-w-0 flex-1 cursor-pointer touch-none select-none" data-slider="enter-intensity" data-min="0.1" data-max="3.0" data-step="0.05" data-val="1">
+                  <div class="slider-rail">
+                    <div class="slider-fill" style="width: 31.03%;"></div>
+                    <div class="slider-knob" style="left: 31.03%;"></div>
+                  </div>
+                </div>
+                <label class="numeric-label flex shrink-0 items-baseline gap-0.5">
+                  <input class="numeric-input" id="enter-intensity" aria-label="Enter Intensity" value="1" data-min="0.1" data-max="3.0" data-step="0.05" data-shift-step="0.5" data-precision="2" />
+                  <span class="text-[11.5px] text-ink-3" style="visibility:hidden">s</span>
+                </label>
+              </div>
+              <!-- Stagger Slider -->
+              <div class="flex h-9 w-full min-w-0 items-center gap-2.5">
+                <span class="flex shrink-0 items-center gap-1.5 text-[13px] text-ink-2" style="width: 76px;">Stagger</span>
+                <div class="slider-track-wrap relative h-full min-w-0 flex-1 cursor-pointer touch-none select-none" data-slider="enter-stagger" data-min="0" data-max="200" data-step="5" data-val="0">
+                  <div class="slider-rail">
+                    <div class="slider-fill" style="width: 0%;"></div>
+                    <div class="slider-knob" style="left: 0%;"></div>
+                  </div>
+                </div>
+                <label class="numeric-label flex shrink-0 items-baseline gap-0.5">
+                  <input class="numeric-input" id="enter-stagger" aria-label="Enter Stagger" value="0" data-min="0" data-max="200" data-step="5" data-shift-step="25" data-precision="0" />
+                  <span class="text-[11.5px] text-ink-3">ms</span>
+                </label>
+              </div>
+              <!-- By Segmented -->
+              <div class="flex min-h-9 items-center gap-2">
+                <span class="w-[76px] shrink-0 text-[13px] text-ink-2">By</span>
+                <div class="flex min-w-0 flex-1 items-center gap-2">
+                  <div class="relative flex h-9 w-full rounded-[10px] p-[3px] field" data-by-control="true">
+                    <div class="pill-thumb absolute top-[3px] bottom-[3px] rounded-[7px] seg-thumb" style="transform: translateX(0px); width: 94px;"></div>
+                    <button type="button" data-v="char" title="Letters" class="relative z-10 flex flex-1 items-center justify-center gap-1.5 rounded-[7px] px-3 text-[13px] smooth font-semibold text-ink">Letters</button>
+                    <button type="button" data-v="word" title="Words" class="relative z-10 flex flex-1 items-center justify-center gap-1.5 rounded-[7px] px-3 text-[13px] smooth text-ink-2 hover:text-ink">Words</button>
+                    <button type="button" data-v="line" title="Lines" class="relative z-10 flex flex-1 items-center justify-center gap-1.5 rounded-[7px] px-3 text-[13px] smooth text-ink-2 hover:text-ink">Lines</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Presets Grid -->
+          <div class="presets-grid grid gap-2.5" style="grid-template-columns: repeat(2, minmax(0px, 1fr));" data-preset-group="enter">
+        <button type="button" class="preset-card-btn" data-preset="None" data-kind="in">
+          <span class="preset-preview-wrap">
+            <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" class="shrink-0" aria-hidden="true"><path d="M3 3l18 18M10.6 5.8A9.7 9.7 0 0 1 12 5.5c6 0 9.5 6.5 9.5 6.5a17 17 0 0 1-3.2 3.9M6.4 6.4A16.8 16.8 0 0 0 2.5 12S6 18.5 12 18.5a9.4 9.4 0 0 0 4.3-1"></path><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"></path></svg>
+          </span>
+          <span class="preset-card-title">None</span>
+        </button>
+        <button type="button" class="preset-card-btn" data-preset="Fade" data-kind="in">
+          <span class="preset-preview-wrap">
+            <canvas aria-hidden="true" class="block w-full" style="aspect-ratio: 270 / 200;" data-preset-canvas="Fade" data-kind="in"></canvas>
+          </span>
+          <span class="preset-card-title">Fade</span>
+        </button>
+        <button type="button" class="preset-card-btn" data-preset="Pop" data-kind="in">
+          <span class="preset-preview-wrap">
+            <canvas aria-hidden="true" class="block w-full" style="aspect-ratio: 270 / 200;" data-preset-canvas="Pop" data-kind="in"></canvas>
+          </span>
+          <span class="preset-card-title">Pop</span>
+        </button>
+        <button type="button" class="preset-card-btn" data-preset="Slide" data-kind="in">
+          <span class="preset-preview-wrap">
+            <canvas aria-hidden="true" class="block w-full" style="aspect-ratio: 270 / 200;" data-preset-canvas="Slide" data-kind="in"></canvas>
+          </span>
+          <span class="preset-card-title">Slide</span>
+        </button>
+        <button type="button" class="preset-card-btn" data-preset="Rise" data-kind="in">
+          <span class="preset-preview-wrap">
+            <canvas aria-hidden="true" class="block w-full" style="aspect-ratio: 270 / 200;" data-preset-canvas="Rise" data-kind="in"></canvas>
+          </span>
+          <span class="preset-card-title">Rise</span>
+        </button>
+        <button type="button" class="preset-card-btn" data-preset="Blur" data-kind="in">
+          <span class="preset-preview-wrap">
+            <canvas aria-hidden="true" class="block w-full" style="aspect-ratio: 270 / 200;" data-preset-canvas="Blur" data-kind="in"></canvas>
+          </span>
+          <span class="preset-card-title">Blur</span>
+        </button>
+        <button type="button" class="preset-card-btn" data-preset="Bounce" data-kind="in">
+          <span class="preset-preview-wrap">
+            <canvas aria-hidden="true" class="block w-full" style="aspect-ratio: 270 / 200;" data-preset-canvas="Bounce" data-kind="in"></canvas>
+          </span>
+          <span class="preset-card-title">Bounce</span>
+        </button>
+        <button type="button" class="preset-card-btn" data-preset="Zoom" data-kind="in">
+          <span class="preset-preview-wrap">
+            <canvas aria-hidden="true" class="block w-full" style="aspect-ratio: 270 / 200;" data-preset-canvas="Zoom" data-kind="in"></canvas>
+          </span>
+          <span class="preset-card-title">Zoom</span>
+        </button>
+        <button type="button" class="preset-card-btn is-selected" data-preset="Slam" data-kind="in">
+          <span class="preset-preview-wrap">
+            <canvas aria-hidden="true" class="block w-full" style="aspect-ratio: 270 / 200;" data-preset-canvas="Slam" data-kind="in"></canvas>
+          </span>
+          <span class="preset-card-title">Slam</span>
+        </button>
+        <button type="button" class="preset-card-btn" data-preset="Drop" data-kind="in">
+          <span class="preset-preview-wrap">
+            <canvas aria-hidden="true" class="block w-full" style="aspect-ratio: 270 / 200;" data-preset-canvas="Drop" data-kind="in"></canvas>
+          </span>
+          <span class="preset-card-title">Drop</span>
+        </button>
+        <button type="button" class="preset-card-btn" data-preset="Spin" data-kind="in">
+          <span class="preset-preview-wrap">
+            <canvas aria-hidden="true" class="block w-full" style="aspect-ratio: 270 / 200;" data-preset-canvas="Spin" data-kind="in"></canvas>
+          </span>
+          <span class="preset-card-title">Spin</span>
+        </button>
+        <button type="button" class="preset-card-btn" data-preset="Wipe" data-kind="in">
+          <span class="preset-preview-wrap">
+            <canvas aria-hidden="true" class="block w-full" style="aspect-ratio: 270 / 200;" data-preset-canvas="Wipe" data-kind="in"></canvas>
+          </span>
+          <span class="preset-card-title">Wipe</span>
+        </button>
+        <button type="button" class="preset-card-btn" data-preset="Typewriter" data-kind="in">
+          <span class="preset-preview-wrap">
+            <canvas aria-hidden="true" class="block w-full" style="aspect-ratio: 270 / 200;" data-preset-canvas="Typewriter" data-kind="in"></canvas>
+          </span>
+          <span class="preset-card-title">Typewriter</span>
+        </button>
+        <button type="button" class="preset-card-btn" data-preset="Flip" data-kind="in">
+          <span class="preset-preview-wrap">
+            <canvas aria-hidden="true" class="block w-full" style="aspect-ratio: 270 / 200;" data-preset-canvas="Flip" data-kind="in"></canvas>
+          </span>
+          <span class="preset-card-title">Flip</span>
+        </button>
+        <button type="button" class="preset-card-btn" data-preset="Turn (3D)" data-kind="in">
+          <span class="preset-preview-wrap">
+            <canvas aria-hidden="true" class="block w-full" style="aspect-ratio: 270 / 200;" data-preset-canvas="Turn (3D)" data-kind="in"></canvas>
+          </span>
+          <span class="preset-card-title">Turn (3D)</span>
+        </button>
+        <button type="button" class="preset-card-btn" data-preset="Tumble (3D)" data-kind="in">
+          <span class="preset-preview-wrap">
+            <canvas aria-hidden="true" class="block w-full" style="aspect-ratio: 270 / 200;" data-preset-canvas="Tumble (3D)" data-kind="in"></canvas>
+          </span>
+          <span class="preset-card-title">Tumble (3D)</span>
+        </button>
+        <button type="button" class="preset-card-btn" data-preset="Card flip (3D)" data-kind="in">
+          <span class="preset-preview-wrap">
+            <canvas aria-hidden="true" class="block w-full" style="aspect-ratio: 270 / 200;" data-preset-canvas="Card flip (3D)" data-kind="in"></canvas>
+          </span>
+          <span class="preset-card-title">Card flip (3D)</span>
+        </button>
+        <button type="button" class="preset-card-btn" data-preset="Land (squash)" data-kind="in">
+          <span class="preset-preview-wrap">
+            <canvas aria-hidden="true" class="block w-full" style="aspect-ratio: 270 / 200;" data-preset-canvas="Land (squash)" data-kind="in"></canvas>
+          </span>
+          <span class="preset-card-title">Land (squash)</span>
+        </button>
+        <button type="button" class="preset-card-btn" data-preset="Jelly" data-kind="in">
+          <span class="preset-preview-wrap">
+            <canvas aria-hidden="true" class="block w-full" style="aspect-ratio: 270 / 200;" data-preset-canvas="Jelly" data-kind="in"></canvas>
+          </span>
+          <span class="preset-card-title">Jelly</span>
+        </button>
+        <button type="button" class="preset-card-btn" data-preset="Boing" data-kind="in">
+          <span class="preset-preview-wrap">
+            <canvas aria-hidden="true" class="block w-full" style="aspect-ratio: 270 / 200;" data-preset-canvas="Boing" data-kind="in"></canvas>
+          </span>
+          <span class="preset-card-title">Boing</span>
+        </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. Exit Section (Initial: Closed) -->
+  <section class="card mx-3 mb-3 rounded-[18px] px-3.5 pb-1 pt-1" data-section="exit" data-state="closed">
+    <div class="card-head-row flex h-11 w-full items-center gap-2.5">
+      <button type="button" class="title-btn flex h-full min-w-0 flex-1 items-center gap-2.5 text-left">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="shrink-0 text-ink-3" aria-hidden="true"><path d="M9 12h11M16 8l4 4-4 4M4 4v16"></path></svg>
+        <span class="flex-1 text-[14px] font-semibold tracking-[-0.01em] text-ink">Exit</span>
+      </button>
+      <button type="button" aria-label="Open Exit" class="fold-btn flex h-full items-center">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="fold-chevron shrink-0 text-ink-3" aria-hidden="true"><path d="m6 15 6-6 6 6"></path></svg>
+      </button>
+    </div>
+    <div class="fold" data-open="false">
+      <div>
+        <div class="flex flex-col gap-2 pb-3 pt-0.5">
+          <div class="presets-grid grid gap-2.5" style="grid-template-columns: repeat(2, minmax(0px, 1fr));" data-preset-group="exit">
+        <button type="button" class="preset-card-btn is-selected" data-preset="None" data-kind="out">
+          <span class="preset-preview-wrap">
+            <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" class="shrink-0" aria-hidden="true"><path d="M3 3l18 18M10.6 5.8A9.7 9.7 0 0 1 12 5.5c6 0 9.5 6.5 9.5 6.5a17 17 0 0 1-3.2 3.9M6.4 6.4A16.8 16.8 0 0 0 2.5 12S6 18.5 12 18.5a9.4 9.4 0 0 0 4.3-1"></path><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"></path></svg>
+          </span>
+          <span class="preset-card-title">None</span>
+        </button>
+        <button type="button" class="preset-card-btn" data-preset="Fade" data-kind="out">
+          <span class="preset-preview-wrap">
+            <canvas aria-hidden="true" class="block w-full" style="aspect-ratio: 270 / 200;" data-preset-canvas="Fade" data-kind="out"></canvas>
+          </span>
+          <span class="preset-card-title">Fade</span>
+        </button>
+        <button type="button" class="preset-card-btn" data-preset="Pop" data-kind="out">
+          <span class="preset-preview-wrap">
+            <canvas aria-hidden="true" class="block w-full" style="aspect-ratio: 270 / 200;" data-preset-canvas="Pop" data-kind="out"></canvas>
+          </span>
+          <span class="preset-card-title">Pop</span>
+        </button>
+        <button type="button" class="preset-card-btn" data-preset="Slide" data-kind="out">
+          <span class="preset-preview-wrap">
+            <canvas aria-hidden="true" class="block w-full" style="aspect-ratio: 270 / 200;" data-preset-canvas="Slide" data-kind="out"></canvas>
+          </span>
+          <span class="preset-card-title">Slide</span>
+        </button>
+        <button type="button" class="preset-card-btn" data-preset="Sink" data-kind="out">
+          <span class="preset-preview-wrap">
+            <canvas aria-hidden="true" class="block w-full" style="aspect-ratio: 270 / 200;" data-preset-canvas="Sink" data-kind="out"></canvas>
+          </span>
+          <span class="preset-card-title">Sink</span>
+        </button>
+        <button type="button" class="preset-card-btn" data-preset="Blur" data-kind="out">
+          <span class="preset-preview-wrap">
+            <canvas aria-hidden="true" class="block w-full" style="aspect-ratio: 270 / 200;" data-preset-canvas="Blur" data-kind="out"></canvas>
+          </span>
+          <span class="preset-card-title">Blur</span>
+        </button>
+        <button type="button" class="preset-card-btn" data-preset="Zoom" data-kind="out">
+          <span class="preset-preview-wrap">
+            <canvas aria-hidden="true" class="block w-full" style="aspect-ratio: 270 / 200;" data-preset-canvas="Zoom" data-kind="out"></canvas>
+          </span>
+          <span class="preset-card-title">Zoom</span>
+        </button>
+        <button type="button" class="preset-card-btn" data-preset="Fall" data-kind="out">
+          <span class="preset-preview-wrap">
+            <canvas aria-hidden="true" class="block w-full" style="aspect-ratio: 270 / 200;" data-preset-canvas="Fall" data-kind="out"></canvas>
+          </span>
+          <span class="preset-card-title">Fall</span>
+        </button>
+        <button type="button" class="preset-card-btn" data-preset="Wipe" data-kind="out">
+          <span class="preset-preview-wrap">
+            <canvas aria-hidden="true" class="block w-full" style="aspect-ratio: 270 / 200;" data-preset-canvas="Wipe" data-kind="out"></canvas>
+          </span>
+          <span class="preset-card-title">Wipe</span>
+        </button>
+        <button type="button" class="preset-card-btn" data-preset="Punch" data-kind="out">
+          <span class="preset-preview-wrap">
+            <canvas aria-hidden="true" class="block w-full" style="aspect-ratio: 270 / 200;" data-preset-canvas="Punch" data-kind="out"></canvas>
+          </span>
+          <span class="preset-card-title">Punch</span>
+        </button>
+        <button type="button" class="preset-card-btn" data-preset="Spin" data-kind="out">
+          <span class="preset-preview-wrap">
+            <canvas aria-hidden="true" class="block w-full" style="aspect-ratio: 270 / 200;" data-preset-canvas="Spin" data-kind="out"></canvas>
+          </span>
+          <span class="preset-card-title">Spin</span>
+        </button>
+        <button type="button" class="preset-card-btn" data-preset="Turn (3D)" data-kind="out">
+          <span class="preset-preview-wrap">
+            <canvas aria-hidden="true" class="block w-full" style="aspect-ratio: 270 / 200;" data-preset-canvas="Turn (3D)" data-kind="out"></canvas>
+          </span>
+          <span class="preset-card-title">Turn (3D)</span>
+        </button>
+        <button type="button" class="preset-card-btn" data-preset="Tumble (3D)" data-kind="out">
+          <span class="preset-preview-wrap">
+            <canvas aria-hidden="true" class="block w-full" style="aspect-ratio: 270 / 200;" data-preset-canvas="Tumble (3D)" data-kind="out"></canvas>
+          </span>
+          <span class="preset-card-title">Tumble (3D)</span>
+        </button>
+        <button type="button" class="preset-card-btn" data-preset="Card flip (3D)" data-kind="out">
+          <span class="preset-preview-wrap">
+            <canvas aria-hidden="true" class="block w-full" style="aspect-ratio: 270 / 200;" data-preset-canvas="Card flip (3D)" data-kind="out"></canvas>
+          </span>
+          <span class="preset-card-title">Card flip (3D)</span>
+        </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. Loop Section (Initial: Closed) -->
+  <section class="card mx-3 mb-3 rounded-[18px] px-3.5 pb-1 pt-1" data-section="loop" data-state="closed">
+    <div class="card-head-row flex h-11 w-full items-center gap-2.5">
+      <button type="button" class="title-btn flex h-full min-w-0 flex-1 items-center gap-2.5 text-left">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="shrink-0 text-ink-3" aria-hidden="true"><path d="M17 3l3 3-3 3M7 21l-3-3 3-3M20 6H9a5 5 0 0 0-5 5v1M4 18h11a5 5 0 0 0 5-5v-1"></path></svg>
+        <span class="flex-1 text-[14px] font-semibold tracking-[-0.01em] text-ink">Loop</span>
+      </button>
+      <button type="button" aria-label="Open Loop" class="fold-btn flex h-full items-center">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="fold-chevron shrink-0 text-ink-3" aria-hidden="true"><path d="m6 15 6-6 6 6"></path></svg>
+      </button>
+    </div>
+    <div class="fold" data-open="false">
+      <div>
+        <div class="flex flex-col gap-2 pb-3 pt-0.5">
+          <div class="presets-grid grid gap-2.5" style="grid-template-columns: repeat(2, minmax(0px, 1fr));" data-preset-group="loop">
+        <button type="button" class="preset-card-btn is-selected" data-preset="None" data-kind="loop">
+          <span class="preset-preview-wrap">
+            <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" class="shrink-0" aria-hidden="true"><path d="M3 3l18 18M10.6 5.8A9.7 9.7 0 0 1 12 5.5c6 0 9.5 6.5 9.5 6.5a17 17 0 0 1-3.2 3.9M6.4 6.4A16.8 16.8 0 0 0 2.5 12S6 18.5 12 18.5a9.4 9.4 0 0 0 4.3-1"></path><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"></path></svg>
+          </span>
+          <span class="preset-card-title">None</span>
+        </button>
+        <button type="button" class="preset-card-btn" data-preset="Float" data-kind="loop">
+          <span class="preset-preview-wrap">
+            <canvas aria-hidden="true" class="block w-full" style="aspect-ratio: 270 / 200;" data-preset-canvas="Float" data-kind="loop"></canvas>
+          </span>
+          <span class="preset-card-title">Float</span>
+        </button>
+        <button type="button" class="preset-card-btn" data-preset="Pulse" data-kind="loop">
+          <span class="preset-preview-wrap">
+            <canvas aria-hidden="true" class="block w-full" style="aspect-ratio: 270 / 200;" data-preset-canvas="Pulse" data-kind="loop"></canvas>
+          </span>
+          <span class="preset-card-title">Pulse</span>
+        </button>
+        <button type="button" class="preset-card-btn" data-preset="Wiggle" data-kind="loop">
+          <span class="preset-preview-wrap">
+            <canvas aria-hidden="true" class="block w-full" style="aspect-ratio: 270 / 200;" data-preset-canvas="Wiggle" data-kind="loop"></canvas>
+          </span>
+          <span class="preset-card-title">Wiggle</span>
+        </button>
+        <button type="button" class="preset-card-btn" data-preset="Spin" data-kind="loop">
+          <span class="preset-preview-wrap">
+            <canvas aria-hidden="true" class="block w-full" style="aspect-ratio: 270 / 200;" data-preset-canvas="Spin" data-kind="loop"></canvas>
+          </span>
+          <span class="preset-card-title">Spin</span>
+        </button>
+        <button type="button" class="preset-card-btn" data-preset="Breathe" data-kind="loop">
+          <span class="preset-preview-wrap">
+            <canvas aria-hidden="true" class="block w-full" style="aspect-ratio: 270 / 200;" data-preset-canvas="Breathe" data-kind="loop"></canvas>
+          </span>
+          <span class="preset-card-title">Breathe</span>
+        </button>
+        <button type="button" class="preset-card-btn" data-preset="Shake" data-kind="loop">
+          <span class="preset-preview-wrap">
+            <canvas aria-hidden="true" class="block w-full" style="aspect-ratio: 270 / 200;" data-preset-canvas="Shake" data-kind="loop"></canvas>
+          </span>
+          <span class="preset-card-title">Shake</span>
+        </button>
+        <button type="button" class="preset-card-btn" data-preset="Bob" data-kind="loop">
+          <span class="preset-preview-wrap">
+            <canvas aria-hidden="true" class="block w-full" style="aspect-ratio: 270 / 200;" data-preset-canvas="Bob" data-kind="loop"></canvas>
+          </span>
+          <span class="preset-card-title">Bob</span>
+        </button>
+        <button type="button" class="preset-card-btn" data-preset="Sway" data-kind="loop">
+          <span class="preset-preview-wrap">
+            <canvas aria-hidden="true" class="block w-full" style="aspect-ratio: 270 / 200;" data-preset-canvas="Sway" data-kind="loop"></canvas>
+          </span>
+          <span class="preset-card-title">Sway</span>
+        </button>
+        <button type="button" class="preset-card-btn" data-preset="Look around" data-kind="loop">
+          <span class="preset-preview-wrap">
+            <canvas aria-hidden="true" class="block w-full" style="aspect-ratio: 270 / 200;" data-preset-canvas="Look around" data-kind="loop"></canvas>
+          </span>
+          <span class="preset-card-title">Look around</span>
+        </button>
+        <button type="button" class="preset-card-btn" data-preset="Blink" data-kind="loop">
+          <span class="preset-preview-wrap">
+            <canvas aria-hidden="true" class="block w-full" style="aspect-ratio: 270 / 200;" data-preset-canvas="Blink" data-kind="loop"></canvas>
+          </span>
+          <span class="preset-card-title">Blink</span>
+        </button>
+        <button type="button" class="preset-card-btn" data-preset="Turntable (3D)" data-kind="loop">
+          <span class="preset-preview-wrap">
+            <canvas aria-hidden="true" class="block w-full" style="aspect-ratio: 270 / 200;" data-preset-canvas="Turntable (3D)" data-kind="loop"></canvas>
+          </span>
+          <span class="preset-card-title">Turntable (3D)</span>
+        </button>
+        <button type="button" class="preset-card-btn" data-preset="Tilt (3D float)" data-kind="loop">
+          <span class="preset-preview-wrap">
+            <canvas aria-hidden="true" class="block w-full" style="aspect-ratio: 270 / 200;" data-preset-canvas="Tilt (3D float)" data-kind="loop"></canvas>
+          </span>
+          <span class="preset-card-title">Tilt (3D float)</span>
+        </button>
+        <button type="button" class="preset-card-btn" data-preset="Rock (3D)" data-kind="loop">
+          <span class="preset-preview-wrap">
+            <canvas aria-hidden="true" class="block w-full" style="aspect-ratio: 270 / 200;" data-preset-canvas="Rock (3D)" data-kind="loop"></canvas>
+          </span>
+          <span class="preset-card-title">Rock (3D)</span>
+        </button>
+        <button type="button" class="preset-card-btn" data-preset="Jiggle" data-kind="loop">
+          <span class="preset-preview-wrap">
+            <canvas aria-hidden="true" class="block w-full" style="aspect-ratio: 270 / 200;" data-preset-canvas="Jiggle" data-kind="loop"></canvas>
+          </span>
+          <span class="preset-card-title">Jiggle</span>
+        </button>
+        <button type="button" class="preset-card-btn" data-preset="Hop" data-kind="loop">
+          <span class="preset-preview-wrap">
+            <canvas aria-hidden="true" class="block w-full" style="aspect-ratio: 270 / 200;" data-preset-canvas="Hop" data-kind="loop"></canvas>
+          </span>
+          <span class="preset-card-title">Hop</span>
+        </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. Timing Section (Initial: Open) -->
+  <section class="card mx-3 mb-3 rounded-[18px] px-3.5 pb-1 pt-1" data-section="timing" data-state="open">
+    <div class="card-head-row flex h-11 w-full items-center gap-2.5">
+      <button type="button" class="title-btn flex h-full min-w-0 flex-1 items-center gap-2.5 text-left">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="shrink-0 text-ink-3" aria-hidden="true"><circle cx="12" cy="12" r="8.5"></circle><path d="M12 7.5V12l3 2"></path></svg>
+        <span class="flex-1 text-[14px] font-semibold tracking-[-0.01em] text-ink">Timing</span>
+      </button>
+      <button type="button" aria-label="Fold Timing" class="fold-btn flex h-full items-center">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="fold-chevron shrink-0 text-ink-3" aria-hidden="true"><path d="m6 15 6-6 6 6"></path></svg>
+      </button>
+    </div>
+    <div class="fold" data-open="true">
+      <div>
+        <div class="flex flex-col gap-2 pb-3 pt-0.5">
+          <!-- From -->
+          <div class="flex h-9 w-full min-w-0 items-center gap-2.5">
+            <span class="flex shrink-0 items-center gap-1.5 text-[13px] text-ink-2" style="width: 76px;">From</span>
+            <div class="slider-track-wrap relative h-full min-w-0 flex-1 cursor-pointer touch-none select-none" data-slider="timing-from" data-min="0" data-dynamic-max="project-duration" data-step="0.05" data-val="1.76">
+              <div class="slider-rail">
+                <div class="slider-fill" style="width: 11.73%;"></div>
+                <div class="slider-knob" style="left: 11.73%;"></div>
+              </div>
+            </div>
+            <label class="numeric-label flex shrink-0 items-baseline gap-0.5">
+              <input class="numeric-input" id="timing-from" aria-label="Timing From" value="1.76" data-min="0" data-dynamic-max="project-duration" data-step="0.05" data-shift-step="0.5" data-precision="2" />
+              <span class="text-[11.5px] text-ink-3">s</span>
+            </label>
+          </div>
+          <!-- To -->
+          <div class="flex h-9 w-full min-w-0 items-center gap-2.5">
+            <span class="flex shrink-0 items-center gap-1.5 text-[13px] text-ink-2" style="width: 76px;">To</span>
+            <div class="slider-track-wrap relative h-full min-w-0 flex-1 cursor-pointer touch-none select-none" data-slider="timing-to" data-min="0" data-dynamic-max="project-duration" data-step="0.05" data-val="3.75">
+              <div class="slider-rail">
+                <div class="slider-fill" style="width: 25%;"></div>
+                <div class="slider-knob" style="left: 25%;"></div>
+              </div>
+            </div>
+            <label class="numeric-label flex shrink-0 items-baseline gap-0.5">
+              <input class="numeric-input" id="timing-to" aria-label="Timing To" value="3.75" data-min="0" data-dynamic-max="project-duration" data-step="0.05" data-shift-step="0.5" data-precision="2" />
+              <span class="text-[11.5px] text-ink-3">s</span>
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. Sound Section (Initial: Closed) -->
+  <section class="card mx-3 mb-3 rounded-[18px] px-3.5 pb-1 pt-1" data-section="sound" data-state="closed">
+    <div class="card-head-row flex h-11 w-full items-center gap-2.5">
+      <button type="button" class="title-btn flex h-full min-w-0 flex-1 items-center gap-2.5 text-left">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="shrink-0 text-ink-3" aria-hidden="true"><path d="M9 18V6l11-2v12"></path><circle cx="6" cy="18" r="3"></circle><circle cx="17" cy="16" r="3"></circle></svg>
+        <span class="flex-1 text-[14px] font-semibold tracking-[-0.01em] text-ink">Sound</span>
+      </button>
+      <button type="button" aria-label="Open Sound" class="fold-btn flex h-full items-center">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="fold-chevron shrink-0 text-ink-3" aria-hidden="true"><path d="m6 15 6-6 6 6"></path></svg>
+      </button>
+    </div>
+    <div class="fold" data-open="false">
+      <div>
+        <div class="flex flex-col gap-2 pb-3 pt-0.5">
+          <!-- Entrance -->
+          <div class="flex min-h-9 items-center gap-2">
+            <span class="w-[76px] shrink-0 text-[13px] text-ink-2">Entrance</span>
+            <div class="flex min-w-0 flex-1 items-center gap-2">
+              <button type="button" aria-label="Entrance" title="Entrance: Auto" class="sound-select-btn"><span>Auto</span><span>⌄</span></button>
+            </div>
+          </div>
+          <!-- Landing -->
+          <div class="flex min-h-9 items-center gap-2">
+            <span class="w-[76px] shrink-0 text-[13px] text-ink-2">Landing</span>
+            <div class="flex min-w-0 flex-1 items-center gap-2">
+              <button type="button" aria-label="Landing" title="Landing: Auto" class="sound-select-btn"><span>Auto</span><span>⌄</span></button>
+            </div>
+          </div>
+          <!-- Exit -->
+          <div class="flex min-h-9 items-center gap-2">
+            <span class="w-[76px] shrink-0 text-[13px] text-ink-2">Exit</span>
+            <div class="flex min-w-0 flex-1 items-center gap-2">
+              <button type="button" aria-label="Exit" title="Exit: Auto" class="sound-select-btn"><span>Auto</span><span>⌄</span></button>
+            </div>
+          </div>
+          <!-- At moments + Add -->
+          <div class="flex items-center justify-between pt-1">
+            <span class="text-[12px] font-medium text-ink-3">At moments</span>
+            <button type="button" title="A sound at the playhead" class="text-[12px] font-semibold text-accent" style="border:none;background:transparent;cursor:pointer;padding:4px 6px;">+ Add</button>
+          </div>
+          <!-- Series Segmented: Rise, Fall, Same (No forced initial selection) -->
+          <div class="flex min-h-9 items-center gap-2">
+            <span class="w-[76px] shrink-0 text-[13px] text-ink-2">Series</span>
+            <div class="flex min-w-0 flex-1 items-center gap-2">
+              <div class="seg-group relative flex h-9 w-full rounded-[10px] p-[3px]" data-segmented="series">
+                <button type="button" class="seg-btn" role="tab" aria-selected="false">Rise</button>
+                <button type="button" class="seg-btn" role="tab" aria-selected="false">Fall</button>
+                <button type="button" class="seg-btn" role="tab" aria-selected="false">Same</button>
+              </div>
+            </div>
+          </div>
+          <!-- Group field: 288px wide text input -->
+          <div class="flex min-h-9 items-center gap-2">
+            <span class="w-[76px] shrink-0 text-[13px] text-ink-2">Group</span>
+            <div class="flex min-w-0 flex-1 items-center gap-2">
+              <input type="text" class="sound-group-input" value="Auto" aria-label="Group" placeholder="Auto" />
+            </div>
+          </div>
+          <!-- Audio State Segmented: Auto, On, Muted -->
+          <div class="flex min-h-9 items-center gap-2">
+            <span class="w-[76px] shrink-0 text-[13px] text-ink-2">Audio</span>
+            <div class="flex min-w-0 flex-1 items-center gap-2">
+              <div class="seg-group relative flex h-9 w-full rounded-[10px] p-[3px]" data-segmented="audio">
+                <button type="button" class="seg-btn is-selected" role="tab" aria-selected="true">Auto</button>
+                <button type="button" class="seg-btn" role="tab" aria-selected="false">On</button>
+                <button type="button" class="seg-btn" role="tab" aria-selected="false">Muted</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
 </div>
 <div class="mt-tab-view" data-panel-view="project" hidden>
   <div class="mt-panel-intro"><span class="mt-panel-icon">Project</span><div><strong>Project</strong><p>Project-level timing, canvas and audio controls.</p></div></div>
@@ -8822,6 +9756,370 @@
 
       paintRail();
       resetAllViews();
+    })();
+  </script>
+  <script id="mt-motion-panel-script">
+    (() => {
+      const initMotion = () => {
+        const motionView = document.querySelector('[data-panel-view="motion"]');
+        if (!motionView) return;
+
+        // 1. Project Duration
+        const getProjectDuration = () => {
+          const durEl = document.querySelector('.mt-timeline-side.right') ||
+                        document.querySelector('.mt-timeline-side') ||
+                        document.querySelector('.project-card .mt-value-field');
+          if (durEl) {
+            const match = durEl.textContent.match(/([0-9.]+)\s*s?/);
+            if (match) {
+              const val = parseFloat(match[1]);
+              if (!isNaN(val) && val > 0) return val;
+            }
+          }
+          return 15;
+        };
+
+        // 2. Fold toggling: title-btn and fold-btn both toggle fold state
+        const sections = motionView.querySelectorAll('section[data-section]');
+        sections.forEach(sec => {
+          const titleBtn = sec.querySelector('.title-btn');
+          const foldBtn = sec.querySelector('.fold-btn');
+          const fold = sec.querySelector('.fold');
+          const titleText = sec.querySelector('.title-btn span')?.textContent.trim() || '';
+
+          const toggleFold = () => {
+            const isOpen = fold.getAttribute('data-open') === 'true';
+            const nextOpen = !isOpen;
+            fold.setAttribute('data-open', nextOpen ? 'true' : 'false');
+            sec.setAttribute('data-state', nextOpen ? 'open' : 'closed');
+            if (foldBtn) {
+              foldBtn.setAttribute('aria-label', (nextOpen ? 'Fold ' : 'Open ') + titleText);
+            }
+          };
+
+          if (titleBtn) titleBtn.addEventListener('click', toggleFold);
+          if (foldBtn) foldBtn.addEventListener('click', toggleFold);
+        });
+
+        // 3. Slider Interaction (Custom slider rail + fill + knob)
+        const sliders = motionView.querySelectorAll('.slider-track-wrap');
+        sliders.forEach(sliderWrap => {
+          const targetId = sliderWrap.getAttribute('data-slider');
+          const numInput = document.getElementById(targetId);
+          const fill = sliderWrap.querySelector('.slider-fill');
+          const knob = sliderWrap.querySelector('.slider-knob');
+          if (!numInput || !fill || !knob) return;
+
+          const getMin = () => parseFloat(sliderWrap.getAttribute('data-min') || '0');
+          const getMax = () => {
+            if (sliderWrap.getAttribute('data-dynamic-max') === 'project-duration' || numInput.getAttribute('data-dynamic-max') === 'project-duration') {
+              return getProjectDuration();
+            }
+            return parseFloat(sliderWrap.getAttribute('data-max') || '100');
+          };
+          const getStep = () => parseFloat(numInput.getAttribute('data-step') || '0.01');
+          const getShiftStep = () => parseFloat(numInput.getAttribute('data-shift-step') || String(getStep() * 10));
+          const getPrecision = () => parseInt(numInput.getAttribute('data-precision') || '2', 10);
+
+          const formatVal = (v) => precision === 0 ? String(Math.round(v)) : v.toFixed(precision);
+
+          const updateVisuals = (val) => {
+            const min = getMin();
+            const max = getMax();
+            const pct = Math.max(0, Math.min(100, ((val - min) / (max - min)) * 100));
+            fill.style.width = pct + '%';
+            knob.style.left = pct + '%';
+            sliderWrap.setAttribute('data-val', String(val));
+          };
+
+          const setVal = (v, updateInput = true) => {
+            const min = getMin();
+            const max = getMax();
+            const step = getStep();
+            const precision = getPrecision();
+            let stepped = Math.round((v - min) / step) * step + min;
+            let clamped = Math.max(min, Math.min(max, stepped));
+            updateVisuals(clamped);
+            if (updateInput) {
+              numInput.value = precision === 0 ? String(Math.round(clamped)) : clamped.toFixed(precision);
+            }
+          };
+
+          const onPointerMove = (e) => {
+            const rect = sliderWrap.getBoundingClientRect();
+            if (rect.width <= 0) return;
+            const x = Math.max(0, Math.min(rect.width, e.clientX - rect.left));
+            const pct = x / rect.width;
+            const min = getMin();
+            const max = getMax();
+            const rawVal = min + pct * (max - min);
+            setVal(rawVal, true);
+          };
+
+          sliderWrap.addEventListener('pointerdown', (e) => {
+            sliderWrap.setPointerCapture(e.pointerId);
+            onPointerMove(e);
+
+            const handleMove = (ev) => onPointerMove(ev);
+            const handleUp = (ev) => {
+              try { sliderWrap.releasePointerCapture(ev.pointerId); } catch(_) {}
+              window.removeEventListener('pointermove', handleMove);
+              window.removeEventListener('pointerup', handleUp);
+              window.removeEventListener('pointercancel', handleUp);
+            };
+
+            window.addEventListener('pointermove', handleMove);
+            window.addEventListener('pointerup', handleUp);
+            window.addEventListener('pointercancel', handleUp);
+          });
+
+          // Numeric input keyboard & change handling
+          let prevVal = numInput.value;
+          numInput.addEventListener('focus', () => { prevVal = numInput.value; });
+
+          numInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+              e.preventDefault();
+              const val = parseFloat(numInput.value);
+              if (!isNaN(val)) setVal(val, true);
+              prevVal = numInput.value;
+              numInput.blur();
+            } else if (e.key === 'Escape') {
+              e.preventDefault();
+              numInput.value = prevVal;
+              const val = parseFloat(prevVal);
+              if (!isNaN(val)) setVal(val, false);
+              numInput.blur();
+            } else if (e.key === 'ArrowUp') {
+              e.preventDefault();
+              const cur = parseFloat(numInput.value) || 0;
+              const delta = e.shiftKey ? getShiftStep() : getStep();
+              setVal(cur + delta, true);
+            } else if (e.key === 'ArrowDown') {
+              e.preventDefault();
+              const cur = parseFloat(numInput.value) || 0;
+              const delta = e.shiftKey ? getShiftStep() : getStep();
+              setVal(cur - delta, true);
+            }
+          });
+
+          numInput.addEventListener('blur', () => {
+            const val = parseFloat(numInput.value);
+            if (!isNaN(val)) {
+              setVal(val, true);
+            } else {
+              numInput.value = prevVal;
+            }
+          });
+        });
+
+        // 4. Preset selection
+        const presetGrids = motionView.querySelectorAll('[data-preset-group]');
+        presetGrids.forEach(grid => {
+          grid.addEventListener('click', (e) => {
+            const btn = e.target.closest('.preset-card-btn');
+            if (!btn) return;
+            grid.querySelectorAll('.preset-card-btn').forEach(b => b.classList.remove('is-selected'));
+            btn.classList.add('is-selected');
+          });
+        });
+
+        // 5. Segmented controls (By)
+        const byControl = motionView.querySelector('[data-by-control]');
+        if (byControl) {
+          const thumb = byControl.querySelector('.pill-thumb');
+          const buttons = Array.from(byControl.querySelectorAll('button'));
+          byControl.addEventListener('click', (e) => {
+            const btn = e.target.closest('button');
+            if (!btn) return;
+            const idx = buttons.indexOf(btn);
+            if (idx === -1) return;
+            
+            // Move thumb
+            const thumbX = idx * 94;
+            if (thumb) {
+              thumb.style.transform = `translateX(${thumbX}px)`;
+              thumb.style.width = '94px';
+            }
+
+            buttons.forEach(b => {
+              if (b === btn) {
+                b.className = 'relative z-10 flex flex-1 items-center justify-center gap-1.5 rounded-[7px] px-3 text-[13px] smooth font-semibold text-ink';
+              } else {
+                b.className = 'relative z-10 flex flex-1 items-center justify-center gap-1.5 rounded-[7px] px-3 text-[13px] smooth text-ink-2 hover:text-ink';
+              }
+            });
+          });
+        }
+
+        // 6. Sound Group input
+        const groupInput = motionView.querySelector('.sound-group-input');
+        if (groupInput) {
+          let prevGroup = groupInput.value;
+          groupInput.addEventListener('focus', () => { prevGroup = groupInput.value; });
+          groupInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+              e.preventDefault();
+              prevGroup = groupInput.value;
+              groupInput.blur();
+            } else if (e.key === 'Escape') {
+              e.preventDefault();
+              groupInput.value = prevGroup;
+              groupInput.blur();
+            }
+          });
+        }
+
+        // 7. Preset Preview Canvas Animations
+        const previewCanvases = motionView.querySelectorAll('canvas[data-preset-canvas]');
+        const activeCanvases = new Set();
+        const dpr = Math.min(2, window.devicePixelRatio || 1);
+
+        previewCanvases.forEach(cvs => {
+          cvs.width = Math.round(270 * dpr);
+          cvs.height = Math.round(200 * dpr);
+        });
+
+        const io = new IntersectionObserver(entries => {
+          entries.forEach(ent => {
+            if (ent.isIntersecting) {
+              activeCanvases.add(ent.target);
+            } else {
+              activeCanvases.delete(ent.target);
+            }
+          });
+        });
+
+        previewCanvases.forEach(cvs => io.observe(cvs));
+
+        const renderPresetFrame = (cvs, time) => {
+          const ctx = cvs.getContext('2d');
+          if (!ctx) return;
+          const w = cvs.width;
+          const h = cvs.height;
+          const preset = cvs.getAttribute('data-preset-canvas');
+          const kind = cvs.getAttribute('data-kind');
+
+          ctx.save();
+          ctx.setTransform(1, 0, 0, 1, 0, 0);
+          ctx.clearRect(0, 0, w, h);
+
+          const scale = w / 270;
+          ctx.scale(scale, scale);
+
+          // Center: (135, 100)
+          const cx = 135;
+          const cy = 100;
+          let tx = cx;
+          let ty = cy;
+          let sx = 1;
+          let sy = 1;
+          let rot = 0;
+          let opacity = 1;
+
+          // Animation phase
+          const period = kind === 'loop' ? 2.0 : 1.7;
+          const t = (time % period) / period; // 0..1
+
+          if (kind === 'in') {
+            const p = Math.min(1, t / 0.5); // animate in first 50%
+            if (preset === 'Fade') {
+              opacity = p;
+            } else if (preset === 'Pop') {
+              sx = sy = p < 0.7 ? (p / 0.7) * 1.15 : 1.15 - ((p - 0.7) / 0.3) * 0.15;
+              opacity = Math.min(1, p * 2);
+            } else if (preset === 'Slam') {
+              const bounce = Math.sin(p * Math.PI * 1.5) * (1 - p);
+              sx = sy = 1 + bounce * 0.8;
+              opacity = Math.min(1, p * 3);
+            } else if (preset === 'Slide' || preset === 'Rise') {
+              ty = cy + (1 - p) * 40;
+              opacity = p;
+            } else if (preset === 'Drop' || preset === 'Land (squash)') {
+              ty = cy - (1 - p) * 50;
+              if (p > 0.8) { sx = 1.15; sy = 0.85; }
+              opacity = Math.min(1, p * 2);
+            } else if (preset === 'Bounce' || preset === 'Boing') {
+              ty = cy - Math.abs(Math.sin(p * Math.PI * 2)) * 30 * (1 - p);
+              opacity = Math.min(1, p * 2);
+            } else if (preset === 'Zoom') {
+              sx = sy = 0.2 + p * 0.8;
+              opacity = p;
+            } else if (preset === 'Spin') {
+              rot = (1 - p) * Math.PI;
+              sx = sy = p;
+              opacity = p;
+            } else {
+              opacity = p;
+            }
+          } else if (kind === 'out') {
+            const p = Math.min(1, t / 0.5);
+            if (preset === 'Fade') {
+              opacity = 1 - p;
+            } else if (preset === 'Pop' || preset === 'Punch') {
+              sx = sy = 1 + p * 0.4;
+              opacity = 1 - p;
+            } else if (preset === 'Slide' || preset === 'Sink' || preset === 'Fall') {
+              ty = cy + p * 40;
+              opacity = 1 - p;
+            } else if (preset === 'Zoom') {
+              sx = sy = 1 - p * 0.8;
+              opacity = 1 - p;
+            } else if (preset === 'Spin') {
+              rot = p * Math.PI;
+              sx = sy = 1 - p;
+              opacity = 1 - p;
+            } else {
+              opacity = 1 - p;
+            }
+          } else if (kind === 'loop') {
+            const phase = time * Math.PI * 2;
+            if (preset === 'Float' || preset === 'Bob') {
+              ty = cy + Math.sin(phase * 0.8) * 10;
+            } else if (preset === 'Pulse' || preset === 'Breathe') {
+              sx = sy = 1 + Math.sin(phase * 0.8) * 0.12;
+            } else if (preset === 'Wiggle' || preset === 'Shake' || preset === 'Jiggle') {
+              tx = cx + Math.sin(phase * 2.5) * 6;
+            } else if (preset === 'Spin') {
+              rot = (time * 1.5) % (Math.PI * 2);
+            } else if (preset === 'Sway' || preset === 'Rock (3D)') {
+              rot = Math.sin(phase * 0.8) * 0.15;
+            } else if (preset === 'Hop') {
+              ty = cy - Math.max(0, Math.sin(phase * 1.2)) * 16;
+            } else {
+              sx = sy = 1 + Math.sin(phase * 0.5) * 0.05;
+            }
+          }
+
+          ctx.translate(tx, ty);
+          ctx.rotate(rot);
+          ctx.scale(sx, sy);
+          ctx.globalAlpha = Math.max(0, Math.min(1, opacity));
+
+          // Draw Aa text
+          ctx.fillStyle = '#1a1a1e';
+          ctx.font = '800 80px "Inter", "Sunghyun Sans", -apple-system, sans-serif';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText('Aa', 0, 0);
+
+          ctx.restore();
+        };
+
+        let animFrameId = 0;
+        const animLoop = (now) => {
+          const t = now / 1000;
+          activeCanvases.forEach(cvs => renderPresetFrame(cvs, t));
+          animFrameId = requestAnimationFrame(animLoop);
+        };
+        animFrameId = requestAnimationFrame(animLoop);
+      };
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initMotion);
+      } else {
+        initMotion();
+      }
     })();
   </script>
 </body>

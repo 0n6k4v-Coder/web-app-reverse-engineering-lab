@@ -1,0 +1,29 @@
+:root.u-theme-base .img-theme-stack__base {
+  opacity:0;
+  transition-delay:0s
+}
+
+:root.u-theme-base .img-theme-stack__layer[data-theme="u-theme-base"] {
+  opacity:1;
+  transition-delay:.3s
+}
+
+:root.u-theme-dark .img-theme-stack__base {
+  opacity:0;
+  transition-delay:0s
+}
+
+:root.u-theme-dark .img-theme-stack__layer[data-theme="u-theme-dark"] {
+  opacity:1;
+  transition-delay:.3s
+}
+
+:root.u-theme-brand .img-theme-stack__base {
+  opacity:0;
+  transition-delay:0s
+}
+
+:root.u-theme-brand .img-theme-stack__layer[data-theme="u-theme-brand"] {
+  opacity:1;
+  transition-delay:.3s
+}

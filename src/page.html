@@ -1,0 +1,724 @@
+<html lang="en" dir="ltr" class="js w-mod-js">
+  <head>
+    <script>
+      // Universal Early Hydration Shield & Framework Prop Symmetrizer
+      (function() {
+      function symmetrizeFrameworkProps() {
+      try {
+      const octaneScript = document.getElementById('__OCTANE_HOME_PROPS__');
+      if (octaneScript && octaneScript.textContent) {
+      const props = JSON.parse(octaneScript.textContent);
+      let modified = false;
+      if (!props.signedInHomeNavigation && (props.heading || props.mobileHeading)) {
+      props.signedInHomeNavigation = {
+      heading: props.heading || 'Where should we begin?',
+      mobileHeading: props.mobileHeading || 'What are you working on?'
+      };
+      modified = true;
+      }
+      if (props.defaultHome !== true) {
+      props.defaultHome = true;
+      modified = true;
+      }
+      if (modified) {
+      octaneScript.textContent = JSON.stringify(props);
+      window.__OCTANE_HOME_PROPS__ = props;
+      }
+      }
+      } catch (_) {}
+      }
+      symmetrizeFrameworkProps();
+      
+      const preservedHeadings = new Map();
+      function captureLandmarks() {
+      document.querySelectorAll('h1, [data-mobile-landing-heading], [data-composer-positioner] > :first-child').forEach((el, idx) => {
+      if (el && el.textContent && el.textContent.trim() && !preservedHeadings.has(idx)) {
+      preservedHeadings.set(idx, {
+      node: el.cloneNode(true),
+      parent: el.parentElement,
+      selector: el.getAttribute('data-mobile-landing-heading') !== null ? '[data-mobile-landing-heading]' : 'h1'
+      });
+      }
+      });
+      }
+      
+      function ensureLandmarks() {
+      captureLandmarks();
+      preservedHeadings.forEach((info) => {
+      const current = document.querySelector(info.selector);
+      if (!current) {
+      const positioner = document.querySelector('[data-composer-positioner]');
+      if (positioner) {
+      let slot = positioner.firstElementChild;
+      if (!slot) {
+      slot = document.createElement('div');
+      slot.className = 'xjp7ctv';
+      positioner.insertBefore(slot, positioner.firstChild);
+      }
+      if (!slot.querySelector(info.selector)) {
+      slot.innerHTML = '';
+      slot.appendChild(info.node.cloneNode(true));
+      }
+      } else if (info.parent && document.contains(info.parent)) {
+      if (!info.parent.querySelector(info.selector)) {
+      info.parent.appendChild(info.node.cloneNode(true));
+      }
+      }
+      }
+      });
+      }
+      
+      // Interactive Input Guardian: Preserves prompt composers & inputs across SPA reconcilers
+      const preservedInputs = new Map();
+      function captureInputs() {
+      document.querySelectorAll('textarea, input:not([type="hidden"]), [data-composer-editor-host]').forEach((el) => {
+      if (el.matches('[data-composer-editor-host]')) {
+      const ta = el.querySelector('textarea, [contenteditable="true"]');
+      if (ta && !preservedInputs.has('composer')) {
+      preservedInputs.set('composer', {
+      hostSelector: '[data-composer-editor-host]',
+      textareaHtml: ta.outerHTML,
+      id: ta.id,
+      placeholder: ta.getAttribute('placeholder') || 'Ask ChatGPT'
+      });
+      }
+      } else if (el.tagName === 'TEXTAREA' && el.id && !preservedInputs.has(el.id)) {
+      preservedInputs.set(el.id, {
+      hostSelector: '#' + el.id,
+      textareaHtml: el.outerHTML,
+      id: el.id,
+      placeholder: el.getAttribute('placeholder') || ''
+      });
+      }
+      });
+      }
+      
+      function ensureInputs() {
+      captureInputs();
+      preservedInputs.forEach((info, key) => {
+      if (key === 'composer') {
+      const hosts = document.querySelectorAll(info.hostSelector);
+      hosts.forEach(host => {
+      let ta = host.querySelector('textarea, [contenteditable="true"]');
+      if (!ta) {
+      host.innerHTML = info.textareaHtml;
+      ta = host.querySelector('textarea');
+      if (ta) {
+      ta.removeAttribute('disabled');
+      ta.style.pointerEvents = 'auto';
+      ta.style.userSelect = 'text';
+      }
+      }
+      if (ta && !ta.dataset.guardianAttached) {
+      ta.dataset.guardianAttached = 'true';
+      ta.addEventListener('input', () => {
+      ta.style.height = 'auto';
+      ta.style.height = Math.min(ta.scrollHeight, 200) + 'px';
+      });
+      }
+      });
+      }
+      });
+      }
+      
+      // Action & Popover Control Bridge
+      function setupActionPopoverBridge() {
+      document.addEventListener('click', function(e) {
+      const targetBtn = e.target.closest('[popovertarget]');
+      if (targetBtn) {
+      const targetId = targetBtn.getAttribute('popovertarget');
+      const popover = document.getElementById(targetId);
+      if (popover && typeof popover.togglePopover === 'function') {
+      setTimeout(() => {
+      try {
+      if (!popover.matches(':popover-open')) {
+      popover.showPopover();
+      }
+      } catch (_) {}
+      }, 0);
+      }
+      }
+      }, true);
+      
+      document.addEventListener('click', function(e) {
+      const popover = document.querySelector('[popover]:popover-open');
+      if (popover) {
+      const action = e.target.closest('[popover] button, [popover] [role="menuitem"], [popover] a');
+      if (action && typeof popover.hidePopover === 'function') {
+      setTimeout(() => {
+      try { popover.hidePopover(); } catch (_) {}
+      }, 50);
+      }
+      }
+      });
+      }
+      setupActionPopoverBridge();
+      
+      const origRemoveChild = Node.prototype.removeChild;
+      Node.prototype.removeChild = function(child) {
+      if (child && (
+      child.tagName === 'H1' ||
+      (child.hasAttribute && child.hasAttribute('data-mobile-landing-heading')) ||
+      child.tagName === 'TEXTAREA' ||
+      (child.hasAttribute && child.hasAttribute('data-composer-editor-host'))
+      )) {
+      setTimeout(() => { ensureLandmarks(); ensureInputs(); }, 0);
+      }
+      return origRemoveChild.apply(this, arguments);
+      };
+      
+      if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => {
+      captureLandmarks(); ensureLandmarks();
+      captureInputs(); ensureInputs();
+      });
+      } else {
+      captureLandmarks(); ensureLandmarks();
+      captureInputs(); ensureInputs();
+      }
+      
+      try {
+      const observer = new MutationObserver(() => {
+      ensureLandmarks();
+      ensureInputs();
+      });
+      observer.observe(document.documentElement, { childList: true, subtree: true });
+      setTimeout(() => { ensureLandmarks(); ensureInputs(); }, 1000);
+      setTimeout(() => { ensureLandmarks(); ensureInputs(); }, 2500);
+      setTimeout(() => { ensureLandmarks(); ensureInputs(); }, 5000);
+      } catch (_) {}
+      })();
+    </script>
+    <link rel="icon" type="image/x-icon" href="./favicon.ico">
+    <link rel="shortcut icon" href="./favicon.ico">
+    <meta charset="utf-8">
+    <base href="/">
+    <title>Karta | Virtual crypto card </title>
+    <link rel="alternate" hreflang="en" href="https://karta.io">
+    <link rel="alternate" hreflang="ar" href="https://karta.io/ar">
+    <link rel="alternate" hreflang="es" href="https://karta.io/es">
+    <link rel="alternate" hreflang="pt" href="https://karta.io/pt">
+    <link rel="alternate" hreflang="x-default" href="https://karta.io">
+    <meta content="A virtual VISA card for any cryptocurrency payments. Receive and send international payments and get 25% cashback on purchases. Join Karta.io!" name="description">
+    <meta content="Karta - Make Your Crypto Spendable" property="og:title">
+    <meta content="Finance without borders. Karta offers self-custody crypto wallets, Visa Signature cards, borderless multi-currency accounts, and global payment solutions." property="og:description">
+    <meta content="/uploads/pages/page-index.jpg" property="og:image">
+    <meta content="Karta - Make Your Crypto Spendable" name="twitter:title">
+    <meta content="Finance without borders. Karta offers self-custody crypto wallets, Visa Signature cards, borderless multi-currency accounts, and global payment solutions." name="twitter:description">
+    <meta content="/uploads/pages/page-index.jpg" name="twitter:image">
+    <meta property="og:type" content="website">
+    <meta content="summary_large_image" name="twitter:card">
+    <link href="https://karta.io" rel="canonical">
+    <script type="text/javascript" async="" src="https://widget.intercom.io/widget/svum8srr">
+      
+    </script>
+    <script type="text/javascript" async="" data-global-segment-analytics-key="analytics" src="https://cdn.segment.com/analytics.js/v1/Qqp2aeCHfSoU6xxNDHi968OgKky8FAbT/analytics.min.js">
+      
+    </script>
+    <script async="" src="https://connect.facebook.net/en_US/fbevents.js">
+      
+    </script>
+    <script type="application/ld+json">
+      {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "Karta Personal",
+      "description": "A virtual VISA card for any cryptocurrency payments. Receive and send international payments and get cashback on purchases.",
+      "url": "/",
+      "applicationCategory": "FinanceApplication",
+      "operatingSystem": "iOS, Android, Web",
+      "offers": {
+      "@type": "Offer",
+      "price": "5.00",
+      "priceCurrency": "USDT",
+      "description": "Visa Virtual Card Activation"
+      },
+      "featureList": [
+      "Virtual and physical Visa Signature cards",
+      "Cryptocurrency payments and wallet management",
+      "International payments via stablecoins, US and EU accounts",
+      "Cashback rewards program",
+      "Global ATM access",
+      "Apple Pay and Google Pay support",
+      "AI finance assistance",
+      "Referral rewards system"
+      ],
+      "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": "4.5",
+      "ratingCount": "20000"
+      },
+      "provider": {
+      "@type": "Organization",
+      "name": "Karta",
+      "url": "https://karta.io",
+      "logo": {
+      "@type": "ImageObject",
+      "url": "https://cdn.prod.website-files.com/69af1d886ee490d45ed747eb/69b94badd96bcc31234ecd09_Component%202.svg"
+      },
+      "sameAs": ["https://t.me/Karta"]
+      },
+      "inLanguage": "en"
+      }
+    </script>
+    <meta content="width=device-width, initial-scale=1" name="viewport">
+    <meta name="facebook-domain-verification" content="5n86utr8awg7s2rriz380gw6gdl0ul">
+    <meta name="google-site-verification" content="_EGuAA9IsZ_rCwoimGIHozY8ybpZM8kDodgNQgZ8eRE">
+    <link href="./images/favicon--favicon.png" rel="icon" type="image/png" sizes="32x32" media="(prefers-color-scheme: light)">
+    <link href="./images/favicon-dark--favicon-dark.png" rel="icon" type="image/png" sizes="32x32" media="(prefers-color-scheme: dark)">
+    <link href="./images/webclip--webclip.png" rel="apple-touch-icon">
+    <link href="css/variables.css?v=1791195360" rel="stylesheet" type="text/css">
+    <link href="css/style.css?v=1791195360" rel="stylesheet" type="text/css">
+    <link href="css/main.css?v=1791195360" rel="stylesheet" type="text/css">
+    <script>
+      document.documentElement.classList.add('js');
+    </script>
+    <script>
+      (function(w,i,g){w[g]=w[g]||[];if(typeof w[g].push=='function')w[g].push.apply(w[g],Array.isArray(i)?i:[i]);})(window,['G-DJK1E9SN6C'],'google_tags_first_party');
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('set', 'developer_id.dZGVlNj', true);
+      gtag('set', 'developer_id.dYWYxNW', true);
+      gtag('js', new Date());
+      gtag('config', 'G-DJK1E9SN6C');
+      (function () {
+      var loaded = false;
+      function loadGtag() {
+      if (loaded) return;
+      loaded = true;
+      var s = document.createElement('script');
+      s.async = true;
+      s.src = 'https://www.googletagmanager.com/gtag/js?id=G-DJK1E9SN6C';
+      document.head.appendChild(s);
+      }
+      if (window.requestIdleCallback) {
+      requestIdleCallback(loadGtag, { timeout: 3500 });
+      } else {
+      setTimeout(loadGtag, 3500);
+      }
+      ['pointerdown', 'keydown', 'scroll', 'touchstart'].forEach(function (evt) {
+      window.addEventListener(evt, loadGtag, { once: true, passive: true });
+      });
+      })();
+      (function () {
+      var loaded = false;
+      function loadTrackers() {
+      if (loaded) return;
+      loaded = true;
+      var fb = document.createElement('script');
+      fb.src = 'js/facebook-pixel.js?v=1791195360';
+      document.head.appendChild(fb);
+      var segment = document.createElement('script');
+      segment.src = 'js/segment.js?v=1791195360';
+      segment.onload = function () {
+      var middleware = document.createElement('script');
+      middleware.src = 'js/segment-middleware.js?v=1791195360';
+      document.head.appendChild(middleware);
+      };
+      document.head.appendChild(segment);
+      }
+      if (window.requestIdleCallback) {
+      requestIdleCallback(loadTrackers, { timeout: 3500 });
+      } else {
+      setTimeout(loadTrackers, 3500);
+      }
+      ['pointerdown', 'keydown', 'scroll', 'touchstart'].forEach(function (evt) {
+      window.addEventListener(evt, loadTrackers, { once: true, passive: true });
+      });
+      })();
+    </script>
+    <script src="js/morph-canvas.js?v=1791195360" defer="">
+      
+    </script>
+    <script src="js/nav-menu.js?v=1791195360" defer="">
+      
+    </script>
+    <script src="js/spoiler.js?v=1791195360" defer="">
+      
+    </script>
+    <!-- js -->
+    <script type="text/javascript">
+      !function(o,c){var n=c.documentElement,t=" w-mod-";n.className+=t+"js",("ontouchstart"in o||o.DocumentTouch&&c instanceof DocumentTouch)&&(n.className+=t+"touch")}(window,document);
+    </script>
+    <script src="js/personal/time-update.js?v=1791195360" defer="">
+      
+    </script>
+    <!-- <script src="js/personal/dynamic-scale.js?v=1791195360" defer></script> -->
+    <script src="js/personal/counter.js?v=1791195360" defer="">
+      
+    </script>
+    <script async="" src="https://www.googletagmanager.com/gtag/js?id=G-DJK1E9SN6C">
+      
+    </script>
+    <script src="js/facebook-pixel.js?v=1791195360">
+      
+    </script>
+    <script src="js/segment.js?v=1791195360">
+      
+    </script>
+    <script src="js/segment-middleware.js?v=1791195360">
+      
+    </script>
+    <link rel="stylesheet" href="/src/css/inline-head.css">
+  </head>
+  <body class="">
+    <main class="page-wrap">
+      <div id="nav" role="banner" class="nav">
+        <div class="nav-wrap">
+          <div class="nav_btn-body">
+            <div class="nav_logo">
+              <a href="/" aria-label="Personal" aria-current="page" class="logo current-page">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 26" width="100px">
+                  <path d="M72.7265 18.5273C72.7265 18.2167 72.4747 17.965 72.1641 17.965H72.033C71.4387 17.965 70.8333 17.9981 70.2169 18.0642C69.6226 18.1083 69.0832 18.2076 68.5989 18.3619C68.1367 18.5163 67.7514 18.7478 67.4432 19.0566C67.135 19.3432 66.9809 19.7292 66.9809 20.2143C66.9809 20.523 67.047 20.7877 67.1791 21.0082C67.3332 21.2287 67.5203 21.4051 67.7404 21.5374C67.9605 21.6698 68.2137 21.769 68.4999 21.8352C68.7861 21.8793 69.0612 21.9013 69.3254 21.9013C70.4261 21.9013 71.2626 21.6036 71.8349 21.0082C72.4293 20.3907 72.7265 19.5638 72.7265 18.5273ZM63.1662 11.5908C62.9562 11.3652 62.9653 11.0113 63.1999 10.8114C64.0708 10.0692 65.056 9.49877 66.1554 9.09999C67.4542 8.6369 68.775 8.40535 70.1179 8.40535C71.5047 8.40535 72.6714 8.58177 73.618 8.9346C74.5866 9.26539 75.3681 9.79464 75.9624 10.5224C76.5568 11.228 76.9861 12.1322 77.2502 13.2348C77.5364 14.3153 77.7463 15.3408 77.7463 16.8403V24.601C77.7463 24.9121 77.4941 25.1643 77.1829 25.1643H73.2393C72.9281 25.1643 72.6759 24.9121 72.6759 24.601V23.4209C72.6759 23.4037 72.662 23.3898 72.6448 23.3898C72.634 23.3898 72.624 23.3955 72.6183 23.4047C72.1999 24.0811 71.5645 24.6054 70.7122 24.9776C69.8757 25.3525 68.9622 25.5399 67.9716 25.5399C67.3111 25.5399 66.6287 25.4517 65.9243 25.2753C65.2199 25.0989 64.5705 24.8122 63.9761 24.4153C63.4038 24.0183 62.9305 23.4891 62.5562 22.8275C62.182 22.1659 61.9949 21.35 61.9949 20.3797C61.9949 19.1889 62.3141 18.2296 62.9525 17.5019C63.6129 16.7742 64.4494 16.2118 65.462 15.8149C66.4966 15.418 67.6414 15.1533 68.8961 15.021C69.9535 14.9095 70.9875 14.845 71.998 14.8275C72.3091 14.8221 72.5703 14.5676 72.5098 14.2624C72.4039 13.728 72.1349 13.3193 71.7028 13.0363C71.1305 12.6394 70.4261 12.4409 69.5895 12.4409C68.8191 12.4409 68.0706 12.6063 67.3442 12.9371C66.8285 13.1792 66.3659 13.4568 65.9564 13.7699C65.7107 13.9577 65.3582 13.9455 65.1475 13.7192L63.1662 11.5908Z">
+                  </path>
+                  <path d="M115.047 18.5273C115.047 18.2167 114.795 17.965 114.485 17.965H114.354C113.759 17.965 113.154 17.9981 112.537 18.0642C111.943 18.1083 111.404 18.2076 110.919 18.3619C110.457 18.5163 110.072 18.7478 109.764 19.0566C109.456 19.3432 109.301 19.7292 109.301 20.2143C109.301 20.523 109.368 20.7877 109.5 21.0082C109.654 21.2287 109.841 21.4051 110.061 21.5374C110.281 21.6698 110.534 21.769 110.82 21.8352C111.107 21.8793 111.382 21.9013 111.646 21.9013C112.747 21.9013 113.583 21.6036 114.155 21.0082C114.75 20.3907 115.047 19.5638 115.047 18.5273ZM105.487 11.5908C105.277 11.3652 105.286 11.0113 105.52 10.8114C106.391 10.0692 107.377 9.49877 108.476 9.09999C109.775 8.6369 111.096 8.40535 112.438 8.40535C113.825 8.40535 114.992 8.58177 115.939 8.9346C116.907 9.26539 117.689 9.79464 118.283 10.5224C118.877 11.228 119.307 12.1322 119.571 13.2348C119.857 14.3153 120 15.3408 120 16.8403V24.601C120 24.9121 119.748 25.1643 119.437 25.1643H115.681C115.37 25.1643 115.117 24.9121 115.117 24.601V23.4984C115.117 23.4384 115.069 23.3898 115.009 23.3898C114.971 23.3898 114.936 23.4096 114.916 23.4415C114.497 24.1002 113.87 24.6122 113.033 24.9776C112.196 25.3525 111.283 25.5399 110.292 25.5399C109.632 25.5399 108.949 25.4517 108.245 25.2753C107.54 25.0989 106.891 24.8122 106.297 24.4153C105.724 24.0183 105.251 23.4891 104.877 22.8275C104.503 22.1659 104.315 21.35 104.315 20.3797C104.315 19.1889 104.635 18.2296 105.273 17.5019C105.933 16.7742 106.77 16.2118 107.783 15.8149C108.817 15.418 109.962 15.1533 111.217 15.021C112.274 14.9095 113.308 14.845 114.319 14.8275C114.63 14.8221 114.891 14.5676 114.83 14.2624C114.724 13.728 114.455 13.3193 114.023 13.0363C113.451 12.6394 112.747 12.4409 111.91 12.4409C111.14 12.4409 110.391 12.6063 109.665 12.9371C109.149 13.1792 108.686 13.4568 108.277 13.7699C108.031 13.9577 107.679 13.9455 107.468 13.7192L105.487 11.5908Z">
+                  </path>
+                  <path d="M85.6337 17.1357V24.601C85.6337 24.9121 85.3814 25.1643 85.0703 25.1643H80.751C80.4399 25.1643 80.1876 24.9121 80.1876 24.601V16.796C80.1876 10.2068 85.4018 8.6385 89.976 8.6385C90.0764 8.6385 90.3152 8.65147 90.545 8.66556C90.8446 8.68394 91.0751 8.93565 91.0724 9.23584C91.063 10.3024 91.0706 11.9176 91.0758 12.7664C91.0777 13.0793 90.8247 13.3316 90.5119 13.3401C88.5772 13.3923 85.6666 13.8254 85.6337 17.1357Z">
+                  </path>
+                  <path d="M99.3426 13.3333C99.0315 13.3333 98.7793 13.5856 98.7793 13.8967V18.6381C98.7793 19.41 98.8485 19.9943 99.1346 20.3913C99.4428 20.7662 99.9822 21.2207 100.753 21.2207H102.347V24.6813C102.347 24.9498 102.159 25.1805 101.894 25.2279C101.244 25.3445 100.039 25.5399 99.2667 25.5399C98.166 25.5399 97.2415 25.4076 96.493 25.143C95.7446 24.8563 95.1392 24.4594 94.6769 23.9522C94.2366 23.4229 93.9174 22.8054 93.7193 22.0998C93.5212 21.3721 93.3332 20.5672 93.3332 19.6851V4.88263C93.3332 4.57149 93.5855 4.31925 93.8966 4.31925H98.2159C98.527 4.31925 98.7793 4.57149 98.7793 4.88263V8.07512C98.7793 8.38627 99.0315 8.6385 99.3426 8.6385H101.972C102.283 8.6385 102.535 8.89074 102.535 9.20188V12.77C102.535 13.0811 102.283 13.3333 101.972 13.3333H99.3426Z">
+                  </path>
+                  <path d="M49.3917 24.6316C49.3917 24.9428 49.1395 25.195 48.8283 25.195H44.5067C44.1956 25.195 43.9434 24.9428 43.9434 24.6316V0.563379C43.9434 0.252233 44.1956 0 44.5067 0H48.8283C49.1395 0 49.3917 0.252234 49.3917 0.563381V13.8092C49.3917 14.3411 50.0609 14.5767 50.3941 14.1622L54.6663 8.84886C54.7732 8.71586 54.9347 8.6385 55.1053 8.6385H60.1219C60.5978 8.6385 60.8593 9.19202 60.5571 9.55964L54.9481 16.3829C54.7803 16.587 54.7769 16.8803 54.94 17.0882L60.5502 24.244C60.84 24.6138 60.5766 25.155 60.1068 25.155H55.0173C54.8413 25.155 54.6753 25.0727 54.5688 24.9326L50.4036 19.4531C50.0771 19.0236 49.3917 19.2545 49.3917 19.7941V24.6316Z">
+                  </path>
+                  <path d="M30.4064 8.63852C31.5832 8.63865 32.1722 10.0634 31.3401 10.8959L26.2716 15.9675C25.7563 16.483 25.7549 17.3211 26.2716 17.8376L31.339 22.9102C32.1706 23.7427 31.5811 25.1672 30.4042 25.1672L21.977 25.1683C21.6267 25.1673 21.2907 25.0288 21.0433 24.7813L13.5598 17.2913C13.3125 17.0433 12.977 16.9039 12.6261 16.9043H1.32087C0.592216 16.9043 6.60789e-05 16.3135 0 15.5823V9.96232C0.000479788 9.23294 0.590912 8.64042 1.32194 8.63995H11.8525C12.5812 8.64088 13.1729 9.23148 13.1734 9.96267V13.7125C13.1734 14.8906 14.5969 15.4804 15.429 14.6479L21.0441 9.02833C21.2914 8.78047 21.6277 8.64151 21.9785 8.64102L30.4056 8.63995V8.63852H30.4064Z">
+                  </path>
+                </svg>
+              </a>
+              <div class="karta-morph-wrap">
+                <canvas id="morphCanvas" class="karta-morph-canvas" width="300" height="100">
+                </canvas>
+              </div>
+            </div>
+            <input type="checkbox" id="nav-menu-toggle" class="nav_menu-toggle" aria-label="Menu">
+            <div class="nav_menu-switch" data-toggle="" data-toggle-group="nav-dropdown" data-group="nav-dropdown">
+              <label for="nav-menu-toggle" class="nav_open-close" aria-label="Menu">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 19 19" class="menu-icon nav_menu-open-icon">
+                  <circle cx="3.5" cy="3.5" r="1.5"></circle>
+                  <circle cx="3.5" cy="9.5" r="1.5"></circle>
+                  <circle cx="3.5" cy="15.5" r="1.5"></circle>
+                  <circle cx="9.5" cy="3.5" r="1.5"></circle>
+                  <circle cx="9.5" cy="9.5" r="1.5"></circle>
+                  <circle cx="9.5" cy="15.5" r="1.5"></circle>
+                  <circle cx="15.5" cy="3.5" r="1.5"></circle>
+                  <circle cx="15.5" cy="9.5" r="1.5"></circle>
+                  <circle cx="15.5" cy="15.5" r="1.5"></circle>
+                </svg>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 15 15" class="menu-icon nav_menu-close-icon">
+                  <path d="M3.64016 2.27L7.50016 6.13L11.3402 2.29C11.425 2.19972 11.5272 2.12749 11.6406 2.07766C11.754 2.02783 11.8763 2.00141 12.0002 2C12.2654 2 12.5197 2.10536 12.7073 2.29289C12.8948 2.48043 13.0002 2.73478 13.0002 3C13.0025 3.1226 12.9797 3.24439 12.9333 3.35788C12.8869 3.47138 12.8178 3.57419 12.7302 3.66L8.84016 7.5L12.7302 11.39C12.895 11.5512 12.9916 11.7696 13.0002 12C13.0002 12.2652 12.8948 12.5196 12.7073 12.7071C12.5197 12.8946 12.2654 13 12.0002 13C11.8727 13.0053 11.7456 12.984 11.6268 12.9375C11.508 12.8911 11.4002 12.8204 11.3102 12.73L7.50016 8.87L3.65016 12.72C3.56567 12.8073 3.46473 12.8769 3.35316 12.925C3.2416 12.9731 3.12163 12.9986 3.00016 13C2.73495 13 2.48059 12.8946 2.29306 12.7071C2.10552 12.5196 2.00016 12.2652 2.00016 12C1.99783 11.8774 2.02058 11.7556 2.06701 11.6421C2.11344 11.5286 2.18257 11.4258 2.27016 11.34L6.16016 7.5L2.27016 3.61C2.10535 3.44876 2.0087 3.23041 2.00016 3C2.00016 2.73478 2.10552 2.48043 2.29306 2.29289C2.48059 2.10536 2.73495 2 3.00016 2C3.24016 2.003 3.47016 2.1 3.64016 2.27Z">
+                  </path>
+                </svg>
+              </label>
+              <div class="nav_links-wrap">
+                <!-- @component nav -->
+              </div>
+            </div>
+            <div class="nav_btn-group">
+              <div class="nav_btn-wrap">
+                <a data-tg-link="" data-track="cta" href="https://t.me/Karta/app" target="_blank" class="nav-btn">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="none" class="nav_btn_icon">
+                    <path d="M19.1144 3.86553L16.3477 16.5945C16.139 17.4929 15.5947 17.7165 14.8211 17.2933L10.6057 14.2627L8.57175 16.1713C8.34672 16.3909 8.15841 16.5746 7.72459 16.5746L8.0274 12.3861L15.8403 5.49856C16.1799 5.20313 15.7666 5.0394 15.3123 5.33487L5.65371 11.2681L1.49558 9.99845C0.59111 9.72293 0.574769 9.11601 1.68382 8.69281L17.948 2.57988C18.7009 2.30439 19.3599 2.74353 19.1144 3.86553Z" fill="currentColor">
+                    </path>
+                  </svg>
+                  <div class="nav_btn_text">
+                    Get Karta
+                  </div>
+                </a>
+              </div>
+              <!-- <details class="nav_lang-switch nav_lang-switch_desktop" id="nav-lang" data-toggle data-toggle-group="nav-dropdown">
+                <summary class="nav_lang-btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" class="nav_lang-globe">
+                        <path d="M21 12C21 16.9706 16.9706 21 12 21M21 12C21 7.02944 16.9706 3 12 3M21 12H3M12 21C7.02944 21 3 16.9706 3 12M12 21C13.6569 21 15 16.9706 15 12C15 7.02944 13.6569 3 12 3M12 21C10.3431 21 9 16.9706 9 12C9 7.02944 10.3431 3 12 3M3 12C3 7.02944 7.02944 3 12 3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" class="nav_lang-chevron">
+                        <path d="M19 9L12 16L5 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </summary>
+                <div class="nav_lang-dropdown">
+                    <div class="nav_lang-border">
+                        <ul class="nav_lang-list">                                                                                                <li class="nav_lang-item">
+                            <a href="/ar/" class="nav_lang-link">
+                                <span class="nav_lang-flag"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g clip-path="url(#clip0_15963_7286)">
+<path d="M12 24C18.6274 24 24 18.6274 24 12C24 5.37258 18.6274 0 12 0C5.37258 0 0 5.37258 0 12C0 18.6274 5.37258 24 12 24Z" fill="#6DA544"/>
+<path d="M6.7829 14.3476C6.7829 15.2121 7.48368 15.9128 8.3481 15.9128H13.0438C13.0438 16.6332 13.6277 17.2172 14.3481 17.2172H15.9133C16.6337 17.2172 17.2177 16.6332 17.2177 15.9128V14.3476H6.7829Z" fill="#F0F0F0"/>
+<path d="M17.3474 6.78308V10.4352C17.3474 11.0106 16.8793 11.4787 16.304 11.4787V13.0439C17.7424 13.0439 18.9126 11.8737 18.9126 10.4352V6.78308H17.3474Z" fill="#F0F0F0"/>
+<path d="M6.13037 10.435C6.13037 11.0104 5.66227 11.4785 5.08688 11.4785V13.0437C6.52534 13.0437 7.69557 11.8734 7.69557 10.435V6.78282H6.13037V10.435Z" fill="#F0F0F0"/>
+<path d="M16.5655 6.78308H15.0003V10.4353H16.5655V6.78308Z" fill="#F0F0F0"/>
+<path d="M12.6521 8.87005C12.6521 9.01391 12.535 9.13091 12.3912 9.13091C12.2474 9.13091 12.1304 9.01386 12.1304 8.87005V6.78308H10.5652V8.87005C10.5652 9.01391 10.4481 9.13091 10.3043 9.13091C10.1605 9.13091 10.0434 9.01386 10.0434 8.87005V6.78308H8.47818V8.87005C8.47818 9.87697 9.29737 10.6962 10.3043 10.6962C10.6921 10.6962 11.0517 10.5743 11.3478 10.3673C11.6438 10.5742 12.0035 10.6962 12.3913 10.6962C12.4694 10.6962 12.5461 10.6907 12.6217 10.6811C12.5108 11.138 12.0992 11.4787 11.6086 11.4787V13.0439C13.0471 13.0439 14.2173 11.8737 14.2173 10.4353V8.87005V6.78308H12.6521V8.87005H12.6521Z" fill="#F0F0F0"/>
+<path d="M10.826 11.4781H8.47818V13.0433H10.826V11.4781Z" fill="#F0F0F0"/>
+</g>
+<defs>
+<clipPath id="clip0_15963_7286">
+<rect width="24" height="24" fill="white"/>
+</clipPath>
+</defs>
+</svg></span>
+                                العربية                            </a>
+                        </li>
+                                                                        <li class="nav_lang-item">
+                            <a href="/es/" class="nav_lang-link">
+                                <span class="nav_lang-flag"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g clip-path="url(#clip0_15963_7347)">
+<path d="M-3.05176e-05 11.9992C-3.05176e-05 13.4671 0.264016 14.8731 0.74636 16.1731L12 17.2166L23.2536 16.1731C23.7359 14.8731 24 13.4671 24 11.9992C24 10.5314 23.7359 9.12533 23.2536 7.82534L12 6.78186L0.74636 7.82534C0.264016 9.12533 -3.05176e-05 10.5314 -3.05176e-05 11.9992Z" fill="#FFDA44"/>
+<path d="M23.2551 7.82574C21.5596 3.25618 17.1611 -0.000366211 12.0015 -0.000366211C6.84192 -0.000366211 2.44341 3.25618 0.747894 7.82574H23.2551Z" fill="#D80027"/>
+<path d="M0.746918 16.174C2.44243 20.7435 6.84095 24.0001 12.0005 24.0001C17.1601 24.0001 21.5586 20.7435 23.2541 16.174H0.746918Z" fill="#D80027"/>
+</g>
+<defs>
+<clipPath id="clip0_15963_7347">
+<rect width="24" height="24" fill="white"/>
+</clipPath>
+</defs>
+</svg></span>
+                                Español                            </a>
+                        </li>
+                                                                                                                        <li class="nav_lang-item">
+                            <a href="/pt/" class="nav_lang-link">
+                                <span class="nav_lang-flag"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g clip-path="url(#clip0_15963_7365)">
+<path d="M-0.000396729 12.0007C-0.000396729 17.1602 3.2561 21.5587 7.82562 23.2542L8.86915 12.0006L7.82562 0.74707C3.2561 2.44263 -0.000396729 6.8411 -0.000396729 12.0007Z" fill="#6DA544"/>
+<path d="M24.0001 11.9999C24.0001 5.37256 18.6275 -6.10352e-05 12.0001 -6.10352e-05C10.5323 -6.10352e-05 9.12617 0.263986 7.82614 0.74633V23.2535C9.12617 23.7359 10.5323 23.9999 12.0001 23.9999C18.6275 23.9999 24.0001 18.6273 24.0001 11.9999Z" fill="#D80027"/>
+<path d="M7.82623 16.1745C10.1314 16.1745 12.0001 14.3058 12.0001 12.0006C12.0001 9.69544 10.1314 7.82672 7.82623 7.82672C5.52106 7.82672 3.65234 9.69544 3.65234 12.0006C3.65234 14.3058 5.52106 16.1745 7.82623 16.1745Z" fill="#FFDA44"/>
+<path d="M5.47775 9.9126V12.5213C5.47775 13.8179 6.52888 14.8691 7.82558 14.8691C9.12229 14.8691 10.1734 13.818 10.1734 12.5213V9.9126H5.47775Z" fill="#D80027"/>
+<path d="M7.82623 13.3038C7.3947 13.3038 7.04361 12.9527 7.04361 12.5212V11.4777H8.60881V12.5212C8.60881 12.9527 8.25772 13.3038 7.82623 13.3038Z" fill="#F0F0F0"/>
+</g>
+<defs>
+<clipPath id="clip0_15963_7365">
+<rect width="24" height="24" fill="white"/>
+</clipPath>
+</defs>
+</svg></span>
+                                Português                            </a>
+                        </li>
+                                                                                                                                                </ul>
+                    </div>
+                </div>
+            </details> -->
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="page_inner">
+        <!-- @component hero -->
+        <!-- @component features -->
+        <!-- @component cverage -->
+        <!-- @component clarity -->
+        <!-- @component people -->
+        <!-- @component atm -->
+        <!-- @component limits -->
+        <!-- @component section-9 -->
+        <!-- @component control -->
+        <!-- @component footer -->
+        <div class="footer_info-wrap">
+          <div class="footer_info_text">
+            Karta products may not be available to all customers.
+          </div>
+          <div class="footer_info_text">
+            We are a financial technology company, not a bank. We are not insured by the FDIC.
+          </div>
+          <details class="nav_lang-switch nav_lang-switch_footer nav_lang-switch_upward" id="footer-lang" data-toggle="" data-toggle-group="footer-lang-dropdown" data-group="footer-lang-dropdown">
+            <summary class="nav_lang-btn">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" class="nav_lang-globe">
+                <path d="M21 12C21 16.9706 16.9706 21 12 21M21 12C21 7.02944 16.9706 3 12 3M21 12H3M12 21C7.02944 21 3 16.9706 3 12M12 21C13.6569 21 15 16.9706 15 12C15 7.02944 13.6569 3 12 3M12 21C10.3431 21 9 16.9706 9 12C9 7.02944 10.3431 3 12 3M3 12C3 7.02944 7.02944 3 12 3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                </path>
+              </svg>
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" class="nav_lang-chevron">
+                <path d="M19 9L12 16L5 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+              </svg>
+            </summary>
+            <div class="nav_lang-dropdown">
+              <div class="nav_lang-border">
+                <ul class="nav_lang-list">
+                  <li class="nav_lang-item">
+                    <a href="/ar/" class="nav_lang-link">
+                      <span class="nav_lang-flag">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <g clip-path="url(#clip0_15963_7286)">
+                            <path d="M12 24C18.6274 24 24 18.6274 24 12C24 5.37258 18.6274 0 12 0C5.37258 0 0 5.37258 0 12C0 18.6274 5.37258 24 12 24Z" fill="#6DA544">
+                            </path>
+                            <path d="M6.7829 14.3476C6.7829 15.2121 7.48368 15.9128 8.3481 15.9128H13.0438C13.0438 16.6332 13.6277 17.2172 14.3481 17.2172H15.9133C16.6337 17.2172 17.2177 16.6332 17.2177 15.9128V14.3476H6.7829Z" fill="#F0F0F0">
+                            </path>
+                            <path d="M17.3474 6.78308V10.4352C17.3474 11.0106 16.8793 11.4787 16.304 11.4787V13.0439C17.7424 13.0439 18.9126 11.8737 18.9126 10.4352V6.78308H17.3474Z" fill="#F0F0F0">
+                            </path>
+                            <path d="M6.13037 10.435C6.13037 11.0104 5.66227 11.4785 5.08688 11.4785V13.0437C6.52534 13.0437 7.69557 11.8734 7.69557 10.435V6.78282H6.13037V10.435Z" fill="#F0F0F0">
+                            </path>
+                            <path d="M16.5655 6.78308H15.0003V10.4353H16.5655V6.78308Z" fill="#F0F0F0"></path>
+                            <path d="M12.6521 8.87005C12.6521 9.01391 12.535 9.13091 12.3912 9.13091C12.2474 9.13091 12.1304 9.01386 12.1304 8.87005V6.78308H10.5652V8.87005C10.5652 9.01391 10.4481 9.13091 10.3043 9.13091C10.1605 9.13091 10.0434 9.01386 10.0434 8.87005V6.78308H8.47818V8.87005C8.47818 9.87697 9.29737 10.6962 10.3043 10.6962C10.6921 10.6962 11.0517 10.5743 11.3478 10.3673C11.6438 10.5742 12.0035 10.6962 12.3913 10.6962C12.4694 10.6962 12.5461 10.6907 12.6217 10.6811C12.5108 11.138 12.0992 11.4787 11.6086 11.4787V13.0439C13.0471 13.0439 14.2173 11.8737 14.2173 10.4353V8.87005V6.78308H12.6521V8.87005H12.6521Z" fill="#F0F0F0">
+                            </path>
+                            <path d="M10.826 11.4781H8.47818V13.0433H10.826V11.4781Z" fill="#F0F0F0"></path>
+                          </g>
+                          <defs>
+                            <clipPath id="clip0_15963_7286">
+                              <rect width="24" height="24" fill="white"></rect>
+                            </clipPath>
+                          </defs>
+                        </svg>
+                      </span>
+                      العربية
+                    </a>
+                  </li>
+                  <li class="nav_lang-item">
+                    <a href="/es/" class="nav_lang-link">
+                      <span class="nav_lang-flag">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <g clip-path="url(#clip0_15963_7347)">
+                            <path d="M-3.05176e-05 11.9992C-3.05176e-05 13.4671 0.264016 14.8731 0.74636 16.1731L12 17.2166L23.2536 16.1731C23.7359 14.8731 24 13.4671 24 11.9992C24 10.5314 23.7359 9.12533 23.2536 7.82534L12 6.78186L0.74636 7.82534C0.264016 9.12533 -3.05176e-05 10.5314 -3.05176e-05 11.9992Z" fill="#FFDA44">
+                            </path>
+                            <path d="M23.2551 7.82574C21.5596 3.25618 17.1611 -0.000366211 12.0015 -0.000366211C6.84192 -0.000366211 2.44341 3.25618 0.747894 7.82574H23.2551Z" fill="#D80027">
+                            </path>
+                            <path d="M0.746918 16.174C2.44243 20.7435 6.84095 24.0001 12.0005 24.0001C17.1601 24.0001 21.5586 20.7435 23.2541 16.174H0.746918Z" fill="#D80027">
+                            </path>
+                          </g>
+                          <defs>
+                            <clipPath id="clip0_15963_7347">
+                              <rect width="24" height="24" fill="white"></rect>
+                            </clipPath>
+                          </defs>
+                        </svg>
+                      </span>
+                      Español
+                    </a>
+                  </li>
+                  <li class="nav_lang-item">
+                    <a href="/pt/" class="nav_lang-link">
+                      <span class="nav_lang-flag">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <g clip-path="url(#clip0_15963_7365)">
+                            <path d="M-0.000396729 12.0007C-0.000396729 17.1602 3.2561 21.5587 7.82562 23.2542L8.86915 12.0006L7.82562 0.74707C3.2561 2.44263 -0.000396729 6.8411 -0.000396729 12.0007Z" fill="#6DA544">
+                            </path>
+                            <path d="M24.0001 11.9999C24.0001 5.37256 18.6275 -6.10352e-05 12.0001 -6.10352e-05C10.5323 -6.10352e-05 9.12617 0.263986 7.82614 0.74633V23.2535C9.12617 23.7359 10.5323 23.9999 12.0001 23.9999C18.6275 23.9999 24.0001 18.6273 24.0001 11.9999Z" fill="#D80027">
+                            </path>
+                            <path d="M7.82623 16.1745C10.1314 16.1745 12.0001 14.3058 12.0001 12.0006C12.0001 9.69544 10.1314 7.82672 7.82623 7.82672C5.52106 7.82672 3.65234 9.69544 3.65234 12.0006C3.65234 14.3058 5.52106 16.1745 7.82623 16.1745Z" fill="#FFDA44">
+                            </path>
+                            <path d="M5.47775 9.9126V12.5213C5.47775 13.8179 6.52888 14.8691 7.82558 14.8691C9.12229 14.8691 10.1734 13.818 10.1734 12.5213V9.9126H5.47775Z" fill="#D80027">
+                            </path>
+                            <path d="M7.82623 13.3038C7.3947 13.3038 7.04361 12.9527 7.04361 12.5212V11.4777H8.60881V12.5212C8.60881 12.9527 8.25772 13.3038 7.82623 13.3038Z" fill="#F0F0F0">
+                            </path>
+                          </g>
+                          <defs>
+                            <clipPath id="clip0_15963_7365">
+                              <rect width="24" height="24" fill="white"></rect>
+                            </clipPath>
+                          </defs>
+                        </svg>
+                      </span>
+                      Português
+                    </a>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </details>
+        </div>
+      </div>
+    </main>
+    <script>
+      document.documentElement.classList.add('js');
+    </script>
+    <script src="js/karta-attr.js?v=1791195360" defer="">
+      
+    </script>
+    <script>
+      (function() {
+      var loaded = false;
+      function load() {
+      if (loaded) return;
+      loaded = true;
+      window.intercomSettings = { api_base: "https://api-iam.intercom.io", app_id: "svum8srr" };
+      (function(){var w=window;var ic=w.Intercom;if(typeof ic==="function"){ic('reattach_activator');ic('update',w.intercomSettings);}else{var d=document;var i=function(){i.c(arguments);};i.q=[];i.c=function(args){i.q.push(args);};w.Intercom=i;var l=function(){var s=d.createElement('script');s.type='text/javascript';s.async=true;s.src='https://widget.intercom.io/widget/svum8srr';var x=d.getElementsByTagName('script')[0];x.parentNode.insertBefore(s,x);};if(document.readyState==='complete'){l();}else if(w.attachEvent){w.attachEvent('onload',l);}else{w.addEventListener('load',l,false);}}})();
+      ['mousemove','scroll','touchstart','click'].forEach(function(e) {
+      window.removeEventListener(e, load);
+      });
+      }
+      ['mousemove','scroll','touchstart','click'].forEach(function(e) {
+      window.addEventListener(e, load, { passive: true, once: true });
+      });
+      setTimeout(load, 1000);
+      })();
+    </script>
+    <!-- <script src="https://cdn.prod.website-files.com/gsap/3.15.0/gsap.min.js" type="text/javascript" defer></script> -->
+    <!-- <script src="https://cdn.prod.website-files.com/gsap/3.15.0/ScrollTrigger.min.js" type="text/javascript" defer></script> -->
+    <script src="js/personal/atm-video-scroll.js?v=1791195360" defer="">
+      
+    </script>
+    <!-- <script src="js/personal/hero-animation.js?v=1791195360" defer></script> -->
+    <!-- <script src="js/personal/payments-animation.js?v=1791195360" defer></script> -->
+    <script src="js/modules/theme-toggle.js?v=1791195360" defer="">
+      
+    </script>
+    <script src="js/personal/atm-theme-scroll.js?v=1791195360" defer="">
+      
+    </script>
+    <script src="js/modules/slider.js?v=1791195360" defer="">
+      
+    </script>
+    <script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4bc70e2c01a94c73b74392e4234840661791215815920" integrity="sha512-L0ha0OXavK/8okipN9F8BtP84dg9DUhPERbBXzwI6dgTA55d2+yweo3pn5CSFYs45/r8md2+xvUPtTdvTNRfjA==" data-cf-beacon="{&quot;version&quot;:&quot;2024.11.0&quot;,&quot;token&quot;:&quot;b7a461e569194acfa2de94c775110d3d&quot;,&quot;r&quot;:1,&quot;spa&quot;:2}" crossorigin="anonymous">
+      
+    </script>
+    <script>
+      // Universal Snapshot Runtime Shim
+      (function() {
+      function initUniversalSnapshot() {
+      // 1. Universal Cookie / Dialog Dismissal Handler (Capture Phase)
+      function setupDismissableBanners() {
+      const STORAGE_KEY = 'snapshot_cookie_consent';
+      let isDismissed = null;
+      try { isDismissed = localStorage.getItem(STORAGE_KEY); } catch (_) {}
+      const isConsentDialog = (el) => /cookie|consent|privacy/i.test(
+      [el.id, typeof el.className === 'string' ? el.className : '', el.textContent || ''].join(' ')
+      );
+      const dialogs = [...document.querySelectorAll('[role="dialog"], [class*="cookie"], [class*="consent"], [id*="cookie"], [id*="consent"]')]
+      .filter(isConsentDialog);
+      if (isDismissed === 'accepted' || isDismissed === 'declined') {
+      dialogs.forEach(d => d.remove());
+      return;
+      }
+      document.addEventListener('click', function(e) {
+      const btn = e.target.closest('button');
+      if (!btn) return;
+      const dialog = btn.closest('[role="dialog"], [class*="cookie"], [class*="consent"], [id*="cookie"], [id*="consent"]');
+      if (dialog && isConsentDialog(dialog)) {
+      e.preventDefault();
+      e.stopPropagation();
+      const text = (btn.textContent || '').trim();
+      const choice = text.includes('ยอมรับ') || text.toLowerCase().includes('accept') ? 'accepted' : 'declined';
+      try { localStorage.setItem(STORAGE_KEY, choice); } catch (_) {}
+      dialog.remove();
+      }
+      }, true);
+      }
+      
+      // 2. Astro / React Island Rehydration Bridge
+      function rehydrateIslands() {
+      const islands = document.querySelectorAll('astro-island');
+      islands.forEach(async (island) => {
+      // Preserve the captured visual state. Forcing entrance animations back to
+      // opacity: 0 leaves static snapshots invisible because no animation driver
+      // may run after the original page runtime has been removed.
+      
+      // React hydrator requires 'ssr' attribute
+      if (!island.hasAttribute('ssr')) {
+      island.setAttribute('ssr', '');
+      }
+      
+      if (typeof island.hydrate === 'function') {
+      try {
+      await island.hydrate();
+      } catch (err) {
+      console.warn('[SnapshotHydrator] Failed to rehydrate island:', island, err);
+      }
+      }
+      });
+      }
+      
+      setupDismissableBanners();
+      setTimeout(rehydrateIslands, 60);
+      }
+      
+      if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => setTimeout(initUniversalSnapshot, 50));
+      } else {
+      setTimeout(initUniversalSnapshot, 50);
+      }
+      })();
+    </script>
+  </body>
+</html>

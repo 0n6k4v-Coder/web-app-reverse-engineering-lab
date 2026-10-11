@@ -1,0 +1,1768 @@
+<html lang="en" dir="ltr" class="js w-mod-js">
+  <head>
+    <script>
+      // Universal Early Hydration Shield & Framework Prop Symmetrizer
+      (function() {
+      function symmetrizeFrameworkProps() {
+      try {
+      const octaneScript = document.getElementById('__OCTANE_HOME_PROPS__');
+      if (octaneScript && octaneScript.textContent) {
+      const props = JSON.parse(octaneScript.textContent);
+      let modified = false;
+      if (!props.signedInHomeNavigation && (props.heading || props.mobileHeading)) {
+      props.signedInHomeNavigation = {
+      heading: props.heading || 'Where should we begin?',
+      mobileHeading: props.mobileHeading || 'What are you working on?'
+      };
+      modified = true;
+      }
+      if (props.defaultHome !== true) {
+      props.defaultHome = true;
+      modified = true;
+      }
+      if (modified) {
+      octaneScript.textContent = JSON.stringify(props);
+      window.__OCTANE_HOME_PROPS__ = props;
+      }
+      }
+      } catch (_) {}
+      }
+      symmetrizeFrameworkProps();
+      
+      const preservedHeadings = new Map();
+      function captureLandmarks() {
+      document.querySelectorAll('h1, [data-mobile-landing-heading], [data-composer-positioner] > :first-child').forEach((el, idx) => {
+      if (el && el.textContent && el.textContent.trim() && !preservedHeadings.has(idx)) {
+      preservedHeadings.set(idx, {
+      node: el.cloneNode(true),
+      parent: el.parentElement,
+      selector: el.getAttribute('data-mobile-landing-heading') !== null ? '[data-mobile-landing-heading]' : 'h1'
+      });
+      }
+      });
+      }
+      
+      function ensureLandmarks() {
+      captureLandmarks();
+      preservedHeadings.forEach((info) => {
+      const current = document.querySelector(info.selector);
+      if (!current) {
+      const positioner = document.querySelector('[data-composer-positioner]');
+      if (positioner) {
+      let slot = positioner.firstElementChild;
+      if (!slot) {
+      slot = document.createElement('div');
+      slot.className = 'xjp7ctv';
+      positioner.insertBefore(slot, positioner.firstChild);
+      }
+      if (!slot.querySelector(info.selector)) {
+      slot.innerHTML = '';
+      slot.appendChild(info.node.cloneNode(true));
+      }
+      } else if (info.parent && document.contains(info.parent)) {
+      if (!info.parent.querySelector(info.selector)) {
+      info.parent.appendChild(info.node.cloneNode(true));
+      }
+      }
+      }
+      });
+      }
+      
+      // Interactive Input Guardian: Preserves prompt composers & inputs across SPA reconcilers
+      const preservedInputs = new Map();
+      function captureInputs() {
+      document.querySelectorAll('textarea, input:not([type="hidden"]), [data-composer-editor-host]').forEach((el) => {
+      if (el.matches('[data-composer-editor-host]')) {
+      const ta = el.querySelector('textarea, [contenteditable="true"]');
+      if (ta && !preservedInputs.has('composer')) {
+      preservedInputs.set('composer', {
+      hostSelector: '[data-composer-editor-host]',
+      textareaHtml: ta.outerHTML,
+      id: ta.id,
+      placeholder: ta.getAttribute('placeholder') || 'Ask ChatGPT'
+      });
+      }
+      } else if (el.tagName === 'TEXTAREA' && el.id && !preservedInputs.has(el.id)) {
+      preservedInputs.set(el.id, {
+      hostSelector: '#' + el.id,
+      textareaHtml: el.outerHTML,
+      id: el.id,
+      placeholder: el.getAttribute('placeholder') || ''
+      });
+      }
+      });
+      }
+      
+      function ensureInputs() {
+      captureInputs();
+      preservedInputs.forEach((info, key) => {
+      if (key === 'composer') {
+      const hosts = document.querySelectorAll(info.hostSelector);
+      hosts.forEach(host => {
+      let ta = host.querySelector('textarea, [contenteditable="true"]');
+      if (!ta) {
+      host.innerHTML = info.textareaHtml;
+      ta = host.querySelector('textarea');
+      if (ta) {
+      ta.removeAttribute('disabled');
+      ta.style.pointerEvents = 'auto';
+      ta.style.userSelect = 'text';
+      }
+      }
+      if (ta && !ta.dataset.guardianAttached) {
+      ta.dataset.guardianAttached = 'true';
+      ta.addEventListener('input', () => {
+      ta.style.height = 'auto';
+      ta.style.height = Math.min(ta.scrollHeight, 200) + 'px';
+      });
+      }
+      });
+      }
+      });
+      }
+      
+      // Action & Popover Control Bridge
+      function setupActionPopoverBridge() {
+      document.addEventListener('click', function(e) {
+      const targetBtn = e.target.closest('[popovertarget]');
+      if (targetBtn) {
+      const targetId = targetBtn.getAttribute('popovertarget');
+      const popover = document.getElementById(targetId);
+      if (popover && typeof popover.togglePopover === 'function') {
+      setTimeout(() => {
+      try {
+      if (!popover.matches(':popover-open')) {
+      popover.showPopover();
+      }
+      } catch (_) {}
+      }, 0);
+      }
+      }
+      }, true);
+      
+      document.addEventListener('click', function(e) {
+      const popover = document.querySelector('[popover]:popover-open');
+      if (popover) {
+      const action = e.target.closest('[popover] button, [popover] [role="menuitem"], [popover] a');
+      if (action && typeof popover.hidePopover === 'function') {
+      setTimeout(() => {
+      try { popover.hidePopover(); } catch (_) {}
+      }, 50);
+      }
+      }
+      });
+      }
+      setupActionPopoverBridge();
+      
+      const origRemoveChild = Node.prototype.removeChild;
+      Node.prototype.removeChild = function(child) {
+      if (child && (
+      child.tagName === 'H1' ||
+      (child.hasAttribute && child.hasAttribute('data-mobile-landing-heading')) ||
+      child.tagName === 'TEXTAREA' ||
+      (child.hasAttribute && child.hasAttribute('data-composer-editor-host'))
+      )) {
+      setTimeout(() => { ensureLandmarks(); ensureInputs(); }, 0);
+      }
+      return origRemoveChild.apply(this, arguments);
+      };
+      
+      if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => {
+      captureLandmarks(); ensureLandmarks();
+      captureInputs(); ensureInputs();
+      });
+      } else {
+      captureLandmarks(); ensureLandmarks();
+      captureInputs(); ensureInputs();
+      }
+      
+      try {
+      const observer = new MutationObserver(() => {
+      ensureLandmarks();
+      ensureInputs();
+      });
+      observer.observe(document.documentElement, { childList: true, subtree: true });
+      setTimeout(() => { ensureLandmarks(); ensureInputs(); }, 1000);
+      setTimeout(() => { ensureLandmarks(); ensureInputs(); }, 2500);
+      setTimeout(() => { ensureLandmarks(); ensureInputs(); }, 5000);
+      } catch (_) {}
+      })();
+    </script>
+    <link rel="icon" type="image/x-icon" href="./favicon.ico">
+    <link rel="shortcut icon" href="./favicon.ico">
+    <meta charset="utf-8">
+    <base href="./">
+    <title>Karta | Virtual crypto card </title>
+    <link rel="alternate" hreflang="en" href="https://karta.io">
+    <link rel="alternate" hreflang="ar" href="https://karta.io/ar">
+    <link rel="alternate" hreflang="es" href="https://karta.io/es">
+    <link rel="alternate" hreflang="pt" href="https://karta.io/pt">
+    <link rel="alternate" hreflang="x-default" href="https://karta.io">
+    <meta content="A virtual VISA card for any cryptocurrency payments. Receive and send international payments and get 25% cashback on purchases. Join Karta.io!" name="description">
+    <meta content="Karta - Make Your Crypto Spendable" property="og:title">
+    <meta content="Finance without borders. Karta offers self-custody crypto wallets, Visa Signature cards, borderless multi-currency accounts, and global payment solutions." property="og:description">
+    <meta content="/uploads/pages/page-index.jpg" property="og:image">
+    <meta content="Karta - Make Your Crypto Spendable" name="twitter:title">
+    <meta content="Finance without borders. Karta offers self-custody crypto wallets, Visa Signature cards, borderless multi-currency accounts, and global payment solutions." name="twitter:description">
+    <meta content="/uploads/pages/page-index.jpg" name="twitter:image">
+    <meta property="og:type" content="website">
+    <meta content="summary_large_image" name="twitter:card">
+    <link href="https://karta.io" rel="canonical">
+    <script type="text/javascript" async="" src="https://widget.intercom.io/widget/svum8srr">
+      
+    </script>
+    <script type="text/javascript" async="" data-global-segment-analytics-key="analytics" src="https://cdn.segment.com/analytics.js/v1/Qqp2aeCHfSoU6xxNDHi968OgKky8FAbT/analytics.min.js">
+      
+    </script>
+    <script async="" src="https://connect.facebook.net/en_US/fbevents.js">
+      
+    </script>
+    <script type="application/ld+json">
+      {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "Karta Personal",
+      "description": "A virtual VISA card for any cryptocurrency payments. Receive and send international payments and get cashback on purchases.",
+      "url": "/",
+      "applicationCategory": "FinanceApplication",
+      "operatingSystem": "iOS, Android, Web",
+      "offers": {
+      "@type": "Offer",
+      "price": "5.00",
+      "priceCurrency": "USDT",
+      "description": "Visa Virtual Card Activation"
+      },
+      "featureList": [
+      "Virtual and physical Visa Signature cards",
+      "Cryptocurrency payments and wallet management",
+      "International payments via stablecoins, US and EU accounts",
+      "Cashback rewards program",
+      "Global ATM access",
+      "Apple Pay and Google Pay support",
+      "AI finance assistance",
+      "Referral rewards system"
+      ],
+      "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": "4.5",
+      "ratingCount": "20000"
+      },
+      "provider": {
+      "@type": "Organization",
+      "name": "Karta",
+      "url": "https://karta.io",
+      "logo": {
+      "@type": "ImageObject",
+      "url": "https://cdn.prod.website-files.com/69af1d886ee490d45ed747eb/69b94badd96bcc31234ecd09_Component%202.svg"
+      },
+      "sameAs": ["https://t.me/Karta"]
+      },
+      "inLanguage": "en"
+      }
+    </script>
+    <meta content="width=device-width, initial-scale=1" name="viewport">
+    <meta name="facebook-domain-verification" content="5n86utr8awg7s2rriz380gw6gdl0ul">
+    <meta name="google-site-verification" content="_EGuAA9IsZ_rCwoimGIHozY8ybpZM8kDodgNQgZ8eRE">
+    <link href="./images/favicon--favicon.png" rel="icon" type="image/png" sizes="32x32" media="(prefers-color-scheme: light)">
+    <link href="./images/favicon-dark--favicon-dark.png" rel="icon" type="image/png" sizes="32x32" media="(prefers-color-scheme: dark)">
+    <link href="./images/webclip--webclip.png" rel="apple-touch-icon">
+    <link href="css/variables.css?v=1791195360" rel="stylesheet" type="text/css">
+    <link href="css/style.css?v=1791195360" rel="stylesheet" type="text/css">
+    <link href="css/main.css?v=1791195360" rel="stylesheet" type="text/css">
+    <script>
+      document.documentElement.classList.add('js');
+    </script>
+    <script>
+      (function(w,i,g){w[g]=w[g]||[];if(typeof w[g].push=='function')w[g].push.apply(w[g],Array.isArray(i)?i:[i]);})(window,['G-DJK1E9SN6C'],'google_tags_first_party');
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('set', 'developer_id.dZGVlNj', true);
+      gtag('set', 'developer_id.dYWYxNW', true);
+      gtag('js', new Date());
+      gtag('config', 'G-DJK1E9SN6C');
+      (function () {
+      var loaded = false;
+      function loadGtag() {
+      if (loaded) return;
+      loaded = true;
+      var s = document.createElement('script');
+      s.async = true;
+      s.src = 'https://www.googletagmanager.com/gtag/js?id=G-DJK1E9SN6C';
+      document.head.appendChild(s);
+      }
+      if (window.requestIdleCallback) {
+      requestIdleCallback(loadGtag, { timeout: 3500 });
+      } else {
+      setTimeout(loadGtag, 3500);
+      }
+      ['pointerdown', 'keydown', 'scroll', 'touchstart'].forEach(function (evt) {
+      window.addEventListener(evt, loadGtag, { once: true, passive: true });
+      });
+      })();
+      (function () {
+      var loaded = false;
+      function loadTrackers() {
+      if (loaded) return;
+      loaded = true;
+      var fb = document.createElement('script');
+      fb.src = 'js/facebook-pixel.js?v=1791195360';
+      document.head.appendChild(fb);
+      var segment = document.createElement('script');
+      segment.src = 'js/segment.js?v=1791195360';
+      segment.onload = function () {
+      var middleware = document.createElement('script');
+      middleware.src = 'js/segment-middleware.js?v=1791195360';
+      document.head.appendChild(middleware);
+      };
+      document.head.appendChild(segment);
+      }
+      if (window.requestIdleCallback) {
+      requestIdleCallback(loadTrackers, { timeout: 3500 });
+      } else {
+      setTimeout(loadTrackers, 3500);
+      }
+      ['pointerdown', 'keydown', 'scroll', 'touchstart'].forEach(function (evt) {
+      window.addEventListener(evt, loadTrackers, { once: true, passive: true });
+      });
+      })();
+    </script>
+    <script src="js/morph-canvas.js?v=1791195360" defer="">
+      
+    </script>
+    <script src="js/nav-menu.js?v=1791195360" defer="">
+      
+    </script>
+    <script src="js/spoiler.js?v=1791195360" defer="">
+      
+    </script>
+    <!-- js -->
+    <script type="text/javascript">
+      !function(o,c){var n=c.documentElement,t=" w-mod-";n.className+=t+"js",("ontouchstart"in o||o.DocumentTouch&&c instanceof DocumentTouch)&&(n.className+=t+"touch")}(window,document);
+    </script>
+    <script src="js/personal/time-update.js?v=1791195360" defer="">
+      
+    </script>
+    <!-- <script src="js/personal/dynamic-scale.js?v=1791195360" defer></script> -->
+    <script src="js/personal/counter.js?v=1791195360" defer="">
+      
+    </script>
+    <script async="" src="https://www.googletagmanager.com/gtag/js?id=G-DJK1E9SN6C">
+      
+    </script>
+    <script src="js/facebook-pixel.js?v=1791195360">
+      
+    </script>
+    <script src="js/segment.js?v=1791195360">
+      
+    </script>
+    <script src="js/segment-middleware.js?v=1791195360">
+      
+    </script>
+    <link rel="stylesheet" href="/src/css/inline-head.css">
+  </head>
+  <body class="">
+    <main class="page-wrap">
+      <div id="nav" role="banner" class="nav">
+        <div class="nav-wrap">
+          <div class="nav_btn-body">
+            <div class="nav_logo">
+              <a href="/" aria-label="Personal" aria-current="page" class="logo current-page">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 26" width="100px">
+                  <path d="M72.7265 18.5273C72.7265 18.2167 72.4747 17.965 72.1641 17.965H72.033C71.4387 17.965 70.8333 17.9981 70.2169 18.0642C69.6226 18.1083 69.0832 18.2076 68.5989 18.3619C68.1367 18.5163 67.7514 18.7478 67.4432 19.0566C67.135 19.3432 66.9809 19.7292 66.9809 20.2143C66.9809 20.523 67.047 20.7877 67.1791 21.0082C67.3332 21.2287 67.5203 21.4051 67.7404 21.5374C67.9605 21.6698 68.2137 21.769 68.4999 21.8352C68.7861 21.8793 69.0612 21.9013 69.3254 21.9013C70.4261 21.9013 71.2626 21.6036 71.8349 21.0082C72.4293 20.3907 72.7265 19.5638 72.7265 18.5273ZM63.1662 11.5908C62.9562 11.3652 62.9653 11.0113 63.1999 10.8114C64.0708 10.0692 65.056 9.49877 66.1554 9.09999C67.4542 8.6369 68.775 8.40535 70.1179 8.40535C71.5047 8.40535 72.6714 8.58177 73.618 8.9346C74.5866 9.26539 75.3681 9.79464 75.9624 10.5224C76.5568 11.228 76.9861 12.1322 77.2502 13.2348C77.5364 14.3153 77.7463 15.3408 77.7463 16.8403V24.601C77.7463 24.9121 77.4941 25.1643 77.1829 25.1643H73.2393C72.9281 25.1643 72.6759 24.9121 72.6759 24.601V23.4209C72.6759 23.4037 72.662 23.3898 72.6448 23.3898C72.634 23.3898 72.624 23.3955 72.6183 23.4047C72.1999 24.0811 71.5645 24.6054 70.7122 24.9776C69.8757 25.3525 68.9622 25.5399 67.9716 25.5399C67.3111 25.5399 66.6287 25.4517 65.9243 25.2753C65.2199 25.0989 64.5705 24.8122 63.9761 24.4153C63.4038 24.0183 62.9305 23.4891 62.5562 22.8275C62.182 22.1659 61.9949 21.35 61.9949 20.3797C61.9949 19.1889 62.3141 18.2296 62.9525 17.5019C63.6129 16.7742 64.4494 16.2118 65.462 15.8149C66.4966 15.418 67.6414 15.1533 68.8961 15.021C69.9535 14.9095 70.9875 14.845 71.998 14.8275C72.3091 14.8221 72.5703 14.5676 72.5098 14.2624C72.4039 13.728 72.1349 13.3193 71.7028 13.0363C71.1305 12.6394 70.4261 12.4409 69.5895 12.4409C68.8191 12.4409 68.0706 12.6063 67.3442 12.9371C66.8285 13.1792 66.3659 13.4568 65.9564 13.7699C65.7107 13.9577 65.3582 13.9455 65.1475 13.7192L63.1662 11.5908Z">
+                  </path>
+                  <path d="M115.047 18.5273C115.047 18.2167 114.795 17.965 114.485 17.965H114.354C113.759 17.965 113.154 17.9981 112.537 18.0642C111.943 18.1083 111.404 18.2076 110.919 18.3619C110.457 18.5163 110.072 18.7478 109.764 19.0566C109.456 19.3432 109.301 19.7292 109.301 20.2143C109.301 20.523 109.368 20.7877 109.5 21.0082C109.654 21.2287 109.841 21.4051 110.061 21.5374C110.281 21.6698 110.534 21.769 110.82 21.8352C111.107 21.8793 111.382 21.9013 111.646 21.9013C112.747 21.9013 113.583 21.6036 114.155 21.0082C114.75 20.3907 115.047 19.5638 115.047 18.5273ZM105.487 11.5908C105.277 11.3652 105.286 11.0113 105.52 10.8114C106.391 10.0692 107.377 9.49877 108.476 9.09999C109.775 8.6369 111.096 8.40535 112.438 8.40535C113.825 8.40535 114.992 8.58177 115.939 8.9346C116.907 9.26539 117.689 9.79464 118.283 10.5224C118.877 11.228 119.307 12.1322 119.571 13.2348C119.857 14.3153 120 15.3408 120 16.8403V24.601C120 24.9121 119.748 25.1643 119.437 25.1643H115.681C115.37 25.1643 115.117 24.9121 115.117 24.601V23.4984C115.117 23.4384 115.069 23.3898 115.009 23.3898C114.971 23.3898 114.936 23.4096 114.916 23.4415C114.497 24.1002 113.87 24.6122 113.033 24.9776C112.196 25.3525 111.283 25.5399 110.292 25.5399C109.632 25.5399 108.949 25.4517 108.245 25.2753C107.54 25.0989 106.891 24.8122 106.297 24.4153C105.724 24.0183 105.251 23.4891 104.877 22.8275C104.503 22.1659 104.315 21.35 104.315 20.3797C104.315 19.1889 104.635 18.2296 105.273 17.5019C105.933 16.7742 106.77 16.2118 107.783 15.8149C108.817 15.418 109.962 15.1533 111.217 15.021C112.274 14.9095 113.308 14.845 114.319 14.8275C114.63 14.8221 114.891 14.5676 114.83 14.2624C114.724 13.728 114.455 13.3193 114.023 13.0363C113.451 12.6394 112.747 12.4409 111.91 12.4409C111.14 12.4409 110.391 12.6063 109.665 12.9371C109.149 13.1792 108.686 13.4568 108.277 13.7699C108.031 13.9577 107.679 13.9455 107.468 13.7192L105.487 11.5908Z">
+                  </path>
+                  <path d="M85.6337 17.1357V24.601C85.6337 24.9121 85.3814 25.1643 85.0703 25.1643H80.751C80.4399 25.1643 80.1876 24.9121 80.1876 24.601V16.796C80.1876 10.2068 85.4018 8.6385 89.976 8.6385C90.0764 8.6385 90.3152 8.65147 90.545 8.66556C90.8446 8.68394 91.0751 8.93565 91.0724 9.23584C91.063 10.3024 91.0706 11.9176 91.0758 12.7664C91.0777 13.0793 90.8247 13.3316 90.5119 13.3401C88.5772 13.3923 85.6666 13.8254 85.6337 17.1357Z">
+                  </path>
+                  <path d="M99.3426 13.3333C99.0315 13.3333 98.7793 13.5856 98.7793 13.8967V18.6381C98.7793 19.41 98.8485 19.9943 99.1346 20.3913C99.4428 20.7662 99.9822 21.2207 100.753 21.2207H102.347V24.6813C102.347 24.9498 102.159 25.1805 101.894 25.2279C101.244 25.3445 100.039 25.5399 99.2667 25.5399C98.166 25.5399 97.2415 25.4076 96.493 25.143C95.7446 24.8563 95.1392 24.4594 94.6769 23.9522C94.2366 23.4229 93.9174 22.8054 93.7193 22.0998C93.5212 21.3721 93.3332 20.5672 93.3332 19.6851V4.88263C93.3332 4.57149 93.5855 4.31925 93.8966 4.31925H98.2159C98.527 4.31925 98.7793 4.57149 98.7793 4.88263V8.07512C98.7793 8.38627 99.0315 8.6385 99.3426 8.6385H101.972C102.283 8.6385 102.535 8.89074 102.535 9.20188V12.77C102.535 13.0811 102.283 13.3333 101.972 13.3333H99.3426Z">
+                  </path>
+                  <path d="M49.3917 24.6316C49.3917 24.9428 49.1395 25.195 48.8283 25.195H44.5067C44.1956 25.195 43.9434 24.9428 43.9434 24.6316V0.563379C43.9434 0.252233 44.1956 0 44.5067 0H48.8283C49.1395 0 49.3917 0.252234 49.3917 0.563381V13.8092C49.3917 14.3411 50.0609 14.5767 50.3941 14.1622L54.6663 8.84886C54.7732 8.71586 54.9347 8.6385 55.1053 8.6385H60.1219C60.5978 8.6385 60.8593 9.19202 60.5571 9.55964L54.9481 16.3829C54.7803 16.587 54.7769 16.8803 54.94 17.0882L60.5502 24.244C60.84 24.6138 60.5766 25.155 60.1068 25.155H55.0173C54.8413 25.155 54.6753 25.0727 54.5688 24.9326L50.4036 19.4531C50.0771 19.0236 49.3917 19.2545 49.3917 19.7941V24.6316Z">
+                  </path>
+                  <path d="M30.4064 8.63852C31.5832 8.63865 32.1722 10.0634 31.3401 10.8959L26.2716 15.9675C25.7563 16.483 25.7549 17.3211 26.2716 17.8376L31.339 22.9102C32.1706 23.7427 31.5811 25.1672 30.4042 25.1672L21.977 25.1683C21.6267 25.1673 21.2907 25.0288 21.0433 24.7813L13.5598 17.2913C13.3125 17.0433 12.977 16.9039 12.6261 16.9043H1.32087C0.592216 16.9043 6.60789e-05 16.3135 0 15.5823V9.96232C0.000479788 9.23294 0.590912 8.64042 1.32194 8.63995H11.8525C12.5812 8.64088 13.1729 9.23148 13.1734 9.96267V13.7125C13.1734 14.8906 14.5969 15.4804 15.429 14.6479L21.0441 9.02833C21.2914 8.78047 21.6277 8.64151 21.9785 8.64102L30.4056 8.63995V8.63852H30.4064Z">
+                  </path>
+                </svg>
+              </a>
+              <div class="karta-morph-wrap">
+                <canvas id="morphCanvas" class="karta-morph-canvas" width="300" height="100">
+                </canvas>
+              </div>
+            </div>
+            <input type="checkbox" id="nav-menu-toggle" class="nav_menu-toggle" aria-label="Menu">
+            <div class="nav_menu-switch" data-toggle="" data-toggle-group="nav-dropdown" data-group="nav-dropdown">
+              <label for="nav-menu-toggle" class="nav_open-close" aria-label="Menu">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 19 19" class="menu-icon nav_menu-open-icon">
+                  <circle cx="3.5" cy="3.5" r="1.5"></circle>
+                  <circle cx="3.5" cy="9.5" r="1.5"></circle>
+                  <circle cx="3.5" cy="15.5" r="1.5"></circle>
+                  <circle cx="9.5" cy="3.5" r="1.5"></circle>
+                  <circle cx="9.5" cy="9.5" r="1.5"></circle>
+                  <circle cx="9.5" cy="15.5" r="1.5"></circle>
+                  <circle cx="15.5" cy="3.5" r="1.5"></circle>
+                  <circle cx="15.5" cy="9.5" r="1.5"></circle>
+                  <circle cx="15.5" cy="15.5" r="1.5"></circle>
+                </svg>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 15 15" class="menu-icon nav_menu-close-icon">
+                  <path d="M3.64016 2.27L7.50016 6.13L11.3402 2.29C11.425 2.19972 11.5272 2.12749 11.6406 2.07766C11.754 2.02783 11.8763 2.00141 12.0002 2C12.2654 2 12.5197 2.10536 12.7073 2.29289C12.8948 2.48043 13.0002 2.73478 13.0002 3C13.0025 3.1226 12.9797 3.24439 12.9333 3.35788C12.8869 3.47138 12.8178 3.57419 12.7302 3.66L8.84016 7.5L12.7302 11.39C12.895 11.5512 12.9916 11.7696 13.0002 12C13.0002 12.2652 12.8948 12.5196 12.7073 12.7071C12.5197 12.8946 12.2654 13 12.0002 13C11.8727 13.0053 11.7456 12.984 11.6268 12.9375C11.508 12.8911 11.4002 12.8204 11.3102 12.73L7.50016 8.87L3.65016 12.72C3.56567 12.8073 3.46473 12.8769 3.35316 12.925C3.2416 12.9731 3.12163 12.9986 3.00016 13C2.73495 13 2.48059 12.8946 2.29306 12.7071C2.10552 12.5196 2.00016 12.2652 2.00016 12C1.99783 11.8774 2.02058 11.7556 2.06701 11.6421C2.11344 11.5286 2.18257 11.4258 2.27016 11.34L6.16016 7.5L2.27016 3.61C2.10535 3.44876 2.0087 3.23041 2.00016 3C2.00016 2.73478 2.10552 2.48043 2.29306 2.29289C2.48059 2.10536 2.73495 2 3.00016 2C3.24016 2.003 3.47016 2.1 3.64016 2.27Z">
+                  </path>
+                </svg>
+              </label>
+              <div class="nav_links-wrap">
+                <nav class="menu_links-wrap">
+  <div class="menu_links_list">
+    <div class="link_item">
+      <a data-tg-link="" href="https://t.me/karta/">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 21 18" class="link_icon">
+          <path d="M18.0169 0.117465C18.264 0.013456 18.5345 -0.022416 18.8002 0.0135823C19.0659 0.0495806 19.317 0.156133 19.5276 0.32215C19.7381 0.488167 19.9003 0.707579 19.9973 0.957548C20.0942 1.20752 20.1224 1.47891 20.0789 1.74347L17.8109 15.5005C17.5909 16.8275 16.1349 17.5885 14.9179 16.9275C13.8999 16.3745 12.3879 15.5225 11.0279 14.6335C10.3479 14.1885 8.26489 12.7635 8.52089 11.7495C8.74089 10.8825 12.2409 7.62447 14.2409 5.68747C15.0259 4.92647 14.6679 4.48747 13.7409 5.18747C11.4389 6.92547 7.74289 9.56847 6.52089 10.3125C5.44289 10.9685 4.88089 11.0805 4.20889 10.9685C2.98289 10.7645 1.84589 10.4485 0.917888 10.0635C-0.336112 9.54347 -0.275112 7.81947 0.916888 7.31747L18.0169 0.117465Z">
+          </path>
+        </svg>
+      </a>
+    </div>
+    <div class="link_item">
+      <a href="https://www.instagram.com/karta.personal">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" class="link_icon">
+          <path d="M13 0C14.3261 0 15.5979 0.526784 16.5355 1.46447C17.4732 2.40215 18 3.67392 18 5V13C18 14.3261 17.4732 15.5979 16.5355 16.5355C15.5979 17.4732 14.3261 18 13 18H5C3.67392 18 2.40215 17.4732 1.46447 16.5355C0.526784 15.5979 0 14.3261 0 13V5C0 3.67392 0.526784 2.40215 1.46447 1.46447C2.40215 0.526784 3.67392 0 5 0H13ZM9 5C7.93913 5 6.92172 5.42143 6.17157 6.17157C5.42143 6.92172 5 7.93913 5 9C5 10.0609 5.42143 11.0783 6.17157 11.8284C6.92172 12.5786 7.93913 13 9 13C10.0609 13 11.0783 12.5786 11.8284 11.8284C12.5786 11.0783 13 10.0609 13 9C13 7.93913 12.5786 6.92172 11.8284 6.17157C11.0783 5.42143 10.0609 5 9 5ZM9 7C9.53043 7 10.0391 7.21071 10.4142 7.58579C10.7893 7.96086 11 8.46957 11 9C11 9.53043 10.7893 10.0391 10.4142 10.4142C10.0391 10.7893 9.53043 11 9 11C8.46957 11 7.96086 10.7893 7.58579 10.4142C7.21071 10.0391 7 9.53043 7 9C7 8.46957 7.21071 7.96086 7.58579 7.58579C7.96086 7.21071 8.46957 7 9 7ZM13.5 3.5C13.2348 3.5 12.9804 3.60536 12.7929 3.79289C12.6054 3.98043 12.5 4.23478 12.5 4.5C12.5 4.76522 12.6054 5.01957 12.7929 5.20711C12.9804 5.39464 13.2348 5.5 13.5 5.5C13.7652 5.5 14.0196 5.39464 14.2071 5.20711C14.3946 5.01957 14.5 4.76522 14.5 4.5C14.5 4.23478 14.3946 3.98043 14.2071 3.79289C14.0196 3.60536 13.7652 3.5 13.5 3.5Z">
+          </path>
+        </svg>
+      </a>
+    </div>
+    <div class="link_item">
+      <a href="https://x.com/Karta_Personal">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" class="link_icon">
+          <path d="M0.114 0H5.415L10.1325 6.747L15.795 0H17.4885L10.7775 7.671L18 18H12.702L7.7745 10.9545L1.692 18H0L7.1295 10.032L0.114 0Z" class="link_icon">
+          </path>
+        </svg>
+      </a>
+    </div>
+  </div>
+  <a href="/" aria-current="page" class="menu_button current-page">
+    <span class="nav_current"></span>
+    <div class="text-block-10">
+      Personal
+    </div>
+  </a>
+  <a href="/business" class="menu_button">
+    <span class="nav_current"></span>
+    <div class="text-block-10">
+      Business
+    </div>
+  </a>
+  <a href="/blog" class="menu_button"><span class="nav_current"> </span> <div class="text-block-10"> Blog </div> </a>
+</nav>
+              </div>
+            </div>
+            <div class="nav_btn-group">
+              <div class="nav_btn-wrap">
+                <a data-tg-link="" data-track="cta" href="https://t.me/Karta/app" target="_blank" class="nav-btn">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="none" class="nav_btn_icon">
+                    <path d="M19.1144 3.86553L16.3477 16.5945C16.139 17.4929 15.5947 17.7165 14.8211 17.2933L10.6057 14.2627L8.57175 16.1713C8.34672 16.3909 8.15841 16.5746 7.72459 16.5746L8.0274 12.3861L15.8403 5.49856C16.1799 5.20313 15.7666 5.0394 15.3123 5.33487L5.65371 11.2681L1.49558 9.99845C0.59111 9.72293 0.574769 9.11601 1.68382 8.69281L17.948 2.57988C18.7009 2.30439 19.3599 2.74353 19.1144 3.86553Z" fill="currentColor">
+                    </path>
+                  </svg>
+                  <div class="nav_btn_text">
+                    Get Karta
+                  </div>
+                </a>
+              </div>
+              <!-- <details class="nav_lang-switch nav_lang-switch_desktop" id="nav-lang" data-toggle data-toggle-group="nav-dropdown">
+                <summary class="nav_lang-btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" class="nav_lang-globe">
+                        <path d="M21 12C21 16.9706 16.9706 21 12 21M21 12C21 7.02944 16.9706 3 12 3M21 12H3M12 21C7.02944 21 3 16.9706 3 12M12 21C13.6569 21 15 16.9706 15 12C15 7.02944 13.6569 3 12 3M12 21C10.3431 21 9 16.9706 9 12C9 7.02944 10.3431 3 12 3M3 12C3 7.02944 7.02944 3 12 3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" class="nav_lang-chevron">
+                        <path d="M19 9L12 16L5 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </summary>
+                <div class="nav_lang-dropdown">
+                    <div class="nav_lang-border">
+                        <ul class="nav_lang-list">                                                                                                <li class="nav_lang-item">
+                            <a href="/ar/" class="nav_lang-link">
+                                <span class="nav_lang-flag"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g clip-path="url(#clip0_15963_7286)">
+<path d="M12 24C18.6274 24 24 18.6274 24 12C24 5.37258 18.6274 0 12 0C5.37258 0 0 5.37258 0 12C0 18.6274 5.37258 24 12 24Z" fill="#6DA544"/>
+<path d="M6.7829 14.3476C6.7829 15.2121 7.48368 15.9128 8.3481 15.9128H13.0438C13.0438 16.6332 13.6277 17.2172 14.3481 17.2172H15.9133C16.6337 17.2172 17.2177 16.6332 17.2177 15.9128V14.3476H6.7829Z" fill="#F0F0F0"/>
+<path d="M17.3474 6.78308V10.4352C17.3474 11.0106 16.8793 11.4787 16.304 11.4787V13.0439C17.7424 13.0439 18.9126 11.8737 18.9126 10.4352V6.78308H17.3474Z" fill="#F0F0F0"/>
+<path d="M6.13037 10.435C6.13037 11.0104 5.66227 11.4785 5.08688 11.4785V13.0437C6.52534 13.0437 7.69557 11.8734 7.69557 10.435V6.78282H6.13037V10.435Z" fill="#F0F0F0"/>
+<path d="M16.5655 6.78308H15.0003V10.4353H16.5655V6.78308Z" fill="#F0F0F0"/>
+<path d="M12.6521 8.87005C12.6521 9.01391 12.535 9.13091 12.3912 9.13091C12.2474 9.13091 12.1304 9.01386 12.1304 8.87005V6.78308H10.5652V8.87005C10.5652 9.01391 10.4481 9.13091 10.3043 9.13091C10.1605 9.13091 10.0434 9.01386 10.0434 8.87005V6.78308H8.47818V8.87005C8.47818 9.87697 9.29737 10.6962 10.3043 10.6962C10.6921 10.6962 11.0517 10.5743 11.3478 10.3673C11.6438 10.5742 12.0035 10.6962 12.3913 10.6962C12.4694 10.6962 12.5461 10.6907 12.6217 10.6811C12.5108 11.138 12.0992 11.4787 11.6086 11.4787V13.0439C13.0471 13.0439 14.2173 11.8737 14.2173 10.4353V8.87005V6.78308H12.6521V8.87005H12.6521Z" fill="#F0F0F0"/>
+<path d="M10.826 11.4781H8.47818V13.0433H10.826V11.4781Z" fill="#F0F0F0"/>
+</g>
+<defs>
+<clipPath id="clip0_15963_7286">
+<rect width="24" height="24" fill="white"/>
+</clipPath>
+</defs>
+</svg></span>
+                                العربية                            </a>
+                        </li>
+                                                                        <li class="nav_lang-item">
+                            <a href="/es/" class="nav_lang-link">
+                                <span class="nav_lang-flag"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g clip-path="url(#clip0_15963_7347)">
+<path d="M-3.05176e-05 11.9992C-3.05176e-05 13.4671 0.264016 14.8731 0.74636 16.1731L12 17.2166L23.2536 16.1731C23.7359 14.8731 24 13.4671 24 11.9992C24 10.5314 23.7359 9.12533 23.2536 7.82534L12 6.78186L0.74636 7.82534C0.264016 9.12533 -3.05176e-05 10.5314 -3.05176e-05 11.9992Z" fill="#FFDA44"/>
+<path d="M23.2551 7.82574C21.5596 3.25618 17.1611 -0.000366211 12.0015 -0.000366211C6.84192 -0.000366211 2.44341 3.25618 0.747894 7.82574H23.2551Z" fill="#D80027"/>
+<path d="M0.746918 16.174C2.44243 20.7435 6.84095 24.0001 12.0005 24.0001C17.1601 24.0001 21.5586 20.7435 23.2541 16.174H0.746918Z" fill="#D80027"/>
+</g>
+<defs>
+<clipPath id="clip0_15963_7347">
+<rect width="24" height="24" fill="white"/>
+</clipPath>
+</defs>
+</svg></span>
+                                Español                            </a>
+                        </li>
+                                                                                                                        <li class="nav_lang-item">
+                            <a href="/pt/" class="nav_lang-link">
+                                <span class="nav_lang-flag"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g clip-path="url(#clip0_15963_7365)">
+<path d="M-0.000396729 12.0007C-0.000396729 17.1602 3.2561 21.5587 7.82562 23.2542L8.86915 12.0006L7.82562 0.74707C3.2561 2.44263 -0.000396729 6.8411 -0.000396729 12.0007Z" fill="#6DA544"/>
+<path d="M24.0001 11.9999C24.0001 5.37256 18.6275 -6.10352e-05 12.0001 -6.10352e-05C10.5323 -6.10352e-05 9.12617 0.263986 7.82614 0.74633V23.2535C9.12617 23.7359 10.5323 23.9999 12.0001 23.9999C18.6275 23.9999 24.0001 18.6273 24.0001 11.9999Z" fill="#D80027"/>
+<path d="M7.82623 16.1745C10.1314 16.1745 12.0001 14.3058 12.0001 12.0006C12.0001 9.69544 10.1314 7.82672 7.82623 7.82672C5.52106 7.82672 3.65234 9.69544 3.65234 12.0006C3.65234 14.3058 5.52106 16.1745 7.82623 16.1745Z" fill="#FFDA44"/>
+<path d="M5.47775 9.9126V12.5213C5.47775 13.8179 6.52888 14.8691 7.82558 14.8691C9.12229 14.8691 10.1734 13.818 10.1734 12.5213V9.9126H5.47775Z" fill="#D80027"/>
+<path d="M7.82623 13.3038C7.3947 13.3038 7.04361 12.9527 7.04361 12.5212V11.4777H8.60881V12.5212C8.60881 12.9527 8.25772 13.3038 7.82623 13.3038Z" fill="#F0F0F0"/>
+</g>
+<defs>
+<clipPath id="clip0_15963_7365">
+<rect width="24" height="24" fill="white"/>
+</clipPath>
+</defs>
+</svg></span>
+                                Português                            </a>
+                        </li>
+                                                                                                                                                </ul>
+                    </div>
+                </div>
+            </details> -->
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="page_inner">
+        <section id="hero" class="hero">
+  <div class="hero-wrap">
+    <div class="hero_header">
+      <h1 class="hero_title">
+        <span class="hero_l-1">Your MONEY </span>
+        <span class="hero_l-2">UNLOCKED </span>
+      </h1>
+    </div>
+    <div class="hero_content-wrap">
+      <div class="iphone-card">
+        <div class="iphone-card-wrap">
+          <img loading="eager" fetchpriority="high" src="./images/kard-hero.webp" alt="" class="card_img1">
+        </div>
+      </div>
+      <div class="iphone-body">
+        <div class="iphone-interface">
+          <div class="s5_time">
+            12:57 PM
+          </div>
+          <picture>
+            <source media="(max-width: 500px)" srcset="./images/iphone-interface--iphone-interface@500w.avif">
+            <img loading="lazy" src="./images/iphone-interface--iphone-interface.avif" alt="" class="scr_layer-5">
+          </picture>
+          <svg xmlns="http://www.w3.org/2000/svg" width="100%" viewBox="0 0 353 46" fill="none" class="iphone-top-bar_white">
+            <path d="M277.857 27.5986C278.376 27.5986 278.797 28.0825 278.797 28.6787V30.8369C278.797 31.4331 278.376 31.917 277.857 31.917H276.919C276.401 31.9169 275.98 31.433 275.98 30.8369V28.6787C275.98 28.0826 276.401 27.5988 276.919 27.5986H277.857ZM282.522 25.3457C283.041 25.346 283.461 25.8367 283.461 26.4414V30.8213C283.461 31.426 283.041 31.9167 282.522 31.917H281.583C281.065 31.9168 280.645 31.426 280.645 30.8213V26.4414C280.645 25.8367 281.065 25.3459 281.583 25.3457H282.522ZM287.274 22.9053C287.793 22.9054 288.213 23.3893 288.213 23.9863V30.835C288.213 31.4321 287.793 31.9169 287.274 31.917H286.336C285.818 31.917 285.396 31.4322 285.396 30.835V23.9863C285.397 23.3892 285.818 22.9053 286.336 22.9053H287.274ZM291.938 20.6523C292.457 20.6524 292.877 21.125 292.877 21.708V30.8604C292.877 31.4436 292.457 31.917 291.938 31.917H291C290.482 31.917 290.062 31.4436 290.062 30.8604V21.708C290.062 21.1249 290.482 20.6523 291 20.6523H291.938Z">
+            </path>
+            <rect opacity="0.35" x="298.977" y="21.1217" width="22.3323" height="11.2644" rx="3.56707" stroke-width="0.938703">
+            </rect>
+            <path opacity="0.4" d="M322.617 25.0332V28.788C323.366 28.47 323.853 27.7302 323.853 26.9106C323.853 26.091 323.366 25.3512 322.617 25.0332">
+            </path>
+            <rect x="300.184" y="22.5293" width="19.5477" height="8.44833" rx="2.34676"></rect>
+          </svg>
+          <svg xmlns="http://www.w3.org/2000/svg" width="100%" viewBox="0 0 353 46" fill="none" class="iphone-top-bar_black">
+            <path d="M277.857 27.5986C278.376 27.5986 278.797 28.0825 278.797 28.6787V30.8369C278.797 31.4331 278.376 31.917 277.857 31.917H276.919C276.401 31.9169 275.98 31.433 275.98 30.8369V28.6787C275.98 28.0826 276.401 27.5988 276.919 27.5986H277.857ZM282.522 25.3457C283.041 25.346 283.461 25.8367 283.461 26.4414V30.8213C283.461 31.426 283.041 31.9167 282.522 31.917H281.583C281.065 31.9168 280.645 31.426 280.645 30.8213V26.4414C280.645 25.8367 281.065 25.3459 281.583 25.3457H282.522ZM287.274 22.9053C287.793 22.9054 288.213 23.3893 288.213 23.9863V30.835C288.213 31.4321 287.793 31.9169 287.274 31.917H286.336C285.818 31.917 285.396 31.4322 285.396 30.835V23.9863C285.397 23.3892 285.818 22.9053 286.336 22.9053H287.274ZM291.938 20.6523C292.457 20.6524 292.877 21.125 292.877 21.708V30.8604C292.877 31.4436 292.457 31.917 291.938 31.917H291C290.482 31.917 290.062 31.4436 290.062 30.8604V21.708C290.062 21.1249 290.482 20.6523 291 20.6523H291.938Z">
+            </path>
+            <rect opacity="0.35" x="298.977" y="21.1217" width="22.3323" height="11.2644" rx="3.56707" stroke-width="0.938703">
+            </rect>
+            <path opacity="0.4" d="M322.617 25.0332V28.788C323.366 28.47 323.853 27.7302 323.853 26.9106C323.853 26.091 323.366 25.3512 322.617 25.0332">
+            </path>
+            <rect x="300.184" y="22.5293" width="19.5477" height="8.44833" rx="2.34676"></rect>
+          </svg>
+        </div>
+        <div class="iphone-applepay-wrap">
+          <div class="scr_layer-4_vid">
+            <video poster="videos/iPhone-animation_poster.0000000.jpg" autoplay="" loop="" muted="" playsinline="">
+              <source src="videos/iPhone-animation_mp4.mp4">
+              <source src="videos/iPhone-animation_webm.webm">
+            </video>
+          </div>
+        </div>
+        <div class="iphone-body-wrap">
+          <picture>
+            <source media="(max-width: 500px)" srcset="./images/iphone-screen2--iphone-screen2@500w.avif">
+            <source media="(max-width: 800px)" srcset="./images/iphone-screen2--iphone-screen2@800w.avif">
+            <img loading="eager" fetchpriority="high" src="./images/iphone-screen2--iphone-screen2.avif" alt="" class="scr_layer-3">
+          </picture>
+          <div class="scr_layer-2_black">
+          </div>
+          <div class="scr_layer-1_karat">
+            <div class="iphone_counter">
+              19,798
+            </div>
+            <picture>
+              <source media="(max-width: 500px)" srcset="./images/karat-invite--karat-invite@500w.webp">
+              <img loading="eager" fetchpriority="high" src="./images/karat-invite--karat-invite.webp" alt="" class="scr_layer-1_img">
+            </picture>
+          </div>
+          <picture>
+            <source media="(max-width: 500px)" srcset="./images/iphone-screen--iphone-screen@500w.webp">
+            <img loading="eager" fetchpriority="high" src="./images/iphone-screen--iphone-screen.webp" alt="" class="scr_layer-1">
+          </picture>
+        </div>
+        <img loading="eager" fetchpriority="high" src="./images/iphone-17-pro-silver--iphone-17-pro-silver.avif" alt="">
+      </div>
+    </div>
+    <p class="hero_sub">Spend at 150M merchants worldwide </p>
+  </div>
+</section>
+        <section id="features" class="features">
+  <h2 class="header-1">KARTA <br> Features </h2>
+  <div class="feature_items">
+    <div class="feature_i-1" style="grid-area:1 / 1 / 2 / 2;">
+      <div class="feature__item col">
+        <div class="feature_cover">
+          <div class="s8_transactions">
+            <div class="receive_source">
+              <h3 class="payments_title">Receive from </h3>
+              <picture>
+                <source media="(max-width: 479px)" srcset="https://ik.imagekit.io/karta/Website%20(by%20design%20team)/images/feature-item-1@479w_hmDyvjlk8.png">
+                <img loading="eager" fetchpriority="high" src="https://ik.imagekit.io/karta/Website%20(by%20design%20team)/images/feature-item-1_CpzBdW-SN.png" alt="" class="_7__trans--img">
+              </picture>
+            </div>
+          </div>
+        </div>
+        <div class="feature_text">
+          <div class="bs-container_title">
+            <h3 class="future_title">Get Paid Your Way </h3>
+          </div>
+          <div class="feature_caption">
+            Get paid in stablecoins, USD, EUR, and other currencies — all in one place.
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="feature_i-2">
+      <div class="feature__item">
+        <div class="feature_cover">
+          <div class="feature_cover-wrap1">
+            <picture>
+              <source media="(max-width: 500px)" srcset="./images/feature-item-2--feature-item-2@500w.avif">
+              <source media="(max-width: 800px)" srcset="./images/feature-item-2--feature-item-2@800w.avif">
+              <img loading="lazy" src="./images/feature-item-2--feature-item-2.avif" alt="" class="feature_image">
+            </picture>
+          </div>
+        </div>
+        <div class="feature_text">
+          <h3 class="future_title">Your Money is Always Yours </h3>
+          <div class="feature_caption">
+            Only you control your wallet. Secure by design — send, receive, and manage your crypto.
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="feature_i-3">
+      <div class="feature__item col">
+        <div class="feature_cover">
+          <div class="platforms_list">
+            <div class="platform_item">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 15 18" fill="none" class="platform_icon">
+                <path d="M9.95333 2.85192C10.5733 2.0842 10.9941 1.05338 10.8831 0C9.9755 0.0446774 8.86792 0.592774 8.22669 1.36109C7.65093 2.01904 7.14134 3.09303 7.27419 4.10224C8.29304 4.18973 9.31095 3.59809 9.95333 2.85192Z" fill="black">
+                </path>
+                <path d="M10.8713 4.29903C9.39168 4.21178 8.13365 5.13034 7.42705 5.13034C6.72007 5.13034 5.63805 4.34299 4.46775 4.36421C2.94454 4.38636 1.53117 5.23895 0.758202 6.59496C-0.831659 9.30766 0.338638 13.3315 1.88469 15.5409C2.63549 16.6339 3.54034 17.8374 4.7326 17.7942C5.8591 17.7504 6.30063 17.0721 7.66993 17.0721C9.03823 17.0721 9.43596 17.7942 10.6284 17.7723C11.865 17.7504 12.6381 16.6787 13.3889 15.5846C14.2502 14.3386 14.6028 13.1355 14.625 13.0695C14.6028 13.0476 12.2405 12.1504 12.2186 9.4603C12.1963 7.2078 14.0733 6.13638 14.1616 6.06994C13.1016 4.51799 11.4455 4.34299 10.8713 4.29903Z" fill="black">
+                </path>
+              </svg>
+              <div class="platform_name">
+                Pay
+              </div>
+            </div>
+            <div class="platform_item">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="none" class="platform_icon">
+                <path d="M19.1251 9.94007C19.1251 9.22975 19.0613 8.55007 18.9427 7.89648H9.76758V11.641L15.0517 11.6421C14.8374 12.888 14.1477 13.9501 13.0908 14.6581V17.0875H16.2362C18.0729 15.3957 19.1251 12.8948 19.1251 9.94007Z" fill="#4285F4">
+                </path>
+                <path d="M13.0875 14.6574C12.2119 15.2451 11.0844 15.5889 9.76534 15.5889C7.21733 15.5889 5.05579 13.8801 4.2817 11.5767H1.03711V14.0821C2.64458 17.257 5.94845 19.4356 9.76534 19.4356C12.4034 19.4356 14.6197 18.5721 16.2329 17.0856L13.0875 14.6574Z" fill="#34A853">
+                </path>
+                <path d="M3.97764 9.71771C3.97764 9.07093 4.08594 8.44572 4.28317 7.85795V5.35254H1.03859C0.373935 6.66538 0 8.14729 0 9.71771C0 11.2881 0.375075 12.77 1.03859 14.0829L4.28317 11.5775C4.08594 10.9897 3.97764 10.3645 3.97764 9.71771Z" fill="#FABB05">
+                </path>
+                <path d="M9.76535 3.84661C11.2052 3.84661 12.4946 4.34021 13.5127 5.3047L16.3001 2.53264C14.6071 0.963357 12.4 0 9.76535 0C5.94959 0 2.64458 2.17861 1.03711 5.35349L4.2817 7.8589C5.05579 5.55547 7.21733 3.84661 9.76535 3.84661Z" fill="#E94235">
+                </path>
+              </svg>
+              <div class="platform_name">
+                Pay
+              </div>
+            </div>
+            <div class="platform_item">
+              <div class="platform_name">
+                ATM
+              </div>
+            </div>
+          </div>
+          <div class="feature_cover-wrap1">
+            <div class="background-video-5">
+              <video poster="videos/17-1-2_poster.0000000.jpg" autoplay="" loop="" muted="" playsinline="">
+                <source src="videos/17-1-2_mp4.mp4">
+                <source src="videos/17-1-2_webm.webm">
+              </video>
+            </div>
+          </div>
+        </div>
+        <div class="feature_text">
+          <h3 class="future_title">Spend Globally </h3>
+          <div class="feature_caption">
+            Use Karta Visa Signature® worldwide. Instant virtual and physical cards. Compatible with Apple Pay, Google Pay, and global ATM cash access.
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="feature_i-4">
+      <div class="feature__item col">
+        <div class="feature_cover">
+          <div class="s7_transactions">
+            <div class="receive_source">
+              <h3 class="payments_title">Send money </h3>
+              <img loading="eager" fetchpriority="high" src="https://ik.imagekit.io/karta/Website%20(by%20design%20team)/images/trans-item-1_W8TWsH1ek.png" alt="" class="_7__trans--img">
+            </div>
+            <div class="s7_transdivider">
+              <svg viewBox="0 0 236 20" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" class="diverging-arrows">
+                <path d="M15.8337 7.5L10.0003 13.3333L4.16699 7.5" stroke="#000" stroke-opacity="0.2" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round">
+                </path>
+                <path d="M51.8337 7.5L46.0003 13.3333L40.167 7.5" stroke="#000" stroke-opacity="0.2" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round">
+                </path>
+                <path d="M87.8337 7.5L82.0003 13.3333L76.167 7.5" stroke="#000" stroke-opacity="0.2" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round">
+                </path>
+                <path d="M123.834 7.5L118 13.3333L112.167 7.5" stroke="#000" stroke-opacity="0.2" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round">
+                </path>
+                <path d="M159.834 7.5L154 13.3333L148.167 7.5" stroke="#000" stroke-opacity="0.2" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round">
+                </path>
+                <path d="M195.834 7.5L190 13.3333L184.167 7.5" stroke="#000" stroke-opacity="0.2" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round">
+                </path>
+                <path d="M231.834 7.5L226 13.3333L220.167 7.5" stroke="#000" stroke-opacity="0.2" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round">
+                </path>
+              </svg>
+            </div>
+            <div class="_7__trans-list s7_translist">
+              <div class="payments_list">
+                <div class="payment1">
+                  <img loading="eager" fetchpriority="high" src="https://ik.imagekit.io/karta/Website%20(by%20design%20team)/images/trans-item-2_RCB6ocUaYZ.png" alt="" class="_7__trans--img">
+                </div>
+                <div class="payment2">
+                  <img loading="eager" fetchpriority="high" src="https://ik.imagekit.io/karta/Website%20(by%20design%20team)/images/trans-item-3_puhYx91y0s.png" alt="" class="_7__trans--img">
+                </div>
+                <div class="payment1-1">
+                  <img loading="eager" fetchpriority="high" src="https://ik.imagekit.io/karta/Website%20(by%20design%20team)/images/trans-item-4_JW5Kl0lDY.png" alt="" class="_7__trans--img">
+                </div>
+                <div class="payment2-1">
+                  <img loading="eager" fetchpriority="high" src="https://ik.imagekit.io/karta/Website%20(by%20design%20team)/images/trans-item-2_RCB6ocUaYZ.png" alt="" class="_7__trans--img">
+                </div>
+                <div class="payment3-1">
+                  <img loading="eager" fetchpriority="high" src="https://ik.imagekit.io/karta/Website%20(by%20design%20team)/images/trans-item-3_puhYx91y0s.png" alt="" class="_7__trans--img">
+                </div>
+              </div>
+              <div class="s7_transcaption">
+                <img loading="lazy" src="./images/check-circle--check-circle.svg" alt="">
+                <div class="text-block-6">
+                  Sent
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="feature_text">
+          <div class="bs-container_title">
+            <h3 class="future_title">Payments </h3>
+          </div>
+          <div class="feature_caption">
+            Send payouts globally — pay partners, move funds across borders, and process faster than international bank transfers.
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="feature_i-5">
+      <div class="feature__item col">
+        <div class="feature_cover">
+          <div class="feature_cover-wrap1">
+            <img loading="lazy" src="./images/feature-item-3.avif" alt="" class="feature_image-2">
+            <div class="feature_claim-wrap">
+              <div class="feature_claim_info">
+                <div class="claim_line-1">
+                  Ready to Claim
+                </div>
+                <div class="claim_counter">
+                  <div class="counter_value">
+                    <b style="--d: 1;">
+                      <svg viewBox="-614.4 0 1228.8 20480" preserveAspectRatio="none" class="counter_digit-svg">
+                        <g transform="translate(-671.5 1752) scale(1 -1)">
+                          <path d="M671 -31 672 -34Q398 -34 241.0 168.5Q84 371 84 723Q84 1072 241.5 1272.5Q399 1473 671 1473Q944 1473 1101.0 1273.0Q1258 1073 1258 724Q1258 374 1101.5 171.5Q945 -31 671 -31ZM672 209Q806 209 879.5 342.0Q953 475 953 722Q953 967 880.0 1099.0Q807 1231 674 1231Q540 1231 465.0 1098.5Q390 966 390 721Q390 474 463.5 341.5Q537 209 672 209Z">
+                          </path>
+                        </g>
+                        <g transform="translate(-491.5 3800) scale(1 -1)">
+                          <path d="M613 -21 616 -16Q548 -16 506.0 25.5Q464 67 464 134V1166H457L245 1018Q207 991 166 991Q120 991 90.0 1021.5Q60 1052 60 1099Q60 1165 125 1213L411 1410Q459 1444 499.0 1455.0Q539 1466 591 1466Q671 1466 716.0 1420.5Q761 1375 761 1297V132Q761 63 720.5 21.0Q680 -21 613 -21Z">
+                          </path>
+                        </g>
+                        <g transform="translate(-617.5 5848) scale(1 -1)">
+                          <path d="M243 0H240Q170 0 134.0 34.5Q98 69 98 129Q98 173 116.5 206.5Q135 240 181 282L610 694Q743 823 788.5 892.5Q834 962 834 1039Q834 1128 771.5 1185.5Q709 1243 612 1243Q444 1243 365 1069Q339 1022 309.5 1001.0Q280 980 233 980Q173 980 139.0 1013.0Q105 1046 105 1102Q105 1135 117 1168Q157 1296 291.5 1386.5Q426 1477 620 1477Q850 1477 991.5 1360.5Q1133 1244 1133 1058Q1133 930 1065.0 827.0Q997 724 811 549L498 248V241H1042Q1100 241 1133.0 209.0Q1166 177 1166 121Q1166 67 1133.0 33.5Q1100 0 1042 0Z">
+                          </path>
+                        </g>
+                        <g transform="translate(-645 7896) scale(1 -1)">
+                          <path d="M638 -33 639 -39Q444 -39 312.5 33.5Q181 106 125 220Q100 267 100 313Q100 371 135.5 405.5Q171 440 233 440Q278 440 308.5 422.0Q339 404 362 363Q403 283 468.5 242.5Q534 202 641 202Q752 202 821.5 260.5Q891 319 891 410Q891 515 817.5 572.0Q744 629 611 629H549Q496 629 465.5 659.0Q435 689 435 739Q435 787 465.0 816.5Q495 846 548 846H606Q719 846 787.5 901.0Q856 956 856 1044Q856 1133 798.0 1185.0Q740 1237 633 1237Q544 1237 486.0 1199.5Q428 1162 392 1084Q368 1033 338.0 1012.5Q308 992 256 992Q195 992 162.0 1024.5Q129 1057 129 1114Q129 1159 152 1210Q204 1324 330.0 1397.0Q456 1470 638 1470Q868 1470 1008.5 1365.5Q1149 1261 1149 1088Q1149 955 1065.5 867.0Q982 779 849 752V746Q1011 732 1106.0 641.5Q1201 551 1201 404Q1201 208 1045.5 87.5Q890 -33 638 -33Z">
+                          </path>
+                        </g>
+                        <g transform="translate(-663 9944) scale(1 -1)">
+                          <path d="M933 -21 925 -19Q861 -19 822.0 19.5Q783 58 783 129V269H245Q163 269 113.5 316.0Q64 363 64 440Q64 523 129 635Q253 857 531 1266Q605 1381 669.5 1425.0Q734 1469 826 1469Q940 1469 1007.0 1411.0Q1074 1353 1074 1251V510H1157Q1215 510 1248.0 476.0Q1281 442 1281.0 387.0Q1281 332 1248.0 299.5Q1215 267 1157 267H1076V127Q1076 56 1036.5 17.5Q997 -21 933 -21ZM789 499 788 1226H782Q473 784 326 508V499Z">
+                          </path>
+                        </g>
+                        <g transform="translate(-640 11992) scale(1 -1)">
+                          <path d="M655 -33 657 -26Q487 -26 349.5 45.5Q212 117 158 232Q134 285 134 333Q134 390 167.5 422.5Q201 455 259 455Q303 455 333.5 438.5Q364 422 390 382Q471 215 655 215Q773 215 849.0 291.0Q925 367 925 484Q925 597 849.5 669.5Q774 742 656 742Q535 742 446 656Q402 614 371.5 600.0Q341 586 291 586Q220 586 182.5 628.5Q145 671 147 735Q147 743 148 748L190 1278Q197 1368 244.0 1408.0Q291 1448 381 1448H1015Q1071 1448 1105.5 1414.5Q1140 1381 1140.0 1326.0Q1140 1271 1106.0 1238.0Q1072 1205 1016 1205H446L411 803H417Q462 873 547.5 913.0Q633 953 742 953Q948 953 1081.0 821.0Q1214 689 1214 483Q1214 253 1058.5 110.0Q903 -33 655 -33Z">
+                          </path>
+                        </g>
+                        <g transform="translate(-658.5 14040) scale(1 -1)">
+                          <path d="M685 -31 687 -39Q513 -39 380.0 42.5Q247 124 167 282Q83 458 83 704Q83 1061 243.5 1265.0Q404 1469 685 1469Q859 1469 985.0 1404.5Q1111 1340 1163 1235Q1182 1193 1182 1152Q1182 1101 1148.0 1068.0Q1114 1035 1056 1035Q1013 1035 981.5 1053.5Q950 1072 914 1113Q865 1176 809.5 1205.0Q754 1234 680 1234Q529 1234 449.0 1100.0Q369 966 367 730V716H373Q417 820 521.5 884.0Q626 948 768 948Q976 948 1107.5 816.0Q1239 684 1239 480Q1239 256 1082.5 112.5Q926 -31 685 -31ZM682 201 680 199Q792 199 869.5 274.5Q947 350 948 459Q948 573 874.0 646.5Q800 720 686 720Q571 720 495.0 648.0Q419 576 419 465Q419 353 495.0 277.0Q571 201 682 201Z">
+                          </path>
+                        </g>
+                        <g transform="translate(-586 16088) scale(1 -1)">
+                          <path d="M377 -22 375 -27Q312 -27 274.5 7.5Q237 42 237 95Q237 145 262 192L795 1193V1200H172Q118 1200 83.5 1233.5Q49 1267 49 1322Q49 1376 84.0 1409.0Q119 1442 174 1442H921Q1001 1442 1051.0 1397.5Q1101 1353 1101 1277Q1101 1208 1045 1099L509 65Q485 17 455.0 -2.5Q425 -22 377 -22Z">
+                          </path>
+                        </g>
+                        <g transform="translate(-668 18136) scale(1 -1)">
+                          <path d="M668 -33 660 -34Q401 -34 238.5 83.5Q76 201 76 389Q76 529 170.0 629.0Q264 729 414 758V763Q286 796 208.5 883.0Q131 970 131 1086Q131 1255 281.0 1365.5Q431 1476 664 1476Q898 1476 1047.5 1366.0Q1197 1256 1197 1085Q1197 970 1119.5 883.0Q1042 796 914 764V758Q1064 728 1157.5 628.0Q1251 528 1251 388Q1251 201 1088.5 84.0Q926 -33 668 -33ZM660 855V853Q762 853 827.5 909.0Q893 965 893 1054Q893 1142 827.5 1198.5Q762 1255 660 1255Q557 1255 491.5 1199.0Q426 1143 426 1054Q426 966 491.0 910.5Q556 855 660 855ZM660 185 659 188Q779 188 854.5 251.0Q930 314 930.0 412.0Q930 510 854.5 572.5Q779 635 659 635Q540 635 464.0 572.0Q388 509 388 411Q388 312 464.0 248.5Q540 185 660 185Z">
+                          </path>
+                        </g>
+                        <g transform="translate(-660.5 20184) scale(1 -1)">
+                          <path d="M625 -32 618 -20Q447 -20 320.5 48.5Q194 117 146 219Q126 258 126 297Q126 349 160.0 382.0Q194 415 253 415Q296 415 326.5 396.5Q357 378 395 337Q448 273 502.0 244.5Q556 216 635 216Q790 216 867.5 350.0Q945 484 946 718V733H941Q901 627 799.5 563.0Q698 499 558 499Q354 499 216.5 630.0Q79 761 79 969Q79 1192 236.0 1336.0Q393 1480 635 1480Q810 1480 942.0 1399.0Q1074 1318 1151 1159Q1236 991 1236 735Q1236 375 1074.0 171.5Q912 -32 625 -32ZM628 730 626 729Q742 729 818.5 800.5Q895 872 895 983Q895 1095 818.5 1171.5Q742 1248 629.0 1248.0Q516 1248 439.5 1173.5Q363 1099 363 989Q363 877 438.5 803.5Q514 730 628 730Z">
+                          </path>
+                        </g>
+                      </svg>
+                    </b>
+                    <b style="--d: 9;">
+                      <svg viewBox="-614.4 0 1228.8 20480" preserveAspectRatio="none" class="counter_digit-svg">
+                        <g transform="translate(-671.5 1752) scale(1 -1)">
+                          <path d="M671 -31 672 -34Q398 -34 241.0 168.5Q84 371 84 723Q84 1072 241.5 1272.5Q399 1473 671 1473Q944 1473 1101.0 1273.0Q1258 1073 1258 724Q1258 374 1101.5 171.5Q945 -31 671 -31ZM672 209Q806 209 879.5 342.0Q953 475 953 722Q953 967 880.0 1099.0Q807 1231 674 1231Q540 1231 465.0 1098.5Q390 966 390 721Q390 474 463.5 341.5Q537 209 672 209Z">
+                          </path>
+                        </g>
+                        <g transform="translate(-491.5 3800) scale(1 -1)">
+                          <path d="M613 -21 616 -16Q548 -16 506.0 25.5Q464 67 464 134V1166H457L245 1018Q207 991 166 991Q120 991 90.0 1021.5Q60 1052 60 1099Q60 1165 125 1213L411 1410Q459 1444 499.0 1455.0Q539 1466 591 1466Q671 1466 716.0 1420.5Q761 1375 761 1297V132Q761 63 720.5 21.0Q680 -21 613 -21Z">
+                          </path>
+                        </g>
+                        <g transform="translate(-617.5 5848) scale(1 -1)">
+                          <path d="M243 0H240Q170 0 134.0 34.5Q98 69 98 129Q98 173 116.5 206.5Q135 240 181 282L610 694Q743 823 788.5 892.5Q834 962 834 1039Q834 1128 771.5 1185.5Q709 1243 612 1243Q444 1243 365 1069Q339 1022 309.5 1001.0Q280 980 233 980Q173 980 139.0 1013.0Q105 1046 105 1102Q105 1135 117 1168Q157 1296 291.5 1386.5Q426 1477 620 1477Q850 1477 991.5 1360.5Q1133 1244 1133 1058Q1133 930 1065.0 827.0Q997 724 811 549L498 248V241H1042Q1100 241 1133.0 209.0Q1166 177 1166 121Q1166 67 1133.0 33.5Q1100 0 1042 0Z">
+                          </path>
+                        </g>
+                        <g transform="translate(-645 7896) scale(1 -1)">
+                          <path d="M638 -33 639 -39Q444 -39 312.5 33.5Q181 106 125 220Q100 267 100 313Q100 371 135.5 405.5Q171 440 233 440Q278 440 308.5 422.0Q339 404 362 363Q403 283 468.5 242.5Q534 202 641 202Q752 202 821.5 260.5Q891 319 891 410Q891 515 817.5 572.0Q744 629 611 629H549Q496 629 465.5 659.0Q435 689 435 739Q435 787 465.0 816.5Q495 846 548 846H606Q719 846 787.5 901.0Q856 956 856 1044Q856 1133 798.0 1185.0Q740 1237 633 1237Q544 1237 486.0 1199.5Q428 1162 392 1084Q368 1033 338.0 1012.5Q308 992 256 992Q195 992 162.0 1024.5Q129 1057 129 1114Q129 1159 152 1210Q204 1324 330.0 1397.0Q456 1470 638 1470Q868 1470 1008.5 1365.5Q1149 1261 1149 1088Q1149 955 1065.5 867.0Q982 779 849 752V746Q1011 732 1106.0 641.5Q1201 551 1201 404Q1201 208 1045.5 87.5Q890 -33 638 -33Z">
+                          </path>
+                        </g>
+                        <g transform="translate(-663 9944) scale(1 -1)">
+                          <path d="M933 -21 925 -19Q861 -19 822.0 19.5Q783 58 783 129V269H245Q163 269 113.5 316.0Q64 363 64 440Q64 523 129 635Q253 857 531 1266Q605 1381 669.5 1425.0Q734 1469 826 1469Q940 1469 1007.0 1411.0Q1074 1353 1074 1251V510H1157Q1215 510 1248.0 476.0Q1281 442 1281.0 387.0Q1281 332 1248.0 299.5Q1215 267 1157 267H1076V127Q1076 56 1036.5 17.5Q997 -21 933 -21ZM789 499 788 1226H782Q473 784 326 508V499Z">
+                          </path>
+                        </g>
+                        <g transform="translate(-640 11992) scale(1 -1)">
+                          <path d="M655 -33 657 -26Q487 -26 349.5 45.5Q212 117 158 232Q134 285 134 333Q134 390 167.5 422.5Q201 455 259 455Q303 455 333.5 438.5Q364 422 390 382Q471 215 655 215Q773 215 849.0 291.0Q925 367 925 484Q925 597 849.5 669.5Q774 742 656 742Q535 742 446 656Q402 614 371.5 600.0Q341 586 291 586Q220 586 182.5 628.5Q145 671 147 735Q147 743 148 748L190 1278Q197 1368 244.0 1408.0Q291 1448 381 1448H1015Q1071 1448 1105.5 1414.5Q1140 1381 1140.0 1326.0Q1140 1271 1106.0 1238.0Q1072 1205 1016 1205H446L411 803H417Q462 873 547.5 913.0Q633 953 742 953Q948 953 1081.0 821.0Q1214 689 1214 483Q1214 253 1058.5 110.0Q903 -33 655 -33Z">
+                          </path>
+                        </g>
+                        <g transform="translate(-658.5 14040) scale(1 -1)">
+                          <path d="M685 -31 687 -39Q513 -39 380.0 42.5Q247 124 167 282Q83 458 83 704Q83 1061 243.5 1265.0Q404 1469 685 1469Q859 1469 985.0 1404.5Q1111 1340 1163 1235Q1182 1193 1182 1152Q1182 1101 1148.0 1068.0Q1114 1035 1056 1035Q1013 1035 981.5 1053.5Q950 1072 914 1113Q865 1176 809.5 1205.0Q754 1234 680 1234Q529 1234 449.0 1100.0Q369 966 367 730V716H373Q417 820 521.5 884.0Q626 948 768 948Q976 948 1107.5 816.0Q1239 684 1239 480Q1239 256 1082.5 112.5Q926 -31 685 -31ZM682 201 680 199Q792 199 869.5 274.5Q947 350 948 459Q948 573 874.0 646.5Q800 720 686 720Q571 720 495.0 648.0Q419 576 419 465Q419 353 495.0 277.0Q571 201 682 201Z">
+                          </path>
+                        </g>
+                        <g transform="translate(-586 16088) scale(1 -1)">
+                          <path d="M377 -22 375 -27Q312 -27 274.5 7.5Q237 42 237 95Q237 145 262 192L795 1193V1200H172Q118 1200 83.5 1233.5Q49 1267 49 1322Q49 1376 84.0 1409.0Q119 1442 174 1442H921Q1001 1442 1051.0 1397.5Q1101 1353 1101 1277Q1101 1208 1045 1099L509 65Q485 17 455.0 -2.5Q425 -22 377 -22Z">
+                          </path>
+                        </g>
+                        <g transform="translate(-668 18136) scale(1 -1)">
+                          <path d="M668 -33 660 -34Q401 -34 238.5 83.5Q76 201 76 389Q76 529 170.0 629.0Q264 729 414 758V763Q286 796 208.5 883.0Q131 970 131 1086Q131 1255 281.0 1365.5Q431 1476 664 1476Q898 1476 1047.5 1366.0Q1197 1256 1197 1085Q1197 970 1119.5 883.0Q1042 796 914 764V758Q1064 728 1157.5 628.0Q1251 528 1251 388Q1251 201 1088.5 84.0Q926 -33 668 -33ZM660 855V853Q762 853 827.5 909.0Q893 965 893 1054Q893 1142 827.5 1198.5Q762 1255 660 1255Q557 1255 491.5 1199.0Q426 1143 426 1054Q426 966 491.0 910.5Q556 855 660 855ZM660 185 659 188Q779 188 854.5 251.0Q930 314 930.0 412.0Q930 510 854.5 572.5Q779 635 659 635Q540 635 464.0 572.0Q388 509 388 411Q388 312 464.0 248.5Q540 185 660 185Z">
+                          </path>
+                        </g>
+                        <g transform="translate(-660.5 20184) scale(1 -1)">
+                          <path d="M625 -32 618 -20Q447 -20 320.5 48.5Q194 117 146 219Q126 258 126 297Q126 349 160.0 382.0Q194 415 253 415Q296 415 326.5 396.5Q357 378 395 337Q448 273 502.0 244.5Q556 216 635 216Q790 216 867.5 350.0Q945 484 946 718V733H941Q901 627 799.5 563.0Q698 499 558 499Q354 499 216.5 630.0Q79 761 79 969Q79 1192 236.0 1336.0Q393 1480 635 1480Q810 1480 942.0 1399.0Q1074 1318 1151 1159Q1236 991 1236 735Q1236 375 1074.0 171.5Q912 -32 625 -32ZM628 730 626 729Q742 729 818.5 800.5Q895 872 895 983Q895 1095 818.5 1171.5Q742 1248 629.0 1248.0Q516 1248 439.5 1173.5Q363 1099 363 989Q363 877 438.5 803.5Q514 730 628 730Z">
+                          </path>
+                        </g>
+                      </svg>
+                    </b>
+                    <span class="counter_spacer"></span>
+                    <b style="--d: 7;">
+                      <svg viewBox="-614.4 0 1228.8 20480" preserveAspectRatio="none" class="counter_digit-svg">
+                        <g transform="translate(-671.5 1752) scale(1 -1)">
+                          <path d="M671 -31 672 -34Q398 -34 241.0 168.5Q84 371 84 723Q84 1072 241.5 1272.5Q399 1473 671 1473Q944 1473 1101.0 1273.0Q1258 1073 1258 724Q1258 374 1101.5 171.5Q945 -31 671 -31ZM672 209Q806 209 879.5 342.0Q953 475 953 722Q953 967 880.0 1099.0Q807 1231 674 1231Q540 1231 465.0 1098.5Q390 966 390 721Q390 474 463.5 341.5Q537 209 672 209Z">
+                          </path>
+                        </g>
+                        <g transform="translate(-491.5 3800) scale(1 -1)">
+                          <path d="M613 -21 616 -16Q548 -16 506.0 25.5Q464 67 464 134V1166H457L245 1018Q207 991 166 991Q120 991 90.0 1021.5Q60 1052 60 1099Q60 1165 125 1213L411 1410Q459 1444 499.0 1455.0Q539 1466 591 1466Q671 1466 716.0 1420.5Q761 1375 761 1297V132Q761 63 720.5 21.0Q680 -21 613 -21Z">
+                          </path>
+                        </g>
+                        <g transform="translate(-617.5 5848) scale(1 -1)">
+                          <path d="M243 0H240Q170 0 134.0 34.5Q98 69 98 129Q98 173 116.5 206.5Q135 240 181 282L610 694Q743 823 788.5 892.5Q834 962 834 1039Q834 1128 771.5 1185.5Q709 1243 612 1243Q444 1243 365 1069Q339 1022 309.5 1001.0Q280 980 233 980Q173 980 139.0 1013.0Q105 1046 105 1102Q105 1135 117 1168Q157 1296 291.5 1386.5Q426 1477 620 1477Q850 1477 991.5 1360.5Q1133 1244 1133 1058Q1133 930 1065.0 827.0Q997 724 811 549L498 248V241H1042Q1100 241 1133.0 209.0Q1166 177 1166 121Q1166 67 1133.0 33.5Q1100 0 1042 0Z">
+                          </path>
+                        </g>
+                        <g transform="translate(-645 7896) scale(1 -1)">
+                          <path d="M638 -33 639 -39Q444 -39 312.5 33.5Q181 106 125 220Q100 267 100 313Q100 371 135.5 405.5Q171 440 233 440Q278 440 308.5 422.0Q339 404 362 363Q403 283 468.5 242.5Q534 202 641 202Q752 202 821.5 260.5Q891 319 891 410Q891 515 817.5 572.0Q744 629 611 629H549Q496 629 465.5 659.0Q435 689 435 739Q435 787 465.0 816.5Q495 846 548 846H606Q719 846 787.5 901.0Q856 956 856 1044Q856 1133 798.0 1185.0Q740 1237 633 1237Q544 1237 486.0 1199.5Q428 1162 392 1084Q368 1033 338.0 1012.5Q308 992 256 992Q195 992 162.0 1024.5Q129 1057 129 1114Q129 1159 152 1210Q204 1324 330.0 1397.0Q456 1470 638 1470Q868 1470 1008.5 1365.5Q1149 1261 1149 1088Q1149 955 1065.5 867.0Q982 779 849 752V746Q1011 732 1106.0 641.5Q1201 551 1201 404Q1201 208 1045.5 87.5Q890 -33 638 -33Z">
+                          </path>
+                        </g>
+                        <g transform="translate(-663 9944) scale(1 -1)">
+                          <path d="M933 -21 925 -19Q861 -19 822.0 19.5Q783 58 783 129V269H245Q163 269 113.5 316.0Q64 363 64 440Q64 523 129 635Q253 857 531 1266Q605 1381 669.5 1425.0Q734 1469 826 1469Q940 1469 1007.0 1411.0Q1074 1353 1074 1251V510H1157Q1215 510 1248.0 476.0Q1281 442 1281.0 387.0Q1281 332 1248.0 299.5Q1215 267 1157 267H1076V127Q1076 56 1036.5 17.5Q997 -21 933 -21ZM789 499 788 1226H782Q473 784 326 508V499Z">
+                          </path>
+                        </g>
+                        <g transform="translate(-640 11992) scale(1 -1)">
+                          <path d="M655 -33 657 -26Q487 -26 349.5 45.5Q212 117 158 232Q134 285 134 333Q134 390 167.5 422.5Q201 455 259 455Q303 455 333.5 438.5Q364 422 390 382Q471 215 655 215Q773 215 849.0 291.0Q925 367 925 484Q925 597 849.5 669.5Q774 742 656 742Q535 742 446 656Q402 614 371.5 600.0Q341 586 291 586Q220 586 182.5 628.5Q145 671 147 735Q147 743 148 748L190 1278Q197 1368 244.0 1408.0Q291 1448 381 1448H1015Q1071 1448 1105.5 1414.5Q1140 1381 1140.0 1326.0Q1140 1271 1106.0 1238.0Q1072 1205 1016 1205H446L411 803H417Q462 873 547.5 913.0Q633 953 742 953Q948 953 1081.0 821.0Q1214 689 1214 483Q1214 253 1058.5 110.0Q903 -33 655 -33Z">
+                          </path>
+                        </g>
+                        <g transform="translate(-658.5 14040) scale(1 -1)">
+                          <path d="M685 -31 687 -39Q513 -39 380.0 42.5Q247 124 167 282Q83 458 83 704Q83 1061 243.5 1265.0Q404 1469 685 1469Q859 1469 985.0 1404.5Q1111 1340 1163 1235Q1182 1193 1182 1152Q1182 1101 1148.0 1068.0Q1114 1035 1056 1035Q1013 1035 981.5 1053.5Q950 1072 914 1113Q865 1176 809.5 1205.0Q754 1234 680 1234Q529 1234 449.0 1100.0Q369 966 367 730V716H373Q417 820 521.5 884.0Q626 948 768 948Q976 948 1107.5 816.0Q1239 684 1239 480Q1239 256 1082.5 112.5Q926 -31 685 -31ZM682 201 680 199Q792 199 869.5 274.5Q947 350 948 459Q948 573 874.0 646.5Q800 720 686 720Q571 720 495.0 648.0Q419 576 419 465Q419 353 495.0 277.0Q571 201 682 201Z">
+                          </path>
+                        </g>
+                        <g transform="translate(-586 16088) scale(1 -1)">
+                          <path d="M377 -22 375 -27Q312 -27 274.5 7.5Q237 42 237 95Q237 145 262 192L795 1193V1200H172Q118 1200 83.5 1233.5Q49 1267 49 1322Q49 1376 84.0 1409.0Q119 1442 174 1442H921Q1001 1442 1051.0 1397.5Q1101 1353 1101 1277Q1101 1208 1045 1099L509 65Q485 17 455.0 -2.5Q425 -22 377 -22Z">
+                          </path>
+                        </g>
+                        <g transform="translate(-668 18136) scale(1 -1)">
+                          <path d="M668 -33 660 -34Q401 -34 238.5 83.5Q76 201 76 389Q76 529 170.0 629.0Q264 729 414 758V763Q286 796 208.5 883.0Q131 970 131 1086Q131 1255 281.0 1365.5Q431 1476 664 1476Q898 1476 1047.5 1366.0Q1197 1256 1197 1085Q1197 970 1119.5 883.0Q1042 796 914 764V758Q1064 728 1157.5 628.0Q1251 528 1251 388Q1251 201 1088.5 84.0Q926 -33 668 -33ZM660 855V853Q762 853 827.5 909.0Q893 965 893 1054Q893 1142 827.5 1198.5Q762 1255 660 1255Q557 1255 491.5 1199.0Q426 1143 426 1054Q426 966 491.0 910.5Q556 855 660 855ZM660 185 659 188Q779 188 854.5 251.0Q930 314 930.0 412.0Q930 510 854.5 572.5Q779 635 659 635Q540 635 464.0 572.0Q388 509 388 411Q388 312 464.0 248.5Q540 185 660 185Z">
+                          </path>
+                        </g>
+                        <g transform="translate(-660.5 20184) scale(1 -1)">
+                          <path d="M625 -32 618 -20Q447 -20 320.5 48.5Q194 117 146 219Q126 258 126 297Q126 349 160.0 382.0Q194 415 253 415Q296 415 326.5 396.5Q357 378 395 337Q448 273 502.0 244.5Q556 216 635 216Q790 216 867.5 350.0Q945 484 946 718V733H941Q901 627 799.5 563.0Q698 499 558 499Q354 499 216.5 630.0Q79 761 79 969Q79 1192 236.0 1336.0Q393 1480 635 1480Q810 1480 942.0 1399.0Q1074 1318 1151 1159Q1236 991 1236 735Q1236 375 1074.0 171.5Q912 -32 625 -32ZM628 730 626 729Q742 729 818.5 800.5Q895 872 895 983Q895 1095 818.5 1171.5Q742 1248 629.0 1248.0Q516 1248 439.5 1173.5Q363 1099 363 989Q363 877 438.5 803.5Q514 730 628 730Z">
+                          </path>
+                        </g>
+                      </svg>
+                    </b>
+                    <b style="--d: 9;">
+                      <svg viewBox="-614.4 0 1228.8 20480" preserveAspectRatio="none" class="counter_digit-svg">
+                        <g transform="translate(-671.5 1752) scale(1 -1)">
+                          <path d="M671 -31 672 -34Q398 -34 241.0 168.5Q84 371 84 723Q84 1072 241.5 1272.5Q399 1473 671 1473Q944 1473 1101.0 1273.0Q1258 1073 1258 724Q1258 374 1101.5 171.5Q945 -31 671 -31ZM672 209Q806 209 879.5 342.0Q953 475 953 722Q953 967 880.0 1099.0Q807 1231 674 1231Q540 1231 465.0 1098.5Q390 966 390 721Q390 474 463.5 341.5Q537 209 672 209Z">
+                          </path>
+                        </g>
+                        <g transform="translate(-491.5 3800) scale(1 -1)">
+                          <path d="M613 -21 616 -16Q548 -16 506.0 25.5Q464 67 464 134V1166H457L245 1018Q207 991 166 991Q120 991 90.0 1021.5Q60 1052 60 1099Q60 1165 125 1213L411 1410Q459 1444 499.0 1455.0Q539 1466 591 1466Q671 1466 716.0 1420.5Q761 1375 761 1297V132Q761 63 720.5 21.0Q680 -21 613 -21Z">
+                          </path>
+                        </g>
+                        <g transform="translate(-617.5 5848) scale(1 -1)">
+                          <path d="M243 0H240Q170 0 134.0 34.5Q98 69 98 129Q98 173 116.5 206.5Q135 240 181 282L610 694Q743 823 788.5 892.5Q834 962 834 1039Q834 1128 771.5 1185.5Q709 1243 612 1243Q444 1243 365 1069Q339 1022 309.5 1001.0Q280 980 233 980Q173 980 139.0 1013.0Q105 1046 105 1102Q105 1135 117 1168Q157 1296 291.5 1386.5Q426 1477 620 1477Q850 1477 991.5 1360.5Q1133 1244 1133 1058Q1133 930 1065.0 827.0Q997 724 811 549L498 248V241H1042Q1100 241 1133.0 209.0Q1166 177 1166 121Q1166 67 1133.0 33.5Q1100 0 1042 0Z">
+                          </path>
+                        </g>
+                        <g transform="translate(-645 7896) scale(1 -1)">
+                          <path d="M638 -33 639 -39Q444 -39 312.5 33.5Q181 106 125 220Q100 267 100 313Q100 371 135.5 405.5Q171 440 233 440Q278 440 308.5 422.0Q339 404 362 363Q403 283 468.5 242.5Q534 202 641 202Q752 202 821.5 260.5Q891 319 891 410Q891 515 817.5 572.0Q744 629 611 629H549Q496 629 465.5 659.0Q435 689 435 739Q435 787 465.0 816.5Q495 846 548 846H606Q719 846 787.5 901.0Q856 956 856 1044Q856 1133 798.0 1185.0Q740 1237 633 1237Q544 1237 486.0 1199.5Q428 1162 392 1084Q368 1033 338.0 1012.5Q308 992 256 992Q195 992 162.0 1024.5Q129 1057 129 1114Q129 1159 152 1210Q204 1324 330.0 1397.0Q456 1470 638 1470Q868 1470 1008.5 1365.5Q1149 1261 1149 1088Q1149 955 1065.5 867.0Q982 779 849 752V746Q1011 732 1106.0 641.5Q1201 551 1201 404Q1201 208 1045.5 87.5Q890 -33 638 -33Z">
+                          </path>
+                        </g>
+                        <g transform="translate(-663 9944) scale(1 -1)">
+                          <path d="M933 -21 925 -19Q861 -19 822.0 19.5Q783 58 783 129V269H245Q163 269 113.5 316.0Q64 363 64 440Q64 523 129 635Q253 857 531 1266Q605 1381 669.5 1425.0Q734 1469 826 1469Q940 1469 1007.0 1411.0Q1074 1353 1074 1251V510H1157Q1215 510 1248.0 476.0Q1281 442 1281.0 387.0Q1281 332 1248.0 299.5Q1215 267 1157 267H1076V127Q1076 56 1036.5 17.5Q997 -21 933 -21ZM789 499 788 1226H782Q473 784 326 508V499Z">
+                          </path>
+                        </g>
+                        <g transform="translate(-640 11992) scale(1 -1)">
+                          <path d="M655 -33 657 -26Q487 -26 349.5 45.5Q212 117 158 232Q134 285 134 333Q134 390 167.5 422.5Q201 455 259 455Q303 455 333.5 438.5Q364 422 390 382Q471 215 655 215Q773 215 849.0 291.0Q925 367 925 484Q925 597 849.5 669.5Q774 742 656 742Q535 742 446 656Q402 614 371.5 600.0Q341 586 291 586Q220 586 182.5 628.5Q145 671 147 735Q147 743 148 748L190 1278Q197 1368 244.0 1408.0Q291 1448 381 1448H1015Q1071 1448 1105.5 1414.5Q1140 1381 1140.0 1326.0Q1140 1271 1106.0 1238.0Q1072 1205 1016 1205H446L411 803H417Q462 873 547.5 913.0Q633 953 742 953Q948 953 1081.0 821.0Q1214 689 1214 483Q1214 253 1058.5 110.0Q903 -33 655 -33Z">
+                          </path>
+                        </g>
+                        <g transform="translate(-658.5 14040) scale(1 -1)">
+                          <path d="M685 -31 687 -39Q513 -39 380.0 42.5Q247 124 167 282Q83 458 83 704Q83 1061 243.5 1265.0Q404 1469 685 1469Q859 1469 985.0 1404.5Q1111 1340 1163 1235Q1182 1193 1182 1152Q1182 1101 1148.0 1068.0Q1114 1035 1056 1035Q1013 1035 981.5 1053.5Q950 1072 914 1113Q865 1176 809.5 1205.0Q754 1234 680 1234Q529 1234 449.0 1100.0Q369 966 367 730V716H373Q417 820 521.5 884.0Q626 948 768 948Q976 948 1107.5 816.0Q1239 684 1239 480Q1239 256 1082.5 112.5Q926 -31 685 -31ZM682 201 680 199Q792 199 869.5 274.5Q947 350 948 459Q948 573 874.0 646.5Q800 720 686 720Q571 720 495.0 648.0Q419 576 419 465Q419 353 495.0 277.0Q571 201 682 201Z">
+                          </path>
+                        </g>
+                        <g transform="translate(-586 16088) scale(1 -1)">
+                          <path d="M377 -22 375 -27Q312 -27 274.5 7.5Q237 42 237 95Q237 145 262 192L795 1193V1200H172Q118 1200 83.5 1233.5Q49 1267 49 1322Q49 1376 84.0 1409.0Q119 1442 174 1442H921Q1001 1442 1051.0 1397.5Q1101 1353 1101 1277Q1101 1208 1045 1099L509 65Q485 17 455.0 -2.5Q425 -22 377 -22Z">
+                          </path>
+                        </g>
+                        <g transform="translate(-668 18136) scale(1 -1)">
+                          <path d="M668 -33 660 -34Q401 -34 238.5 83.5Q76 201 76 389Q76 529 170.0 629.0Q264 729 414 758V763Q286 796 208.5 883.0Q131 970 131 1086Q131 1255 281.0 1365.5Q431 1476 664 1476Q898 1476 1047.5 1366.0Q1197 1256 1197 1085Q1197 970 1119.5 883.0Q1042 796 914 764V758Q1064 728 1157.5 628.0Q1251 528 1251 388Q1251 201 1088.5 84.0Q926 -33 668 -33ZM660 855V853Q762 853 827.5 909.0Q893 965 893 1054Q893 1142 827.5 1198.5Q762 1255 660 1255Q557 1255 491.5 1199.0Q426 1143 426 1054Q426 966 491.0 910.5Q556 855 660 855ZM660 185 659 188Q779 188 854.5 251.0Q930 314 930.0 412.0Q930 510 854.5 572.5Q779 635 659 635Q540 635 464.0 572.0Q388 509 388 411Q388 312 464.0 248.5Q540 185 660 185Z">
+                          </path>
+                        </g>
+                        <g transform="translate(-660.5 20184) scale(1 -1)">
+                          <path d="M625 -32 618 -20Q447 -20 320.5 48.5Q194 117 146 219Q126 258 126 297Q126 349 160.0 382.0Q194 415 253 415Q296 415 326.5 396.5Q357 378 395 337Q448 273 502.0 244.5Q556 216 635 216Q790 216 867.5 350.0Q945 484 946 718V733H941Q901 627 799.5 563.0Q698 499 558 499Q354 499 216.5 630.0Q79 761 79 969Q79 1192 236.0 1336.0Q393 1480 635 1480Q810 1480 942.0 1399.0Q1074 1318 1151 1159Q1236 991 1236 735Q1236 375 1074.0 171.5Q912 -32 625 -32ZM628 730 626 729Q742 729 818.5 800.5Q895 872 895 983Q895 1095 818.5 1171.5Q742 1248 629.0 1248.0Q516 1248 439.5 1173.5Q363 1099 363 989Q363 877 438.5 803.5Q514 730 628 730Z">
+                          </path>
+                        </g>
+                      </svg>
+                    </b>
+                    <b style="--d: 8;">
+                      <svg viewBox="-614.4 0 1228.8 20480" preserveAspectRatio="none" class="counter_digit-svg">
+                        <g transform="translate(-671.5 1752) scale(1 -1)">
+                          <path d="M671 -31 672 -34Q398 -34 241.0 168.5Q84 371 84 723Q84 1072 241.5 1272.5Q399 1473 671 1473Q944 1473 1101.0 1273.0Q1258 1073 1258 724Q1258 374 1101.5 171.5Q945 -31 671 -31ZM672 209Q806 209 879.5 342.0Q953 475 953 722Q953 967 880.0 1099.0Q807 1231 674 1231Q540 1231 465.0 1098.5Q390 966 390 721Q390 474 463.5 341.5Q537 209 672 209Z">
+                          </path>
+                        </g>
+                        <g transform="translate(-491.5 3800) scale(1 -1)">
+                          <path d="M613 -21 616 -16Q548 -16 506.0 25.5Q464 67 464 134V1166H457L245 1018Q207 991 166 991Q120 991 90.0 1021.5Q60 1052 60 1099Q60 1165 125 1213L411 1410Q459 1444 499.0 1455.0Q539 1466 591 1466Q671 1466 716.0 1420.5Q761 1375 761 1297V132Q761 63 720.5 21.0Q680 -21 613 -21Z">
+                          </path>
+                        </g>
+                        <g transform="translate(-617.5 5848) scale(1 -1)">
+                          <path d="M243 0H240Q170 0 134.0 34.5Q98 69 98 129Q98 173 116.5 206.5Q135 240 181 282L610 694Q743 823 788.5 892.5Q834 962 834 1039Q834 1128 771.5 1185.5Q709 1243 612 1243Q444 1243 365 1069Q339 1022 309.5 1001.0Q280 980 233 980Q173 980 139.0 1013.0Q105 1046 105 1102Q105 1135 117 1168Q157 1296 291.5 1386.5Q426 1477 620 1477Q850 1477 991.5 1360.5Q1133 1244 1133 1058Q1133 930 1065.0 827.0Q997 724 811 549L498 248V241H1042Q1100 241 1133.0 209.0Q1166 177 1166 121Q1166 67 1133.0 33.5Q1100 0 1042 0Z">
+                          </path>
+                        </g>
+                        <g transform="translate(-645 7896) scale(1 -1)">
+                          <path d="M638 -33 639 -39Q444 -39 312.5 33.5Q181 106 125 220Q100 267 100 313Q100 371 135.5 405.5Q171 440 233 440Q278 440 308.5 422.0Q339 404 362 363Q403 283 468.5 242.5Q534 202 641 202Q752 202 821.5 260.5Q891 319 891 410Q891 515 817.5 572.0Q744 629 611 629H549Q496 629 465.5 659.0Q435 689 435 739Q435 787 465.0 816.5Q495 846 548 846H606Q719 846 787.5 901.0Q856 956 856 1044Q856 1133 798.0 1185.0Q740 1237 633 1237Q544 1237 486.0 1199.5Q428 1162 392 1084Q368 1033 338.0 1012.5Q308 992 256 992Q195 992 162.0 1024.5Q129 1057 129 1114Q129 1159 152 1210Q204 1324 330.0 1397.0Q456 1470 638 1470Q868 1470 1008.5 1365.5Q1149 1261 1149 1088Q1149 955 1065.5 867.0Q982 779 849 752V746Q1011 732 1106.0 641.5Q1201 551 1201 404Q1201 208 1045.5 87.5Q890 -33 638 -33Z">
+                          </path>
+                        </g>
+                        <g transform="translate(-663 9944) scale(1 -1)">
+                          <path d="M933 -21 925 -19Q861 -19 822.0 19.5Q783 58 783 129V269H245Q163 269 113.5 316.0Q64 363 64 440Q64 523 129 635Q253 857 531 1266Q605 1381 669.5 1425.0Q734 1469 826 1469Q940 1469 1007.0 1411.0Q1074 1353 1074 1251V510H1157Q1215 510 1248.0 476.0Q1281 442 1281.0 387.0Q1281 332 1248.0 299.5Q1215 267 1157 267H1076V127Q1076 56 1036.5 17.5Q997 -21 933 -21ZM789 499 788 1226H782Q473 784 326 508V499Z">
+                          </path>
+                        </g>
+                        <g transform="translate(-640 11992) scale(1 -1)">
+                          <path d="M655 -33 657 -26Q487 -26 349.5 45.5Q212 117 158 232Q134 285 134 333Q134 390 167.5 422.5Q201 455 259 455Q303 455 333.5 438.5Q364 422 390 382Q471 215 655 215Q773 215 849.0 291.0Q925 367 925 484Q925 597 849.5 669.5Q774 742 656 742Q535 742 446 656Q402 614 371.5 600.0Q341 586 291 586Q220 586 182.5 628.5Q145 671 147 735Q147 743 148 748L190 1278Q197 1368 244.0 1408.0Q291 1448 381 1448H1015Q1071 1448 1105.5 1414.5Q1140 1381 1140.0 1326.0Q1140 1271 1106.0 1238.0Q1072 1205 1016 1205H446L411 803H417Q462 873 547.5 913.0Q633 953 742 953Q948 953 1081.0 821.0Q1214 689 1214 483Q1214 253 1058.5 110.0Q903 -33 655 -33Z">
+                          </path>
+                        </g>
+                        <g transform="translate(-658.5 14040) scale(1 -1)">
+                          <path d="M685 -31 687 -39Q513 -39 380.0 42.5Q247 124 167 282Q83 458 83 704Q83 1061 243.5 1265.0Q404 1469 685 1469Q859 1469 985.0 1404.5Q1111 1340 1163 1235Q1182 1193 1182 1152Q1182 1101 1148.0 1068.0Q1114 1035 1056 1035Q1013 1035 981.5 1053.5Q950 1072 914 1113Q865 1176 809.5 1205.0Q754 1234 680 1234Q529 1234 449.0 1100.0Q369 966 367 730V716H373Q417 820 521.5 884.0Q626 948 768 948Q976 948 1107.5 816.0Q1239 684 1239 480Q1239 256 1082.5 112.5Q926 -31 685 -31ZM682 201 680 199Q792 199 869.5 274.5Q947 350 948 459Q948 573 874.0 646.5Q800 720 686 720Q571 720 495.0 648.0Q419 576 419 465Q419 353 495.0 277.0Q571 201 682 201Z">
+                          </path>
+                        </g>
+                        <g transform="translate(-586 16088) scale(1 -1)">
+                          <path d="M377 -22 375 -27Q312 -27 274.5 7.5Q237 42 237 95Q237 145 262 192L795 1193V1200H172Q118 1200 83.5 1233.5Q49 1267 49 1322Q49 1376 84.0 1409.0Q119 1442 174 1442H921Q1001 1442 1051.0 1397.5Q1101 1353 1101 1277Q1101 1208 1045 1099L509 65Q485 17 455.0 -2.5Q425 -22 377 -22Z">
+                          </path>
+                        </g>
+                        <g transform="translate(-668 18136) scale(1 -1)">
+                          <path d="M668 -33 660 -34Q401 -34 238.5 83.5Q76 201 76 389Q76 529 170.0 629.0Q264 729 414 758V763Q286 796 208.5 883.0Q131 970 131 1086Q131 1255 281.0 1365.5Q431 1476 664 1476Q898 1476 1047.5 1366.0Q1197 1256 1197 1085Q1197 970 1119.5 883.0Q1042 796 914 764V758Q1064 728 1157.5 628.0Q1251 528 1251 388Q1251 201 1088.5 84.0Q926 -33 668 -33ZM660 855V853Q762 853 827.5 909.0Q893 965 893 1054Q893 1142 827.5 1198.5Q762 1255 660 1255Q557 1255 491.5 1199.0Q426 1143 426 1054Q426 966 491.0 910.5Q556 855 660 855ZM660 185 659 188Q779 188 854.5 251.0Q930 314 930.0 412.0Q930 510 854.5 572.5Q779 635 659 635Q540 635 464.0 572.0Q388 509 388 411Q388 312 464.0 248.5Q540 185 660 185Z">
+                          </path>
+                        </g>
+                        <g transform="translate(-660.5 20184) scale(1 -1)">
+                          <path d="M625 -32 618 -20Q447 -20 320.5 48.5Q194 117 146 219Q126 258 126 297Q126 349 160.0 382.0Q194 415 253 415Q296 415 326.5 396.5Q357 378 395 337Q448 273 502.0 244.5Q556 216 635 216Q790 216 867.5 350.0Q945 484 946 718V733H941Q901 627 799.5 563.0Q698 499 558 499Q354 499 216.5 630.0Q79 761 79 969Q79 1192 236.0 1336.0Q393 1480 635 1480Q810 1480 942.0 1399.0Q1074 1318 1151 1159Q1236 991 1236 735Q1236 375 1074.0 171.5Q912 -32 625 -32ZM628 730 626 729Q742 729 818.5 800.5Q895 872 895 983Q895 1095 818.5 1171.5Q742 1248 629.0 1248.0Q516 1248 439.5 1173.5Q363 1099 363 989Q363 877 438.5 803.5Q514 730 628 730Z">
+                          </path>
+                        </g>
+                      </svg>
+                    </b>
+                  </div>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="100%" viewBox="0 0 45 45" fill="none" class="svg-8">
+                    <g clip-path="url(#clip0_17241_15887)">
+                      <path d="M9.2858 15.8742C9.98438 15.8742 10.6199 16.3059 10.8787 16.9536L20.2308 41.1984C20.4119 41.6683 19.7904 42.0239 19.467 41.6302L0.385407 18.5918C-0.519694 17.4996 0.270325 15.8742 1.70613 15.8742H9.2858ZM42.8791 15.8742C44.315 15.8742 45.1051 17.4996 44.1998 18.5918L25.1182 41.6302C24.7948 42.0239 24.1733 41.6683 24.3544 41.1984L33.7084 16.9536C33.9671 16.3059 34.6008 15.8742 35.2994 15.8742H42.8791ZM29.4668 15.8742C30.644 15.8742 31.472 17.0424 31.0451 18.1347L22.7271 39.6491C22.5719 40.0301 22.0276 40.0301 21.8853 39.6491L13.5673 18.1347C13.1405 17.0426 13.9557 15.8745 15.1456 15.8742H29.4668ZM25.989 5.57324C26.6226 5.57339 27.2043 5.90362 27.5147 6.43679H27.5274L30.3993 11.2244C31.0719 12.3292 30.258 13.7384 28.9389 13.7389H15.6518C14.3454 13.7386 13.5299 12.3419 14.1895 11.2244L17.0632 6.43679C17.3867 5.90364 17.9682 5.57324 18.5889 5.57324H25.989ZM14.0063 5.58594C14.6013 5.58607 14.9768 6.22092 14.6794 6.72888L11.949 11.2752C11.0306 12.7992 9.37495 13.7261 7.57684 13.7262H1.84583C0.396926 13.7262 -0.379361 12.05 0.565012 10.9831H0.552312L3.08673 8.1004C4.48388 6.50016 6.52877 5.58595 8.67623 5.58594H14.0063ZM35.9108 5.58594C38.0581 5.58598 40.1014 6.50038 41.4985 8.1004L44.0347 10.9831H44.022C44.9664 12.05 44.1901 13.7262 42.7412 13.7262H37.0102C35.212 13.7262 33.5565 12.7992 32.638 11.2752L29.9076 6.72888C29.6101 6.22088 29.9857 5.58599 30.5807 5.58594H35.9108Z" fill="black">
+                      </path>
+                    </g>
+                    <defs>
+                      <clipPath id="clip0_17241_15887">
+                        <rect width="44.5854" height="44.5854" fill="white"></rect>
+                      </clipPath>
+                    </defs>
+                  </svg>
+                </div>
+                <div class="claim_line-3">
+                  1 KARAT = 0.01 USDT
+                  <br>
+                  9 Friends Invited
+                </div>
+              </div>
+              <a href="#" class="features-button">
+                <span>Claim </span>
+                <span counter_value="">197.98 </span>
+                <span>USDT </span>
+              </a>
+            </div>
+          </div>
+        </div>
+        <div class="feature_text">
+          <h3 class="future_title">Your Friends, Your Money </h3>
+          <div class="feature_caption">
+            Invite friends and earn rewards. Get cashback from their spending — the more they spend, the more you earn.
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="feature_i-6">
+      <div class="feature__item">
+        <div class="feature_cover">
+          <div class="feature_cover-wrap1">
+            <picture>
+              <source media="(max-width: 500px)" srcset="./images/feature-item-6--feature-item-6@500w.avif">
+              <source media="(max-width: 800px)" srcset="./images/feature-item-6--feature-item-6@800w.avif">
+              <img loading="lazy" src="./images/feature-item-6--feature-item-6.avif" alt="" class="feature_image">
+            </picture>
+          </div>
+        </div>
+        <div class="feature_text">
+          <h3 class="future_title">AI Finance Assistance </h3>
+          <div class="feature_caption">
+            Karta AI delivers insights, automates transactions, and provides in-app support across your financial activity.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+        <section id="cverage" class="cverage">
+  <h2 class="header-1">Global <br> Coverage </h2>
+  <div class="coverage-wrap">
+    <h3 class="coverage_title">Works <br> anywhere <br> visa is accepted </h3>
+    <div class="coverage_cover">
+      <img loading="lazy" src="./images/kard-hero.webp" alt="" class="card_img2">
+      <div class="planet-vid">
+        <video poster="videos/platet-small4_poster.0000000.jpg" autoplay="" loop="" muted="" playsinline="">
+          <source src="videos/platet-small4_mp4.mp4">
+          <source src="videos/platet-small4_webm.webm">
+        </video>
+      </div>
+    </div>
+    <div class="coverage_caption">
+      Use your card in 200+ countries and territories where Visa is accepted – online, in-store, and at ATMs. Availability depends on local regulations and partner coverage.
+    </div>
+  </div>
+</section>
+        <section id="clarity" class="clarity">
+  <h2 class="header-1">Regulatory <br> clarity </h2>
+  <div class="slider">
+    <div mask="" class="mask" style="transition: none; transform: translateX(0px);">
+      <div class="slide">
+        <div class="slide-item">
+          <div class="clarity_header">
+            <div class="rich-text-block">
+              <h3>Licenses, registrations and security policies </h3>
+              <p>
+                Karta works with regulated financial and card-issuing partners to provide compliant card programs and virtual accounts.
+              </p>
+            </div>
+            <picture>
+              <source media="(max-width: 500px)" srcset="./images/clarity-item-1--clarity-item-1@500w.webp">
+              <img loading="lazy" src="./images/clarity-item-1--clarity-item-1.webp" alt="" class="clarity_content">
+            </picture>
+          </div>
+          <div class="clarity_text">
+            <h3 class="future_title">Built with Trusted Partners </h3>
+          </div>
+        </div>
+      </div>
+      <div class="slide">
+        <div class="slide-item">
+          <div class="clarity_header">
+            <img loading="lazy" src="./images/sticker-1--sticker-1.webp" alt="" class="clarity_sticker-1">
+            <img loading="lazy" src="./images/sticker-2--sticker-2.webp" alt="" class="clarity_sticker-2">
+            <picture>
+              <source media="(max-width: 500px)" srcset="./images/sticker-4--sticker-4@500w.webp">
+              <img loading="lazy" src="./images/sticker-4--sticker-4.webp" alt="" class="clarity_sticker-3">
+            </picture>
+            <img loading="lazy" src="./images/sticker-3--sticker-3.webp" alt="" class="clarity_sticker-4">
+            <img loading="lazy" src="./images/sticker-5--sticker.webp" alt="" class="clarity_sticker-5">
+            <div class="rich-text-block">
+              ✓ Self-Custody wallet
+              <br>
+              ✓ 3D-Secure
+              <br>
+              ✓ Encrypted transactions
+              <br>
+              ✓ PIN protection
+            </div>
+          </div>
+          <div class="clarity_text">
+            <h3 class="future_title">Secure by Design </h3>
+          </div>
+        </div>
+      </div>
+      <div class="slide">
+        <div class="slide-item">
+          <div class="clarity_header">
+            <img loading="lazy" src="./images/clarity-item-3.avif" alt="" class="clarity_content clarity_header-3">
+          </div>
+          <div class="clarity_text">
+            <h3 class="future_title">We are not a Bank </h3>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="slide-nav" style="display: none;">
+      <div class="slider-dot active">
+      </div>
+    </div>
+  </div>
+</section>
+        <section id="people" class="people">
+  <h2 class="people_title">
+    <span class="slogan_l-1">Used monthly by over </span>
+    <span class="slogan_l-2">20,000 people </span>
+    <span class="slogan_l-3">Used monthly by over 20,000 people </span>
+  </h2>
+</section>
+        <section id="atm" class="atm">
+  <div class="atm-wrap">
+    <div class="atm_text">
+      NO 🏦 NO ⏳ NO 🚫
+    </div>
+    <div class="atm_text-mobile">
+      NO🏦
+      <br>
+      NO⏳
+      <br>
+      NO🚫
+    </div>
+    <div class="atm_video">
+      <video poster="videos/atm-explosion_poster.0000000.jpg" preload="auto" muted="" playsinline="" src="blob:https://karta.io/7f034e1f-7ef0-44cc-ac33-c09fad917945">
+        <source src="videos/atm-explosion.mp4">
+      </video>
+    </div>
+    <img loading="lazy" src="./images/atm-frame-last--atm-frame-last.webp" alt="" class="atm_frame-last" style="opacity: 0;">
+    <img loading="lazy" src="./images/atm-frame-first--atm-frame-first.webp" alt="" class="atm_frame-first">
+  </div>
+</section>
+        <section id="limits" class="limits">
+  <h2 class="header-1">
+    <span>FEES </span>
+    <span class="span">&amp; LIMITS </span>
+  </h2>
+  <div class="receipt">
+    <div class="receipt_header">
+      <h3 class="receipt_title">NO <br> WALLS </h3>
+      <img loading="lazy" src="./images/receipt-cover--receipt-cover.webp" alt="" class="receipt_cover">
+    </div>
+    <div class="receipt_body">
+      <div class="receipt_block-1">
+        <table cellspacing="0" cellpadding="12">
+          <thead>
+            <tr class="receipt_h">
+              <th>
+                Activation
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="receipt_metric">
+                Visa Virtual
+              </td>
+              <td class="receipt_value">
+                5.00 USDT
+              </td>
+            </tr>
+            <tr>
+              <td class="receipt_metric">
+                Visa Physical
+              </td>
+              <td class="receipt_value">
+                from 100.00 USDT
+              </td>
+            </tr>
+            <tr>
+              <td class="receipt_metric">
+                Virtual Accounts
+              </td>
+              <td class="receipt_value">
+                FREE
+              </td>
+            </tr>
+          </tbody>
+          <thead>
+            <tr class="receipt_h-2">
+              <th>
+                Fees
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="receipt_metric">
+                Crypto Top-Up
+              </td>
+              <td class="receipt_value">
+                FREE
+              </td>
+            </tr>
+            <tr>
+              <td class="receipt_metric">
+                Card payments
+              </td>
+              <td class="receipt_value">
+                1.5%
+              </td>
+            </tr>
+            <tr>
+              <td class="receipt_metric">
+                ATM Withdrawal
+              </td>
+              <td class="receipt_value">
+                1.5% + 1 USDT
+              </td>
+            </tr>
+          </tbody>
+          <thead>
+            <tr class="receipt_h-2">
+              <th>
+                Sending Funds
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="receipt_metric">
+                To crypto wallets
+              </td>
+              <td class="receipt_value">
+                Network fee only
+              </td>
+            </tr>
+            <tr>
+              <td class="receipt_metric">
+                SEPA (EUR)
+              </td>
+              <td class="receipt_value">
+                1,5% + €2
+              </td>
+            </tr>
+            <tr>
+              <td class="receipt_metric">
+                SWIFT (USD)
+              </td>
+              <td class="receipt_value">
+                1,4% + $2
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <picture>
+        <source media="(max-width: 500px)" srcset="./images/receipt-bg--receipt-bg@500w.webp">
+        <img loading="lazy" src="./images/receipt-bg--receipt-bg.webp" alt="" class="receipt_bg">
+      </picture>
+    </div>
+  </div>
+</section>
+        <section class="spoiler">
+  <h2 class="header-1">FAQ </h2>
+  <div class="spoiler_items">
+    <details class="spoiler_item" data-toggle="" data-group="personal-spoiler">
+      <summary class="spoiler_header">
+        <h3 class="spoiler_h">What is Karta? </h3>
+        <svg xmlns="http://www.w3.org/2000/svg" width="24px" viewBox="0 0 24 24" height="24px" class="spoiler_icon">
+          <path d="M18 13H13V18C13 18.55 12.55 19 12 19C11.45 19 11 18.55 11 18V13H6C5.45 13 5 12.55 5 12C5 11.45 5.45 11 6 11H11V6C11 5.45 11.45 5 12 5C12.55 5 13 5.45 13 6V11H18C18.55 11 19 11.45 19 12C19 12.55 18.55 13 18 13Z">
+          </path>
+        </svg>
+      </summary>
+      <div class="spoiler_content">
+        <div>
+          Karta is an all-in-one payment app. You can fund your balance with supported top-up methods, manage your digital assets, use your Visa card for everyday purchases, and handle payments in just a few clicks. Whether you're shopping online or in-store, Karta makes the experience simple and seamless.
+        </div>
+      </div>
+    </details>
+    <details class="spoiler_item" data-toggle="" data-group="personal-spoiler">
+      <summary class="spoiler_header">
+        <h3 class="spoiler_h">Are there any fees for registration or getting the card? </h3>
+        <svg xmlns="http://www.w3.org/2000/svg" width="24px" viewBox="0 0 24 24" height="24px" class="spoiler_icon">
+          <path d="M18 13H13V18C13 18.55 12.55 19 12 19C11.45 19 11 18.55 11 18V13H6C5.45 13 5 12.55 5 12C5 11.45 5.45 11 6 11H11V6C11 5.45 11.45 5 12 5C12.55 5 13 5.45 13 6V11H18C18.55 11 19 11.45 19 12C19 12.55 18.55 13 18 13Z">
+          </path>
+        </svg>
+      </summary>
+      <div class="spoiler_content">
+        <div>
+          Signing up is free, and you can get started right away. There's a one-time fee of
+          <s>30 USDT </s>
+          5 USDT for issuing your virtual Visa Signature® card.
+        </div>
+      </div>
+    </details>
+    <details class="spoiler_item" data-toggle="" data-group="personal-spoiler">
+      <summary class="spoiler_header">
+        <h3 class="spoiler_h">Are there any fees for using the card or account? </h3>
+        <svg xmlns="http://www.w3.org/2000/svg" width="24px" viewBox="0 0 24 24" height="24px" class="spoiler_icon">
+          <path d="M18 13H13V18C13 18.55 12.55 19 12 19C11.45 19 11 18.55 11 18V13H6C5.45 13 5 12.55 5 12C5 11.45 5.45 11 6 11H11V6C11 5.45 11.45 5 12 5C12.55 5 13 5.45 13 6V11H18C18.55 11 19 11.45 19 12C19 12.55 18.55 13 18 13Z">
+          </path>
+        </svg>
+      </summary>
+      <div class="spoiler_content">
+        <div>
+          For a full breakdown of applicable fees, please refer to
+          <a href="https://intercom.help/karta-personal/en/articles/10511616-are-there-any-fees-for-using-karta-personal" tabindex="0">
+            our dedicated article
+          </a>
+        </div>
+      </div>
+    </details>
+    <details class="spoiler_item" data-toggle="" data-group="personal-spoiler">
+      <summary class="spoiler_header">
+        <h3 class="spoiler_h">How do I get the card? </h3>
+        <svg xmlns="http://www.w3.org/2000/svg" width="24px" viewBox="0 0 24 24" height="24px" class="spoiler_icon">
+          <path d="M18 13H13V18C13 18.55 12.55 19 12 19C11.45 19 11 18.55 11 18V13H6C5.45 13 5 12.55 5 12C5 11.45 5.45 11 6 11H11V6C11 5.45 11.45 5 12 5C12.55 5 13 5.45 13 6V11H18C18.55 11 19 11.45 19 12C19 12.55 18.55 13 18 13Z">
+          </path>
+        </svg>
+      </summary>
+      <div class="spoiler_content">
+        <div>
+          Just start
+          <a href="https://t.me/karta" target="_blank" tabindex="0">the Karta Telegram bot </a>
+          , open the app within Telegram, complete a quick verification (it takes up to 5 minutes). After that, top up your balance to activate your virtual card — that's all!
+        </div>
+      </div>
+    </details>
+    <details class="spoiler_item" data-toggle="" data-group="personal-spoiler">
+      <summary class="spoiler_header">
+        <h3 class="spoiler_h">How can I fund my account? </h3>
+        <svg xmlns="http://www.w3.org/2000/svg" width="24px" viewBox="0 0 24 24" height="24px" class="spoiler_icon">
+          <path d="M18 13H13V18C13 18.55 12.55 19 12 19C11.45 19 11 18.55 11 18V13H6C5.45 13 5 12.55 5 12C5 11.45 5.45 11 6 11H11V6C11 5.45 11.45 5 12 5C12.55 5 13 5.45 13 6V11H18C18.55 11 19 11.45 19 12C19 12.55 18.55 13 18 13Z">
+          </path>
+        </svg>
+      </summary>
+      <div class="spoiler_content">
+        <div>
+          <strong>Stablecoins: </strong>
+          USDT or USDC on Tron (TRC-20), Ethereum, BNB Smart Chain, Polygon, Arbitrum, Optimism, Base, Solana.
+          <strong>Bank transfer: </strong>
+          Coming soon.
+        </div>
+      </div>
+    </details>
+    <details class="spoiler_item" data-toggle="" data-group="personal-spoiler">
+      <summary class="spoiler_header">
+        <h3 class="spoiler_h">How do I withdraw my funds? </h3>
+        <svg xmlns="http://www.w3.org/2000/svg" width="24px" viewBox="0 0 24 24" height="24px" class="spoiler_icon">
+          <path d="M18 13H13V18C13 18.55 12.55 19 12 19C11.45 19 11 18.55 11 18V13H6C5.45 13 5 12.55 5 12C5 11.45 5.45 11 6 11H11V6C11 5.45 11.45 5 12 5C12.55 5 13 5.45 13 6V11H18C18.55 11 19 11.45 19 12C19 12.55 18.55 13 18 13Z">
+          </path>
+        </svg>
+      </summary>
+      <div class="spoiler_content">
+        <div>
+          Just tap the Send button in the app to move your money to an external crypto wallet. Bank withdrawals are coming soon — stay tuned!
+        </div>
+      </div>
+    </details>
+    <details class="spoiler_item" data-toggle="" data-group="personal-spoiler">
+      <summary class="spoiler_header">
+        <h3 class="spoiler_h">How do I contact customer support? </h3>
+        <svg xmlns="http://www.w3.org/2000/svg" width="24px" viewBox="0 0 24 24" height="24px" class="spoiler_icon">
+          <path d="M18 13H13V18C13 18.55 12.55 19 12 19C11.45 19 11 18.55 11 18V13H6C5.45 13 5 12.55 5 12C5 11.45 5.45 11 6 11H11V6C11 5.45 11.45 5 12 5C12.55 5 13 5.45 13 6V11H18C18.55 11 19 11.45 19 12C19 12.55 18.55 13 18 13Z">
+          </path>
+        </svg>
+      </summary>
+      <div class="spoiler_content">
+        <div>
+          Need help? Just reach out to us via the in-app chat for fast, friendly support! For answers to common questions,
+          <a href="https://intercom.help/karta-personal/en/" target="_blank" tabindex="0">visit our Help Center </a>
+          .
+        </div>
+      </div>
+    </details>
+  </div>
+</section>
+        <section id="control" class="control">
+  <h2 class="people_title">
+    <span class="slogan_l-1">The 🏦 End </span>
+    <span class="slogan_l-2">Starts Now </span>
+    <span class="slogan_l-3">The End of <br> BANKS <br> Starts Now </span>
+  </h2>
+  <a id="get_card_hero" data-tg-link="" data-track="cta" href="https://t.me/Karta/app" target="_blank" class="cta-button">
+    <svg xmlns="http://www.w3.org/2000/svg" width="100%" viewBox="0 0 24 24" fill="none" class="button_icon-2">
+      <path d="M22.9373 4.63864L19.6174 19.9134C19.3669 20.9915 18.7137 21.2597 17.7854 20.752L12.727 17.1153L10.2862 19.4056C10.0162 19.6691 9.79019 19.8896 9.2696 19.8896L9.63298 14.8633L19.0084 6.59827C19.416 6.24376 18.92 6.04728 18.3748 6.40184L6.78455 13.5217L1.7948 11.9981C0.70943 11.6675 0.689821 10.9392 2.02068 10.4314L21.5376 3.09585C22.4412 2.76527 23.232 3.29224 22.9373 4.63864Z" fill="currentColor">
+      </path>
+    </svg>
+    <div class="text-block-11">
+      Get Karta
+    </div>
+  </a>
+</section>
+        <section id="footer" class="footer-2">
+  <svg class="footer_image" width="752" height="758" viewBox="0 0 752 758" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g opacity="0.1" clip-path="url(#clip0_5573_48612)">
+<path d="M79.3727 376.039L2.43588 366.503L4.89765 346.642L35.1267 350.388L8.52268 317.395L11.4849 293.495L43.9479 333.753L88.5165 302.267L85.4054 327.367L49.4228 352.16L81.8345 356.178L79.3727 376.039Z" fill="#171717"/>
+<path d="M86.8962 306.786L24.5847 254.392L38.4706 220.509L119.588 227.012L111.54 246.65L87.115 244.484L75.9396 271.754L94.8607 287.351L86.8962 306.786ZM61.8459 260.036L68.8514 242.942L37.9773 240.272L61.8459 260.036Z" fill="#171717"/>
+<path d="M120.991 227.079L59.3118 180.112L80.0302 152.903C90.6892 138.905 104.036 127.368 117.071 137.294C127.133 144.955 128.548 155.984 120.479 167.67C124.527 164.532 129.041 163.686 140.446 165.044L165.959 168.024L151.436 187.096L127.797 183.471C122.262 182.573 119.571 183.565 116.707 187.327L111.31 194.413L133.183 211.068L120.991 227.079ZM98.3621 184.554L106.889 173.355C112.285 166.269 115.62 161.344 109.496 156.681C103.284 151.951 99.0706 156.759 93.941 163.496L85.4137 174.694L98.3621 184.554Z" fill="#171717"/>
+<path d="M115.614 110.488L169.913 66.5832L180.906 80.1792L161.496 95.8743L199.247 142.562L183.77 155.077L146.018 108.389L126.608 124.084L115.614 110.488Z" fill="#171717"/>
+<path d="M215.676 127.683L206.251 46.8185L239.593 31.6783L294.175 92.0374L274.85 100.812L258.558 82.4862L231.724 94.6711L234.8 118.999L215.676 127.683ZM229.501 76.4777L246.322 68.8394L225.681 45.7247L229.501 76.4777Z" fill="#171717"/>
+<path d="M283.606 35.5542L284.849 23.9701L295.742 25.1286L302.35 28.3898L298.84 22.1446L296.678 11.4749L308.102 9.1599L310.264 19.8296L309.377 27.078L314.13 21.7392L323.605 16.453L329.368 26.6175L319.828 32.1411L312.693 33.4747L319.105 36.3267L327.103 43.682L319.318 52.3282L311.45 45.0589L307.767 38.5121L306.966 45.631L302.44 55.4119L291.817 50.608L296.429 40.6975L301.289 35.3368L294.392 36.7345L283.606 35.5542Z" fill="#171717"/>
+<path d="M367.307 83.501L344.97 5.24854L366.183 5.90374L385.996 76.8171L410.148 7.26168L431.142 7.9101L403.908 84.6315L367.307 83.501Z" fill="#171717"/>
+<path d="M448.602 12.4419L501.933 27.1118L497.296 43.9702L480.226 39.2746L468.968 80.2011L486.039 84.8967L481.372 101.861L428.041 87.1911L432.707 70.2268L449.777 74.9223L461.035 33.9958L443.965 29.3002L448.602 12.4419Z" fill="#171717"/>
+<path d="M486.921 103.448L523.864 35.2905L553.931 51.5877C569.399 59.972 582.848 71.3895 575.04 85.7943C569.014 96.9121 558.333 100.003 545.547 93.8234C549.269 97.3416 550.798 101.673 551.206 113.151L552.178 138.819L531.102 127.395L531.056 103.48C531.094 97.8722 529.701 95.3659 525.544 93.1126L517.713 88.868L504.613 113.037L486.921 103.448ZM525.469 74.5599L537.843 81.2674C545.674 85.512 551.052 88.0517 554.72 81.2843C558.441 74.4203 553.043 70.9942 545.599 66.9592L533.224 60.2517L525.469 74.5599Z" fill="#171717"/>
+<path d="M601.215 80.2705L652.867 127.26L641.101 140.193L622.636 123.395L582.233 167.808L567.51 154.415L607.914 110.002L589.449 93.2039L601.215 80.2705Z" fill="#171717"/>
+<path d="M625.507 169.614L666.023 142.565L677.135 159.21L644.577 180.947C633.327 188.457 626.102 193.28 635.017 206.633C643.931 219.986 651.37 215.284 662.528 207.835L695.086 186.098L706.199 202.743L665.683 229.792C649.404 240.66 633.45 235.974 620.384 216.402C607.378 196.922 609.228 180.482 625.507 169.614Z" fill="#171717"/>
+<path d="M642.124 244.689L723.53 243.783L735.096 278.526L669.354 326.489L662.651 306.352L682.582 292.068L673.274 264.106L648.758 264.618L642.124 244.689ZM691.6 263.8L697.435 281.328L722.584 263.221L691.6 263.8Z" fill="#171717"/>
+<path d="M668.285 337.365C667.735 330.9 670.815 326.886 677.389 326.327L744.665 320.605L746.361 340.547L686.646 345.626L689.805 382.77L672.274 384.261L668.285 337.365Z" fill="#171717"/>
+<path d="M730.969 393.953L741.632 398.648L737.227 408.678L732.117 413.987L739.132 412.535L749.955 413.707L748.699 425.296L737.876 424.123L731.237 421.081L734.885 427.228L737.051 437.86L725.618 440.271L723.245 429.506L724.136 422.302L719.475 427.549L710.042 432.942L704.162 422.903L713.474 417.607L720.829 416.082L714.287 413.161L706.338 405.884L714.135 397.216L722.182 404.614L725.818 410.871L726.576 403.874L730.969 393.953Z" fill="#171717"/>
+<path d="M652.461 476.42C660.846 452.442 682.438 443.334 704.132 450.921C725.723 458.472 736.932 479.051 728.547 503.029C721.214 523.996 705.036 533.949 685.9 529.703L692.689 510.293C701.122 511.495 708.153 506.381 711.383 497.143C715.34 485.828 711.736 475.481 697.308 470.436C682.776 465.353 673.508 471.199 669.552 482.514C666.321 491.752 668.736 500.169 676.081 504.485L669.292 523.895C651.578 515.254 645.128 497.388 652.461 476.42Z" fill="#171717"/>
+<path d="M639.405 515.317L703.564 558.834L684.368 587.137C674.491 601.698 661.797 613.949 648.237 604.752C637.771 597.654 635.754 586.719 643.171 574.608C639.301 577.963 634.839 579.056 623.377 578.324L597.739 576.747L611.196 556.907L634.998 559.232C640.574 559.826 643.206 558.688 645.861 554.774L650.86 547.403L628.109 531.971L639.405 515.317ZM664.329 556.538L656.429 568.187C651.429 575.559 648.369 580.658 654.739 584.979C661.201 589.362 665.145 584.33 669.898 577.323L677.798 565.674L664.329 556.538Z" fill="#171717"/>
+<path d="M609.768 668.758L593.698 682.956L578.571 632.784L584.01 627.978L564.207 605.563L579.123 592.385L598.927 614.8L604.448 609.922L652.126 631.335L636.139 645.46L594.849 625.299L609.768 668.758Z" fill="#171717"/>
+<path d="M540.193 625.363L576.125 694.059L549.036 708.228C527.502 719.492 514.181 717.276 504.854 699.444C495.629 681.807 501.407 669.602 522.941 658.338L532.296 653.445L522.459 634.639L540.193 625.363ZM540.399 668.938L529.973 674.392C521.398 678.877 518.821 683.203 522.491 690.219C526.263 697.43 531.286 697.78 539.861 693.295L550.287 687.842L540.399 668.938Z" fill="#171717"/>
+<path d="M502.848 730.465L435.181 747.703L430.865 730.76L455.054 724.598L440.232 666.415L459.519 661.501L474.342 719.684L498.531 713.522L502.848 730.465Z" fill="#171717"/>
+<path d="M415.22 712.411C415.044 735.283 399.405 752.537 374.114 752.342C348.932 752.147 333.672 734.654 333.848 711.782C334.026 688.8 349.555 671.545 374.736 671.74C400.027 671.935 415.398 689.429 415.22 712.411ZM394.548 712.251C394.656 698.176 388.011 689.987 374.596 689.883C361.181 689.78 354.52 697.866 354.411 711.941C354.303 726.016 360.948 734.095 374.254 734.198C387.669 734.302 394.44 726.216 394.548 712.251Z" fill="#171717"/>
+<path d="M314.898 728.63L308.86 738.594L299.486 732.925L294.885 727.169L295.414 734.313L292.847 744.893L281.52 742.144L284.087 731.564L287.965 725.377L281.396 728.196L270.573 728.964L269.666 717.315L280.648 716.359L287.675 718.177L283.077 712.875L278.953 702.822L289.671 698.293L293.713 708.214L294.272 715.705L298.017 709.598L306.264 702.659L313.846 711.515L305.467 718.534L298.792 721.327L305.631 722.987L314.898 728.63Z" fill="#171717"/>
+<path d="M244.374 640.593C267.097 651.947 273.397 674.518 263.124 695.077C252.9 715.538 231.067 724.051 208.344 712.697C188.474 702.768 180.65 685.459 187.285 667.015L205.68 676.207C203.42 684.42 207.602 692.042 216.356 696.417C227.078 701.774 237.799 699.51 244.631 685.836C251.513 672.065 246.887 662.132 236.165 656.774C227.411 652.4 218.756 653.73 213.544 660.468L195.149 651.277C205.965 634.799 224.504 630.664 244.374 640.593Z" fill="#171717"/>
+<path d="M212.024 627.338L141.769 668.473L114.503 644.029L147.832 569.789L163.634 583.956L153.403 606.241L175.346 625.913L196.385 613.318L212.024 627.338ZM159.581 635.262L145.825 622.93L132.957 651.121L159.581 635.262Z" fill="#171717"/>
+<path d="M147.685 568.004L82.7391 610.338L64.064 581.688C54.4562 566.948 48.0686 550.503 61.7948 541.556C72.3889 534.651 83.2531 537.02 91.5521 548.543C89.9554 543.677 90.6733 539.14 95.7817 528.853L107.153 505.821L120.243 525.904L108.893 546.954C106.189 551.867 106.22 554.734 108.802 558.695L113.666 566.157L136.696 551.145L147.685 568.004ZM100.032 575.045L92.3456 563.253C87.4816 555.791 83.9626 550.997 77.5141 555.2C70.9734 559.463 74.0877 565.047 78.7115 572.14L86.3977 583.932L100.032 575.045Z" fill="#171717"/>
+<path d="M107.436 505.011L33.8788 529.498L24.5009 501.327C17.7974 481.19 15.9632 458.621 47.577 448.097C79.2951 437.538 91.3542 456.703 98.0577 476.84L107.436 505.011ZM84.4205 491.579L81.3639 482.397C77.1612 469.773 73.6179 460.521 53.8984 467.086C34.1789 473.65 36.9223 483.284 41.0903 495.804L44.1468 504.986L84.4205 491.579Z" fill="#171717"/>
+<path d="M25.8835 439.049L14.4715 436.703L16.6671 425.97L20.5457 419.705L13.9933 422.601L3.16564 423.732L1.95448 412.139L12.7821 411.008L19.9124 412.585L15.0528 407.343L10.6976 397.405L21.367 392.642L25.9523 402.666L26.597 409.896L30.0496 403.786L38.1365 396.529L45.998 405.105L38.009 412.242L31.1399 415.282L38.1494 416.761L47.4523 422.201L41.654 432.316L32.2303 426.777L27.3593 421.426L28.0905 428.425L25.8835 439.049Z" fill="#171717"/>
+</g>
+<defs>
+<clipPath id="clip0_5573_48612">
+<rect width="751.701" height="758" fill="white"/>
+</clipPath>
+</defs>
+</svg>
+  <div class="link_blocks-wrap">
+    <div class="link_block card-brand">
+      <h2 class="footer_title">Store, <br> spend, <br> exchange </h2>
+      <div class="link_header_col">
+        <a aria-label="Personal" href="/" aria-current="page" class="logo current-page">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 26" width="100px">
+            <path d="M72.7265 18.5273C72.7265 18.2167 72.4747 17.965 72.1641 17.965H72.033C71.4387 17.965 70.8333 17.9981 70.2169 18.0642C69.6226 18.1083 69.0832 18.2076 68.5989 18.3619C68.1367 18.5163 67.7514 18.7478 67.4432 19.0566C67.135 19.3432 66.9809 19.7292 66.9809 20.2143C66.9809 20.523 67.047 20.7877 67.1791 21.0082C67.3332 21.2287 67.5203 21.4051 67.7404 21.5374C67.9605 21.6698 68.2137 21.769 68.4999 21.8352C68.7861 21.8793 69.0612 21.9013 69.3254 21.9013C70.4261 21.9013 71.2626 21.6036 71.8349 21.0082C72.4293 20.3907 72.7265 19.5638 72.7265 18.5273ZM63.1662 11.5908C62.9562 11.3652 62.9653 11.0113 63.1999 10.8114C64.0708 10.0692 65.056 9.49877 66.1554 9.09999C67.4542 8.6369 68.775 8.40535 70.1179 8.40535C71.5047 8.40535 72.6714 8.58177 73.618 8.9346C74.5866 9.26539 75.3681 9.79464 75.9624 10.5224C76.5568 11.228 76.9861 12.1322 77.2502 13.2348C77.5364 14.3153 77.7463 15.3408 77.7463 16.8403V24.601C77.7463 24.9121 77.4941 25.1643 77.1829 25.1643H73.2393C72.9281 25.1643 72.6759 24.9121 72.6759 24.601V23.4209C72.6759 23.4037 72.662 23.3898 72.6448 23.3898C72.634 23.3898 72.624 23.3955 72.6183 23.4047C72.1999 24.0811 71.5645 24.6054 70.7122 24.9776C69.8757 25.3525 68.9622 25.5399 67.9716 25.5399C67.3111 25.5399 66.6287 25.4517 65.9243 25.2753C65.2199 25.0989 64.5705 24.8122 63.9761 24.4153C63.4038 24.0183 62.9305 23.4891 62.5562 22.8275C62.182 22.1659 61.9949 21.35 61.9949 20.3797C61.9949 19.1889 62.3141 18.2296 62.9525 17.5019C63.6129 16.7742 64.4494 16.2118 65.462 15.8149C66.4966 15.418 67.6414 15.1533 68.8961 15.021C69.9535 14.9095 70.9875 14.845 71.998 14.8275C72.3091 14.8221 72.5703 14.5676 72.5098 14.2624C72.4039 13.728 72.1349 13.3193 71.7028 13.0363C71.1305 12.6394 70.4261 12.4409 69.5895 12.4409C68.8191 12.4409 68.0706 12.6063 67.3442 12.9371C66.8285 13.1792 66.3659 13.4568 65.9564 13.7699C65.7107 13.9577 65.3582 13.9455 65.1475 13.7192L63.1662 11.5908Z">
+            </path>
+            <path d="M115.047 18.5273C115.047 18.2167 114.795 17.965 114.485 17.965H114.354C113.759 17.965 113.154 17.9981 112.537 18.0642C111.943 18.1083 111.404 18.2076 110.919 18.3619C110.457 18.5163 110.072 18.7478 109.764 19.0566C109.456 19.3432 109.301 19.7292 109.301 20.2143C109.301 20.523 109.368 20.7877 109.5 21.0082C109.654 21.2287 109.841 21.4051 110.061 21.5374C110.281 21.6698 110.534 21.769 110.82 21.8352C111.107 21.8793 111.382 21.9013 111.646 21.9013C112.747 21.9013 113.583 21.6036 114.155 21.0082C114.75 20.3907 115.047 19.5638 115.047 18.5273ZM105.487 11.5908C105.277 11.3652 105.286 11.0113 105.52 10.8114C106.391 10.0692 107.377 9.49877 108.476 9.09999C109.775 8.6369 111.096 8.40535 112.438 8.40535C113.825 8.40535 114.992 8.58177 115.939 8.9346C116.907 9.26539 117.689 9.79464 118.283 10.5224C118.877 11.228 119.307 12.1322 119.571 13.2348C119.857 14.3153 120 15.3408 120 16.8403V24.601C120 24.9121 119.748 25.1643 119.437 25.1643H115.681C115.37 25.1643 115.117 24.9121 115.117 24.601V23.4984C115.117 23.4384 115.069 23.3898 115.009 23.3898C114.971 23.3898 114.936 23.4096 114.916 23.4415C114.497 24.1002 113.87 24.6122 113.033 24.9776C112.196 25.3525 111.283 25.5399 110.292 25.5399C109.632 25.5399 108.949 25.4517 108.245 25.2753C107.54 25.0989 106.891 24.8122 106.297 24.4153C105.724 24.0183 105.251 23.4891 104.877 22.8275C104.503 22.1659 104.315 21.35 104.315 20.3797C104.315 19.1889 104.635 18.2296 105.273 17.5019C105.933 16.7742 106.77 16.2118 107.783 15.8149C108.817 15.418 109.962 15.1533 111.217 15.021C112.274 14.9095 113.308 14.845 114.319 14.8275C114.63 14.8221 114.891 14.5676 114.83 14.2624C114.724 13.728 114.455 13.3193 114.023 13.0363C113.451 12.6394 112.747 12.4409 111.91 12.4409C111.14 12.4409 110.391 12.6063 109.665 12.9371C109.149 13.1792 108.686 13.4568 108.277 13.7699C108.031 13.9577 107.679 13.9455 107.468 13.7192L105.487 11.5908Z">
+            </path>
+            <path d="M85.6337 17.1357V24.601C85.6337 24.9121 85.3814 25.1643 85.0703 25.1643H80.751C80.4399 25.1643 80.1876 24.9121 80.1876 24.601V16.796C80.1876 10.2068 85.4018 8.6385 89.976 8.6385C90.0764 8.6385 90.3152 8.65147 90.545 8.66556C90.8446 8.68394 91.0751 8.93565 91.0724 9.23584C91.063 10.3024 91.0706 11.9176 91.0758 12.7664C91.0777 13.0793 90.8247 13.3316 90.5119 13.3401C88.5772 13.3923 85.6666 13.8254 85.6337 17.1357Z">
+            </path>
+            <path d="M99.3426 13.3333C99.0315 13.3333 98.7793 13.5856 98.7793 13.8967V18.6381C98.7793 19.41 98.8485 19.9943 99.1346 20.3913C99.4428 20.7662 99.9822 21.2207 100.753 21.2207H102.347V24.6813C102.347 24.9498 102.159 25.1805 101.894 25.2279C101.244 25.3445 100.039 25.5399 99.2667 25.5399C98.166 25.5399 97.2415 25.4076 96.493 25.143C95.7446 24.8563 95.1392 24.4594 94.6769 23.9522C94.2366 23.4229 93.9174 22.8054 93.7193 22.0998C93.5212 21.3721 93.3332 20.5672 93.3332 19.6851V4.88263C93.3332 4.57149 93.5855 4.31925 93.8966 4.31925H98.2159C98.527 4.31925 98.7793 4.57149 98.7793 4.88263V8.07512C98.7793 8.38627 99.0315 8.6385 99.3426 8.6385H101.972C102.283 8.6385 102.535 8.89074 102.535 9.20188V12.77C102.535 13.0811 102.283 13.3333 101.972 13.3333H99.3426Z">
+            </path>
+            <path d="M49.3917 24.6316C49.3917 24.9428 49.1395 25.195 48.8283 25.195H44.5067C44.1956 25.195 43.9434 24.9428 43.9434 24.6316V0.563379C43.9434 0.252233 44.1956 0 44.5067 0H48.8283C49.1395 0 49.3917 0.252234 49.3917 0.563381V13.8092C49.3917 14.3411 50.0609 14.5767 50.3941 14.1622L54.6663 8.84886C54.7732 8.71586 54.9347 8.6385 55.1053 8.6385H60.1219C60.5978 8.6385 60.8593 9.19202 60.5571 9.55964L54.9481 16.3829C54.7803 16.587 54.7769 16.8803 54.94 17.0882L60.5502 24.244C60.84 24.6138 60.5766 25.155 60.1068 25.155H55.0173C54.8413 25.155 54.6753 25.0727 54.5688 24.9326L50.4036 19.4531C50.0771 19.0236 49.3917 19.2545 49.3917 19.7941V24.6316Z">
+            </path>
+            <path d="M30.4064 8.63852C31.5832 8.63865 32.1722 10.0634 31.3401 10.8959L26.2716 15.9675C25.7563 16.483 25.7549 17.3211 26.2716 17.8376L31.339 22.9102C32.1706 23.7427 31.5811 25.1672 30.4042 25.1672L21.977 25.1683C21.6267 25.1673 21.2907 25.0288 21.0433 24.7813L13.5598 17.2913C13.3125 17.0433 12.977 16.9039 12.6261 16.9043H1.32087C0.592216 16.9043 6.60789e-05 16.3135 0 15.5823V9.96232C0.000479788 9.23294 0.590912 8.64042 1.32194 8.63995H11.8525C12.5812 8.64088 13.1729 9.23148 13.1734 9.96267V13.7125C13.1734 14.8906 14.5969 15.4804 15.429 14.6479L21.0441 9.02833C21.2914 8.78047 21.6277 8.64151 21.9785 8.64102L30.4056 8.63995V8.63852H30.4064Z">
+            </path>
+          </svg>
+        </a>
+        <div class="footer-copyright">
+          ©2026 All Rights Reserved, Karta.
+        </div>
+        <div class="footer-copyright">
+          <strong>Karta Finance Inc. </strong>
+          <br>
+          221 W 10th St. 4th Floor Wilmington, DE 19801 United States
+        </div>
+      </div>
+    </div>
+    <div class="footer_secondary-cards">
+      <div class="link_block card-support">
+        <h3 class="link_title">Support </h3>
+        <div class="footer_cart_text">
+          Visit our
+          <a id="help-center" href="https://intercom.help/karta-personal/en/" class="faq_span">
+            <span class="text-span-2"><strong id="help-center-2"> Help Center </strong> </span>
+          </a>
+          for answers and support.
+        </div>
+        <div class="footer_cart_text">
+          Join us on
+          <a id="get_in_touch" href="https://t.me/KartaWalletBot" data-tg-link="" target="_blank" class="link_text">Telegram </a>
+        </div>
+      </div>
+      <div class="link_block card-legal">
+        <div class="link_privacy_row">
+          <div class="footer_cart_text term">
+            <a href="https://legal.karta.io/b2c-card-terms" target="_blank" class="link_text">Terms of use </a>
+          </div>
+          <div class="footer_cart_text term">
+            <a href="https://legal.karta.io/b2c-privacy-policy" target="_blank" class="link_text">Privacy Policy </a>
+          </div>
+        </div>
+      </div>
+      <div class="link_block card-social">
+        <div class="link_social_list">
+          <div data-tg-link="" class="link_item">
+            <a aria-label="Telegram" data-tg-link="" href="https://t.me/karta/">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 21 18" class="link_icon">
+                <path d="M18.0169 0.117465C18.264 0.013456 18.5345 -0.022416 18.8002 0.0135823C19.0659 0.0495806 19.317 0.156133 19.5276 0.32215C19.7381 0.488167 19.9003 0.707579 19.9973 0.957548C20.0942 1.20752 20.1224 1.47891 20.0789 1.74347L17.8109 15.5005C17.5909 16.8275 16.1349 17.5885 14.9179 16.9275C13.8999 16.3745 12.3879 15.5225 11.0279 14.6335C10.3479 14.1885 8.26489 12.7635 8.52089 11.7495C8.74089 10.8825 12.2409 7.62447 14.2409 5.68747C15.0259 4.92647 14.6679 4.48747 13.7409 5.18747C11.4389 6.92547 7.74289 9.56847 6.52089 10.3125C5.44289 10.9685 4.88089 11.0805 4.20889 10.9685C2.98289 10.7645 1.84589 10.4485 0.917888 10.0635C-0.336112 9.54347 -0.275112 7.81947 0.916888 7.31747L18.0169 0.117465Z">
+                </path>
+              </svg>
+            </a>
+          </div>
+          <div data-tg-link="" class="link_item">
+            <a aria-label="Instagram" href="https://www.instagram.com/karta.personal">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" class="link_icon">
+                <path d="M13 0C14.3261 0 15.5979 0.526784 16.5355 1.46447C17.4732 2.40215 18 3.67392 18 5V13C18 14.3261 17.4732 15.5979 16.5355 16.5355C15.5979 17.4732 14.3261 18 13 18H5C3.67392 18 2.40215 17.4732 1.46447 16.5355C0.526784 15.5979 0 14.3261 0 13V5C0 3.67392 0.526784 2.40215 1.46447 1.46447C2.40215 0.526784 3.67392 0 5 0H13ZM9 5C7.93913 5 6.92172 5.42143 6.17157 6.17157C5.42143 6.92172 5 7.93913 5 9C5 10.0609 5.42143 11.0783 6.17157 11.8284C6.92172 12.5786 7.93913 13 9 13C10.0609 13 11.0783 12.5786 11.8284 11.8284C12.5786 11.0783 13 10.0609 13 9C13 7.93913 12.5786 6.92172 11.8284 6.17157C11.0783 5.42143 10.0609 5 9 5ZM9 7C9.53043 7 10.0391 7.21071 10.4142 7.58579C10.7893 7.96086 11 8.46957 11 9C11 9.53043 10.7893 10.0391 10.4142 10.4142C10.0391 10.7893 9.53043 11 9 11C8.46957 11 7.96086 10.7893 7.58579 10.4142C7.21071 10.0391 7 9.53043 7 9C7 8.46957 7.21071 7.96086 7.58579 7.58579C7.96086 7.21071 8.46957 7 9 7ZM13.5 3.5C13.2348 3.5 12.9804 3.60536 12.7929 3.79289C12.6054 3.98043 12.5 4.23478 12.5 4.5C12.5 4.76522 12.6054 5.01957 12.7929 5.20711C12.9804 5.39464 13.2348 5.5 13.5 5.5C13.7652 5.5 14.0196 5.39464 14.2071 5.20711C14.3946 5.01957 14.5 4.76522 14.5 4.5C14.5 4.23478 14.3946 3.98043 14.2071 3.79289C14.0196 3.60536 13.7652 3.5 13.5 3.5Z">
+                </path>
+              </svg>
+            </a>
+          </div>
+          <div data-tg-link="" class="link_item">
+            <a aria-label="X (Twitter)" href="https://x.com/Karta_Personal">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" class="link_icon">
+                <path d="M0.114 0H5.415L10.1325 6.747L15.795 0H17.4885L10.7775 7.671L18 18H12.702L7.7745 10.9545L1.692 18H0L7.1295 10.032L0.114 0Z" class="link_icon">
+                </path>
+              </svg>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+        <div class="footer_info-wrap">
+          <div class="footer_info_text">
+            Karta products may not be available to all customers.
+          </div>
+          <div class="footer_info_text">
+            We are a financial technology company, not a bank. We are not insured by the FDIC.
+          </div>
+          <details class="nav_lang-switch nav_lang-switch_footer nav_lang-switch_upward" id="footer-lang" data-toggle="" data-toggle-group="footer-lang-dropdown" data-group="footer-lang-dropdown">
+            <summary class="nav_lang-btn">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" class="nav_lang-globe">
+                <path d="M21 12C21 16.9706 16.9706 21 12 21M21 12C21 7.02944 16.9706 3 12 3M21 12H3M12 21C7.02944 21 3 16.9706 3 12M12 21C13.6569 21 15 16.9706 15 12C15 7.02944 13.6569 3 12 3M12 21C10.3431 21 9 16.9706 9 12C9 7.02944 10.3431 3 12 3M3 12C3 7.02944 7.02944 3 12 3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                </path>
+              </svg>
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" class="nav_lang-chevron">
+                <path d="M19 9L12 16L5 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+              </svg>
+            </summary>
+            <div class="nav_lang-dropdown">
+              <div class="nav_lang-border">
+                <ul class="nav_lang-list">
+                  <li class="nav_lang-item">
+                    <a href="/ar/" class="nav_lang-link">
+                      <span class="nav_lang-flag">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <g clip-path="url(#clip0_15963_7286)">
+                            <path d="M12 24C18.6274 24 24 18.6274 24 12C24 5.37258 18.6274 0 12 0C5.37258 0 0 5.37258 0 12C0 18.6274 5.37258 24 12 24Z" fill="#6DA544">
+                            </path>
+                            <path d="M6.7829 14.3476C6.7829 15.2121 7.48368 15.9128 8.3481 15.9128H13.0438C13.0438 16.6332 13.6277 17.2172 14.3481 17.2172H15.9133C16.6337 17.2172 17.2177 16.6332 17.2177 15.9128V14.3476H6.7829Z" fill="#F0F0F0">
+                            </path>
+                            <path d="M17.3474 6.78308V10.4352C17.3474 11.0106 16.8793 11.4787 16.304 11.4787V13.0439C17.7424 13.0439 18.9126 11.8737 18.9126 10.4352V6.78308H17.3474Z" fill="#F0F0F0">
+                            </path>
+                            <path d="M6.13037 10.435C6.13037 11.0104 5.66227 11.4785 5.08688 11.4785V13.0437C6.52534 13.0437 7.69557 11.8734 7.69557 10.435V6.78282H6.13037V10.435Z" fill="#F0F0F0">
+                            </path>
+                            <path d="M16.5655 6.78308H15.0003V10.4353H16.5655V6.78308Z" fill="#F0F0F0"></path>
+                            <path d="M12.6521 8.87005C12.6521 9.01391 12.535 9.13091 12.3912 9.13091C12.2474 9.13091 12.1304 9.01386 12.1304 8.87005V6.78308H10.5652V8.87005C10.5652 9.01391 10.4481 9.13091 10.3043 9.13091C10.1605 9.13091 10.0434 9.01386 10.0434 8.87005V6.78308H8.47818V8.87005C8.47818 9.87697 9.29737 10.6962 10.3043 10.6962C10.6921 10.6962 11.0517 10.5743 11.3478 10.3673C11.6438 10.5742 12.0035 10.6962 12.3913 10.6962C12.4694 10.6962 12.5461 10.6907 12.6217 10.6811C12.5108 11.138 12.0992 11.4787 11.6086 11.4787V13.0439C13.0471 13.0439 14.2173 11.8737 14.2173 10.4353V8.87005V6.78308H12.6521V8.87005H12.6521Z" fill="#F0F0F0">
+                            </path>
+                            <path d="M10.826 11.4781H8.47818V13.0433H10.826V11.4781Z" fill="#F0F0F0"></path>
+                          </g>
+                          <defs>
+                            <clipPath id="clip0_15963_7286">
+                              <rect width="24" height="24" fill="white"></rect>
+                            </clipPath>
+                          </defs>
+                        </svg>
+                      </span>
+                      العربية
+                    </a>
+                  </li>
+                  <li class="nav_lang-item">
+                    <a href="/es/" class="nav_lang-link">
+                      <span class="nav_lang-flag">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <g clip-path="url(#clip0_15963_7347)">
+                            <path d="M-3.05176e-05 11.9992C-3.05176e-05 13.4671 0.264016 14.8731 0.74636 16.1731L12 17.2166L23.2536 16.1731C23.7359 14.8731 24 13.4671 24 11.9992C24 10.5314 23.7359 9.12533 23.2536 7.82534L12 6.78186L0.74636 7.82534C0.264016 9.12533 -3.05176e-05 10.5314 -3.05176e-05 11.9992Z" fill="#FFDA44">
+                            </path>
+                            <path d="M23.2551 7.82574C21.5596 3.25618 17.1611 -0.000366211 12.0015 -0.000366211C6.84192 -0.000366211 2.44341 3.25618 0.747894 7.82574H23.2551Z" fill="#D80027">
+                            </path>
+                            <path d="M0.746918 16.174C2.44243 20.7435 6.84095 24.0001 12.0005 24.0001C17.1601 24.0001 21.5586 20.7435 23.2541 16.174H0.746918Z" fill="#D80027">
+                            </path>
+                          </g>
+                          <defs>
+                            <clipPath id="clip0_15963_7347">
+                              <rect width="24" height="24" fill="white"></rect>
+                            </clipPath>
+                          </defs>
+                        </svg>
+                      </span>
+                      Español
+                    </a>
+                  </li>
+                  <li class="nav_lang-item">
+                    <a href="/pt/" class="nav_lang-link">
+                      <span class="nav_lang-flag">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <g clip-path="url(#clip0_15963_7365)">
+                            <path d="M-0.000396729 12.0007C-0.000396729 17.1602 3.2561 21.5587 7.82562 23.2542L8.86915 12.0006L7.82562 0.74707C3.2561 2.44263 -0.000396729 6.8411 -0.000396729 12.0007Z" fill="#6DA544">
+                            </path>
+                            <path d="M24.0001 11.9999C24.0001 5.37256 18.6275 -6.10352e-05 12.0001 -6.10352e-05C10.5323 -6.10352e-05 9.12617 0.263986 7.82614 0.74633V23.2535C9.12617 23.7359 10.5323 23.9999 12.0001 23.9999C18.6275 23.9999 24.0001 18.6273 24.0001 11.9999Z" fill="#D80027">
+                            </path>
+                            <path d="M7.82623 16.1745C10.1314 16.1745 12.0001 14.3058 12.0001 12.0006C12.0001 9.69544 10.1314 7.82672 7.82623 7.82672C5.52106 7.82672 3.65234 9.69544 3.65234 12.0006C3.65234 14.3058 5.52106 16.1745 7.82623 16.1745Z" fill="#FFDA44">
+                            </path>
+                            <path d="M5.47775 9.9126V12.5213C5.47775 13.8179 6.52888 14.8691 7.82558 14.8691C9.12229 14.8691 10.1734 13.818 10.1734 12.5213V9.9126H5.47775Z" fill="#D80027">
+                            </path>
+                            <path d="M7.82623 13.3038C7.3947 13.3038 7.04361 12.9527 7.04361 12.5212V11.4777H8.60881V12.5212C8.60881 12.9527 8.25772 13.3038 7.82623 13.3038Z" fill="#F0F0F0">
+                            </path>
+                          </g>
+                          <defs>
+                            <clipPath id="clip0_15963_7365">
+                              <rect width="24" height="24" fill="white"></rect>
+                            </clipPath>
+                          </defs>
+                        </svg>
+                      </span>
+                      Português
+                    </a>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </details>
+        </div>
+      </div>
+    </main>
+    <script>
+      document.documentElement.classList.add('js');
+    </script>
+    <script src="js/karta-attr.js?v=1791195360" defer="">
+      
+    </script>
+    <script>
+      (function() {
+      var loaded = false;
+      function load() {
+      if (loaded) return;
+      loaded = true;
+      window.intercomSettings = { api_base: "https://api-iam.intercom.io", app_id: "svum8srr" };
+      (function(){var w=window;var ic=w.Intercom;if(typeof ic==="function"){ic('reattach_activator');ic('update',w.intercomSettings);}else{var d=document;var i=function(){i.c(arguments);};i.q=[];i.c=function(args){i.q.push(args);};w.Intercom=i;var l=function(){var s=d.createElement('script');s.type='text/javascript';s.async=true;s.src='https://widget.intercom.io/widget/svum8srr';var x=d.getElementsByTagName('script')[0];x.parentNode.insertBefore(s,x);};if(document.readyState==='complete'){l();}else if(w.attachEvent){w.attachEvent('onload',l);}else{w.addEventListener('load',l,false);}}})();
+      ['mousemove','scroll','touchstart','click'].forEach(function(e) {
+      window.removeEventListener(e, load);
+      });
+      }
+      ['mousemove','scroll','touchstart','click'].forEach(function(e) {
+      window.addEventListener(e, load, { passive: true, once: true });
+      });
+      setTimeout(load, 1000);
+      })();
+    </script>
+    <!-- <script src="https://cdn.prod.website-files.com/gsap/3.15.0/gsap.min.js" type="text/javascript" defer></script> -->
+    <!-- <script src="https://cdn.prod.website-files.com/gsap/3.15.0/ScrollTrigger.min.js" type="text/javascript" defer></script> -->
+    <script src="js/personal/atm-video-scroll.js?v=1791195360" defer="">
+      
+    </script>
+    <!-- <script src="js/personal/hero-animation.js?v=1791195360" defer></script> -->
+    <!-- <script src="js/personal/payments-animation.js?v=1791195360" defer></script> -->
+    <script src="js/modules/theme-toggle.js?v=1791195360" defer="">
+      
+    </script>
+    <script src="js/personal/atm-theme-scroll.js?v=1791195360" defer="">
+      
+    </script>
+    <script src="js/modules/slider.js?v=1791195360" defer="">
+      
+    </script>
+    <script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4bc70e2c01a94c73b74392e4234840661791215815920" integrity="sha512-L0ha0OXavK/8okipN9F8BtP84dg9DUhPERbBXzwI6dgTA55d2+yweo3pn5CSFYs45/r8md2+xvUPtTdvTNRfjA==" data-cf-beacon="{&quot;version&quot;:&quot;2024.11.0&quot;,&quot;token&quot;:&quot;b7a461e569194acfa2de94c775110d3d&quot;,&quot;r&quot;:1,&quot;spa&quot;:2}" crossorigin="anonymous">
+      
+    </script>
+    <script>
+      // Universal Snapshot Runtime Shim
+      (function() {
+      function initUniversalSnapshot() {
+      // 1. Universal Cookie / Dialog Dismissal Handler (Capture Phase)
+      function setupDismissableBanners() {
+      const STORAGE_KEY = 'snapshot_cookie_consent';
+      let isDismissed = null;
+      try { isDismissed = localStorage.getItem(STORAGE_KEY); } catch (_) {}
+      const isConsentDialog = (el) => /cookie|consent|privacy/i.test(
+      [el.id, typeof el.className === 'string' ? el.className : '', el.textContent || ''].join(' ')
+      );
+      const dialogs = [...document.querySelectorAll('[role="dialog"], [class*="cookie"], [class*="consent"], [id*="cookie"], [id*="consent"]')]
+      .filter(isConsentDialog);
+      if (isDismissed === 'accepted' || isDismissed === 'declined') {
+      dialogs.forEach(d => d.remove());
+      return;
+      }
+      document.addEventListener('click', function(e) {
+      const btn = e.target.closest('button');
+      if (!btn) return;
+      const dialog = btn.closest('[role="dialog"], [class*="cookie"], [class*="consent"], [id*="cookie"], [id*="consent"]');
+      if (dialog && isConsentDialog(dialog)) {
+      e.preventDefault();
+      e.stopPropagation();
+      const text = (btn.textContent || '').trim();
+      const choice = text.includes('ยอมรับ') || text.toLowerCase().includes('accept') ? 'accepted' : 'declined';
+      try { localStorage.setItem(STORAGE_KEY, choice); } catch (_) {}
+      dialog.remove();
+      }
+      }, true);
+      }
+      
+      // 2. Astro / React Island Rehydration Bridge
+      function rehydrateIslands() {
+      const islands = document.querySelectorAll('astro-island');
+      islands.forEach(async (island) => {
+      // Preserve the captured visual state. Forcing entrance animations back to
+      // opacity: 0 leaves static snapshots invisible because no animation driver
+      // may run after the original page runtime has been removed.
+      
+      // React hydrator requires 'ssr' attribute
+      if (!island.hasAttribute('ssr')) {
+      island.setAttribute('ssr', '');
+      }
+      
+      if (typeof island.hydrate === 'function') {
+      try {
+      await island.hydrate();
+      } catch (err) {
+      console.warn('[SnapshotHydrator] Failed to rehydrate island:', island, err);
+      }
+      }
+      });
+      }
+      
+      setupDismissableBanners();
+      setTimeout(rehydrateIslands, 60);
+      }
+      
+      if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => setTimeout(initUniversalSnapshot, 50));
+      } else {
+      setTimeout(initUniversalSnapshot, 50);
+      }
+      })();
+    </script>
+  </body>
+</html>
